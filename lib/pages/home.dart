@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hwscontrol/core/storage.dart';
 import 'package:hwscontrol/pages/login_page.dart';
-import 'package:hwscontrol/theme.dart';
-import 'package:hwscontrol/widgets/snackbar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:hwscontrol/pages/login_page.dart';
+// import 'package:hwscontrol/widgets/snackbar.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,6 +14,23 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+   // desconectar do app
+  _logOut() {
+
+    // Deletar token de acesso
+    DeleteAll().deleteAllTokens();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+          const LoginPage(),
+      ),
+      (route) => false
+    );
+  }
+
+  /*
   _logoutUser() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -33,6 +50,7 @@ class _HomeState extends State<Home> {
       });
     });
   }
+  */
 
   @override
   void dispose() {
@@ -48,8 +66,8 @@ class _HomeState extends State<Home> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: const <Widget>[
-            DrawerHeader(
+          children: <Widget>[
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -61,17 +79,25 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.message),
               title: Text('Messages'),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.account_circle),
               title: Text('Profile'),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(Icons.settings),
               title: Text('Settings'),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Disconnect'),
+              onTap: () {
+                _logOut();
+              },
             ),
           ],
         ),
@@ -189,8 +215,10 @@ class _HomeState extends State<Home> {
     );*/
   }
 
+  /*
   void _toggleHomeButton() {
     CustomSnackBar(context, const Text('Aguarde...'));
     _logoutUser();
   }
+  */
 }

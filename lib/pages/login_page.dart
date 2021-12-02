@@ -142,9 +142,10 @@ class _LoginPageState extends State<LoginPage>
                 child: Text(
                   'Conectar',
                   style: TextStyle(
-                      color: left,
-                      fontSize: 14.0,
-                      fontFamily: 'WorkSansThin'),
+                    color: left,
+                    fontSize: 14.0,
+                    fontFamily: 'WorkSansThin',
+                  ),
                 ),
               ),
             ),
@@ -158,9 +159,10 @@ class _LoginPageState extends State<LoginPage>
                 child: Text(
                   'Cadastrar',
                   style: TextStyle(
-                      color: center,
-                      fontSize: 14.0,
-                      fontFamily: 'WorkSansThin'),
+                    color: center,
+                    fontSize: 14.0,
+                    fontFamily: 'WorkSansThin', 
+                  ),
                 ),
               ),
             ),

@@ -81,7 +81,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: Container(
+                child: SizedBox(
                   width: 300.0,
                   height: 160.0,
                   child: Column(
