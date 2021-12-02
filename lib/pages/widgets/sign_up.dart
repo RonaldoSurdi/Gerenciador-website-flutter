@@ -33,12 +33,12 @@ class _SignUpState extends State<SignUp> {
     String name = signupNameController.text;
     String email = signupEmailController.text;
     String senha = signupPasswordController.text;
-    String confirma_senha = signupConfirmPasswordController.text;
+    String confirmaSenha = signupConfirmPasswordController.text;
 
     if (name.trim().isNotEmpty && name.trim().length >= 3) {
       if (email.trim().isNotEmpty && email.trim().contains("@")) {
-        if (senha.trim().isNotEmpty && confirma_senha.trim().isNotEmpty) {
-          if (senha.trim() == confirma_senha.trim()) {
+        if (senha.trim().isNotEmpty && confirmaSenha.trim().isNotEmpty) {
+          if (senha.trim() == confirmaSenha.trim()) {
             setState(() {
               CustomSnackBar(context, const Text('Verificando'));
             });
@@ -129,7 +129,7 @@ class _SignUpState extends State<SignUp> {
                 ),
                 child: Container(
                   width: 300.0,
-                  height: 360.0,
+                  height: 370.0,
                   child: Column(
                     children: <Widget>[
                       Padding(
@@ -142,7 +142,7 @@ class _SignUpState extends State<SignUp> {
                           textCapitalization: TextCapitalization.words,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansSemiBold',
+                              fontFamily: 'WorkSansThin',
                               fontSize: 16.0,
                               color: Colors.black),
                           decoration: const InputDecoration(
@@ -153,7 +153,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             hintText: 'Nome completo',
                             hintStyle: TextStyle(
-                                fontFamily: 'WorkSansSemiBold', fontSize: 16.0),
+                                fontFamily: 'WorkSansThin', fontSize: 16.0),
                           ),
                           onSubmitted: (_) {
                             focusNodeEmail.requestFocus();
@@ -174,7 +174,7 @@ class _SignUpState extends State<SignUp> {
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansSemiBold',
+                              fontFamily: 'WorkSansThin',
                               fontSize: 16.0,
                               color: Colors.black),
                           decoration: const InputDecoration(
@@ -185,7 +185,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             hintText: 'E-mail',
                             hintStyle: TextStyle(
-                                fontFamily: 'WorkSansSemiBold', fontSize: 16.0),
+                                fontFamily: 'WorkSansThin', fontSize: 16.0),
                           ),
                           onSubmitted: (_) {
                             focusNodePassword.requestFocus();
@@ -206,7 +206,7 @@ class _SignUpState extends State<SignUp> {
                           obscureText: _obscureTextPassword,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansSemiBold',
+                              fontFamily: 'WorkSansThin',
                               fontSize: 16.0,
                               color: Colors.black),
                           decoration: InputDecoration(
@@ -217,7 +217,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             hintText: 'Senha',
                             hintStyle: const TextStyle(
-                                fontFamily: 'WorkSansSemiBold', fontSize: 16.0),
+                                fontFamily: 'WorkSansThin', fontSize: 16.0),
                             suffixIcon: GestureDetector(
                               onTap: _toggleSignup,
                               child: Icon(
@@ -248,7 +248,7 @@ class _SignUpState extends State<SignUp> {
                           obscureText: _obscureTextConfirmPassword,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansSemiBold',
+                              fontFamily: 'WorkSansThin',
                               fontSize: 16.0,
                               color: Colors.black),
                           decoration: InputDecoration(
@@ -259,7 +259,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             hintText: 'Confirmar senha',
                             hintStyle: const TextStyle(
-                                fontFamily: 'WorkSansSemiBold', fontSize: 16.0),
+                                fontFamily: 'WorkSansThin', fontSize: 16.0),
                             suffixIcon: GestureDetector(
                               onTap: _toggleSignupConfirm,
                               child: Icon(
@@ -282,7 +282,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 340.0),
+                margin: const EdgeInsets.only(top: 350.0),
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                   boxShadow: <BoxShadow>[
@@ -316,7 +316,7 @@ class _SignUpState extends State<SignUp> {
                     child: Text(
                       'CADASTRAR',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.yellow,
                           fontSize: 25.0,
                           fontFamily: 'WorkSansBold'),
                     ),

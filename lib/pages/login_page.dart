@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hwscontrol/pages/widgets/forgot_password.dart';
 import 'package:hwscontrol/pages/widgets/sign_in.dart';
 import 'package:hwscontrol/pages/widgets/sign_up.dart';
 import 'package:hwscontrol/theme.dart';
-import 'package:hwscontrol/utils/bubble_indicator_painter.dart';
+//import 'package:hwscontrol/utils/bubble_indicator_painter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -15,7 +16,8 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late PageController _pageController;
 
-  Color left = Colors.black;
+  Color left = Colors.yellow;
+  Color center = Colors.white;
   Color right = Colors.white;
 
   @override
@@ -77,13 +79,21 @@ class _LoginPageState extends State<LoginPage>
                     FocusScope.of(context).requestFocus(FocusNode());
                     if (i == 0) {
                       setState(() {
+                        left = Colors.yellow;
+                        center = Colors.white;
                         right = Colors.white;
-                        left = Colors.black;
                       });
                     } else if (i == 1) {
                       setState(() {
-                        right = Colors.black;
                         left = Colors.white;
+                        center = Colors.yellow;
+                        right = Colors.white;
+                      });
+                    } else if (i == 2) {
+                      setState(() {
+                        left = Colors.white;
+                        center = Colors.white;
+                        right = Colors.yellow;
                       });
                     }
                   },
@@ -95,6 +105,10 @@ class _LoginPageState extends State<LoginPage>
                     ConstrainedBox(
                       constraints: const BoxConstraints.expand(),
                       child: const SignUp(),
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints.expand(),
+                      child: const ForgotPassword(),
                     ),
                   ],
                 ),
@@ -112,12 +126,12 @@ class _LoginPageState extends State<LoginPage>
       height: 50.0,
       decoration: const BoxDecoration(
         color: Color(0x552B2B2B),
-        borderRadius: BorderRadius.all(Radius.circular(25.0)),
+        borderRadius: BorderRadius.all(Radius.circular(21.0)),
       ),
       child: CustomPaint(
-        painter: BubbleIndicatorPainter(pageController: _pageController),
+        //painter: BubbleIndicatorPainter(pageController: _pageController),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Expanded(
               child: TextButton(
@@ -129,12 +143,12 @@ class _LoginPageState extends State<LoginPage>
                   'Conectar',
                   style: TextStyle(
                       color: left,
-                      fontSize: 16.0,
-                      fontFamily: 'WorkSansSemiBold'),
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansThin'),
                 ),
               ),
             ),
-            //Container(height: 33.0, width: 1.0, color: Colors.white),
+            Container(height: 33.0, width: 1.0, color: Colors.white),
             Expanded(
               child: TextButton(
                 style: ButtonStyle(
@@ -142,11 +156,27 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 onPressed: _onSignUpButtonPress,
                 child: Text(
-                  'Cadastre-se',
+                  'Cadastrar',
+                  style: TextStyle(
+                      color: center,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansThin'),
+                ),
+              ),
+            ),
+            Container(height: 33.0, width: 1.0, color: Colors.white),
+            Expanded(
+              child: TextButton(
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                onPressed: _onForgotPasswordButtonPress,
+                child: Text(
+                  'Ajuda',
                   style: TextStyle(
                       color: right,
-                      fontSize: 16.0,
-                      fontFamily: 'WorkSansSemiBold'),
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansThin'),
                 ),
               ),
             ),
@@ -163,6 +193,11 @@ class _LoginPageState extends State<LoginPage>
 
   void _onSignUpButtonPress() {
     _pageController.animateToPage(1,
+        duration: const Duration(milliseconds: 500), curve: Curves.decelerate);
+  }
+
+  void _onForgotPasswordButtonPress() {
+    _pageController.animateToPage(2,
         duration: const Duration(milliseconds: 500), curve: Curves.decelerate);
   }
 }

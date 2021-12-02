@@ -3,41 +3,35 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/theme.dart';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hwscontrol/core/users.dart';
 import 'package:hwscontrol/pages/home.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({Key? key}) : super(key: key);
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({Key? key}) : super(key: key);
 
   @override
-  _SignInState createState() => _SignInState();
+  _ForgotPasswordState createState() => _ForgotPasswordState();
 }
 
-class _SignInState extends State<SignIn> {
-  final TextEditingController loginEmailController = TextEditingController();
-  final TextEditingController loginPasswordController = TextEditingController();
-
+class _ForgotPasswordState extends State<ForgotPassword> {
   final FocusNode focusNodeEmail = FocusNode();
-  final FocusNode focusNodePassword = FocusNode();
-
-  bool _obscureTextPassword = true;
+  
+  final TextEditingController forgotpasswordEmailController = TextEditingController();
   
   _validateFields() {
     //Recupera dados dos campos
-    String email = loginEmailController.text;
-    String senha = loginPasswordController.text;
+    String email = forgotpasswordEmailController.text;
 
     if (email.trim().isNotEmpty && email.trim().contains("@")) {
-      if (senha.isNotEmpty) {
         setState(() {
           CustomSnackBar(context, const Text('Verificando'));
         });
 
-        _logarUsuario();
-      } else {
-        setState(() {
-          CustomSnackBar(context, const Text('Preencha a senha!'), backgroundColor: Colors.red);
-        });
-      }
+        Users users = Users(
+          email: email
+        );
+
+        _sendpassword(users);
     } else {
       setState(() {
         CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'), backgroundColor: Colors.red);
@@ -45,15 +39,13 @@ class _SignInState extends State<SignIn> {
     }
   }
 
-  _logarUsuario() {
+  _sendpassword(Users users) async {
+    
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    auth.signInWithEmailAndPassword(
-      email: loginEmailController.text,
-      password: loginPasswordController.text,
+    await auth.sendPasswordResetEmail(
+      email: users.email!,
     ).then((firebaseUser) {
-      // print(firebaseUser);
-      // String uid = firebaseUser.user!.uid;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -61,8 +53,9 @@ class _SignInState extends State<SignIn> {
         ),
       );
     }).catchError((error) {
+      print("erro app: " + error.toString());
       setState(() {
-        CustomSnackBar(context, const Text('Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'), backgroundColor: Colors.red);
+        CustomSnackBar(context, const Text('Erro ao enviar e-mail, verifique os campos e tente novamente!'), backgroundColor: Colors.red);
       });
     });
   }
@@ -70,7 +63,6 @@ class _SignInState extends State<SignIn> {
   @override
   void dispose() {
     focusNodeEmail.dispose();
-    focusNodePassword.dispose();
     super.dispose();
   }
 
@@ -91,7 +83,7 @@ class _SignInState extends State<SignIn> {
                 ),
                 child: Container(
                   width: 300.0,
-                  height: 200.0,
+                  height: 160.0,
                   child: Column(
                     children: <Widget>[
                       Padding(
@@ -99,8 +91,9 @@ class _SignInState extends State<SignIn> {
                             top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
                         child: TextField(
                           focusNode: focusNodeEmail,
-                          controller: loginEmailController,
+                          controller: forgotpasswordEmailController,
                           keyboardType: TextInputType.emailAddress,
+                          autocorrect: false,
                           style: const TextStyle(
                               fontFamily: 'WorkSansThin',
                               fontSize: 16.0,
@@ -110,14 +103,13 @@ class _SignInState extends State<SignIn> {
                             icon: Icon(
                               FontAwesomeIcons.envelope,
                               color: Colors.black,
-                              size: 22.0,
                             ),
-                            hintText: 'E-mail',
+                            hintText: 'E-mail cadastrado',
                             hintStyle: TextStyle(
-                                fontFamily: 'WorkSansThin', fontSize: 17.0),
+                                fontFamily: 'WorkSansThin', fontSize: 16.0),
                           ),
                           onSubmitted: (_) {
-                            focusNodePassword.requestFocus();
+                            _toggleForgotPasswordButton();
                           },
                         ),
                       ),
@@ -127,49 +119,23 @@ class _SignInState extends State<SignIn> {
                         color: Colors.grey[400],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextField(
-                          focusNode: focusNodePassword,
-                          controller: loginPasswordController,
-                          obscureText: _obscureTextPassword,
-                          style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            icon: const Icon(
-                              FontAwesomeIcons.lock,
-                              size: 22.0,
-                              color: Colors.black,
-                            ),
-                            hintText: 'Senha',
-                            hintStyle: const TextStyle(
-                                fontFamily: 'WorkSansThin', fontSize: 17.0),
-                            suffixIcon: GestureDetector(
-                              onTap: _toggleLogin,
-                              child: Icon(
-                                _obscureTextPassword
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
-                                size: 15.0,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          onSubmitted: (_) {
-                            _toggleSignInButton();
-                          },
-                          textInputAction: TextInputAction.go,
-                        ),
+                        padding: const EdgeInsets.only(top: 10.0, left: 15.0, right: 15.0),
+                        child: TextButton(
+                            onPressed: () => _toggleForgotPasswordButton(),
+                            child: const Text(
+                              'Será enviado o link para redefinir sua senha.',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontFamily: 'WorkSansThin'),
+                            )),
                       ),
                     ],
                   ),
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 180.0),
+                margin: const EdgeInsets.only(top: 140.0),
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                   boxShadow: <BoxShadow>[
@@ -201,53 +167,25 @@ class _SignInState extends State<SignIn> {
                     padding:
                         EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
                     child: Text(
-                      'CONECTAR',
+                      'ENVIAR',
                       style: TextStyle(
                           color: Colors.yellow,
                           fontSize: 25.0,
                           fontFamily: 'WorkSansBold'),
                     ),
                   ),
-                  onPressed: () => _toggleSignInButton(),
-                )
+                  onPressed: () => _toggleForgotPasswordButton(),
+                ),
               )
             ],
           ),
-          /*Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: TextButton(
-                onPressed: () => _toggleForgotPasswordButton(),
-                child: const Text(
-                  'Esqueceu sua senha?',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Colors.white,
-                      fontSize: 16.0,
-                      fontFamily: 'WorkSansMedium'),
-                )),
-          ),*/
         ],
       ),
     );
   }
 
-  void _toggleSignInButton() {
+  void _toggleForgotPasswordButton() {
     CustomSnackBar(context, const Text('Verificando'));
     _validateFields();
-  }
-
-  /*void _toggleForgotPasswordButton() {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (builder) => const ForgotPassword(),
-        ),
-      );
-  }*/
-
-  void _toggleLogin() {
-    setState(() {
-      _obscureTextPassword = !_obscureTextPassword;
-    });
   }
 }
