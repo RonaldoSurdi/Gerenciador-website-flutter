@@ -1,7 +1,7 @@
-class BiographyData {
+class BiographyModel {
   String? description;
 
-  BiographyData({ this.description });
+  BiographyModel({ this.description });
 
   Map<String, dynamic> toMap() {
 

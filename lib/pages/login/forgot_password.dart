@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/core/theme/custom_theme';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hwscontrol/core/users.dart';
+import 'package:hwscontrol/core/models/user_model.dart';
 import 'package:hwscontrol/pages/home.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -27,11 +27,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           CustomSnackBar(context, const Text('Verificando'));
         });
 
-        Users users = Users(
+        UserModel userModel = UserModel(
           email: email
         );
 
-        _sendpassword(users);
+        _sendpassword(userModel);
     } else {
       setState(() {
         CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'), backgroundColor: Colors.red);
@@ -39,12 +39,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  _sendpassword(Users users) async {
+  _sendpassword(UserModel userModel) async {
 
     FirebaseAuth auth = FirebaseAuth.instance;
 
     await auth.sendPasswordResetEmail(
-      email: users.email!,
+      email: userModel.email!,
     ).then((firebaseUser) {
       Navigator.pushReplacement(
         context,

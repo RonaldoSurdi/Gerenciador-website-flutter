@@ -3,7 +3,7 @@ import 'package:hwscontrol/core/storage.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/login_page.dart';
-import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/core/theme/custom_theme';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

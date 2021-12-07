@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/core/theme/custom_theme';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hwscontrol/core/users.dart';
+import 'package:hwscontrol/core/models/user_model.dart';
 import 'package:hwscontrol/pages/home.dart';
 
 class SignUp extends StatefulWidget {
@@ -43,13 +43,13 @@ class _SignUpState extends State<SignUp> {
               CustomSnackBar(context, const Text('Verificando'));
             });
 
-            Users users = Users(
+            UserModel userModel = UserModel(
               nome: name,
               email: email,
               password: senha
             );
 
-            _registeruser(users);
+            _registeruser(userModel);
           } else {
             setState(() {
               CustomSnackBar(context, const Text('As senhas não são iguais!'), backgroundColor: Colors.red);
@@ -72,22 +72,22 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  _registeruser(Users users) async {
+  _registeruser(UserModel userModel) async {
 
     FirebaseAuth auth = FirebaseAuth.instance;
 
     await auth.createUserWithEmailAndPassword(
-      email: users.email!,
-      password: users.password!,
+      email: userModel.email!,
+      password: userModel.password!,
     ).then((firebaseUser) async {
       User? user = firebaseUser.user;
-      user!.updateDisplayName(users.nome);
+      user!.updateDisplayName(Model.nome);
       await user.reload();
 
       //Salvar dados do usuário
       FirebaseFirestore db = FirebaseFirestore.instance;
 
-      db.collection("users").doc(firebaseUser.user!.uid).set(users.toMap());
+      db.collection("users").doc(firebaseUser.user!.uid).set(userModel.toMap());
 
       Navigator.pushReplacement(
         context,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/core/theme/custom_theme';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/biography_data.dart';
+import 'package:hwscontrol/core/models/biography_model.dart';
 
 class Biography extends StatefulWidget {
   const Biography({ Key? key }) : super(key: key);
@@ -24,11 +24,11 @@ class _BiographyState extends State<Biography> {
           CustomSnackBar(context, const Text('Verificando'));
         });
 
-        BiographyData biographyData = BiographyData(
+        BiographyModel biographyModel = BiographyModel(
           description: description
         );
 
-        _onSaveData(biographyData);
+        _onSaveData(biographyModel);
     } else {
       setState(() {
         CustomSnackBar(context, const Text('Digite a biografia!'), backgroundColor: Colors.red);
@@ -36,11 +36,11 @@ class _BiographyState extends State<Biography> {
     }
   }
 
-  _onSaveData(BiographyData biographyData) {
+  _onSaveData(BiographyModel biographyModel) {
 
       FirebaseFirestore db = FirebaseFirestore.instance;
 
-      db.collection("biography").doc("Data").set(biographyData.toMap());
+      db.collection("biography").doc("Data").set(biographyModel.toMap());
 
       setState(() {
         CustomSnackBar(context, const Text('Dados gravados com sucesso.'));

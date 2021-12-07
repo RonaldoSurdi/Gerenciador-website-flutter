@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/core/theme/custom_theme';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/home.dart';
