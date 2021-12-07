@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert' as convert;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/widgets/snackbar.dart';
@@ -39,14 +40,33 @@ class _BiographyState extends State<Biography> {
   _onSaveData(BiographyModel biographyModel) {
 
       FirebaseFirestore db = FirebaseFirestore.instance;
-
-      db.collection("biography").doc("Data").set(biographyModel.toMap());
+      db.collection("biography").doc("data").set(biographyModel.toMap());
 
       setState(() {
         CustomSnackBar(context, const Text('Dados gravados com sucesso.'));
       });
 
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.collection("biography").doc("data").get().then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        _descriptionController.text = documentSnapshot['description'].toString();
+      }
+    });
+    //_descriptionController.text = description;
+
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -63,19 +83,20 @@ class _BiographyState extends State<Biography> {
             controller: _descriptionController,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.next,
-            maxLines: 20,
+            maxLines: 500,
             cursorColor: Colors.white,
-            // selectionColor: Colors.white,
-            // selectionHandleColor: Colors.white,
+            textAlign: TextAlign.justify,
             style: TextStyle(
-              fontSize: 20,
+              fontFamily: 'WorkSansThin',
+              fontSize: 14,
               color: Colors.white,
             ),
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(10, 16, 10, 16),
+              contentPadding: EdgeInsets.fromLTRB(16, 20, 15, 20),
               labelText: "Digite a biografia",
               filled: true,
               labelStyle: TextStyle(
+                fontFamily: 'WorkSansThin',
                 color: Colors.white38,
               ),
               enabledBorder: OutlineInputBorder(
@@ -96,6 +117,21 @@ class _BiographyState extends State<Biography> {
           ),
         ),
       ),
+      /* bottomNavigationBar: Row (
+        children: <Widget>[
+          TextButton(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.all(16.0),
+              primary: Colors.white,
+              textStyle: const TextStyle(fontSize: 20),
+            ),
+            onPressed: () {
+              _onVerifyData();
+            },
+            child: const Text('Gradient'),
+          ),
+        ],
+      ), */
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onVerifyData(),
         tooltip: 'Salvar dados',

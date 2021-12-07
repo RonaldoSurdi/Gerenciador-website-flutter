@@ -15,8 +15,13 @@ final ThemeData defaultTheme = ThemeData(
     backgroundColor: ColorsTheme.greyDefault,
   ),
 
-  scaffoldBackgroundColor: ColorsTheme.greyBackground,
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: Colors.white,
+    selectionColor: Colors.white,
+    selectionHandleColor: Colors.white,
+  ),
 
+  scaffoldBackgroundColor: ColorsTheme.greyBackground,
 
 );
 
