@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hwscontrol/core/theme/colors_theme.dart';
 import 'package:hwscontrol/pages/login_page.dart';
+
+final ThemeData defaultTheme = ThemeData(
+  primaryColor: ColorsTheme.greyDefault,
+  secondaryHeaderColor: ColorsTheme.greenDefault,
+
+  appBarTheme: const AppBarTheme(
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.light,
+    ),
+    backgroundColor: ColorsTheme.greyDefault,
+  ),
+
+  scaffoldBackgroundColor: ColorsTheme.greyBackground,
+
+
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
