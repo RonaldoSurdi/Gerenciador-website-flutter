@@ -13,6 +13,6 @@ class Users {
     };
 
     return map;
-    
+
   }
 }

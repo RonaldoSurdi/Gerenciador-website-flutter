@@ -15,9 +15,9 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final FocusNode focusNodePassword = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
   final FocusNode focusNodeConfirmPassword = FocusNode();
-  final FocusNode focusNodeEmail = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode focusNodeName = FocusNode();
 
   final TextEditingController signupEmailController = TextEditingController();
@@ -73,7 +73,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   _registeruser(Users users) async {
-    
+
     FirebaseAuth auth = FirebaseAuth.instance;
 
     await auth.createUserWithEmailAndPassword(
@@ -96,18 +96,22 @@ class _SignUpState extends State<SignUp> {
         ),
       );
     }).catchError((error) {
-      print("erro app: " + error.toString());
-      setState(() {
-        CustomSnackBar(context, const Text('Erro ao cadastrar usuário, verifique os campos e tente novamente!'), backgroundColor: Colors.red);
-      });
+      // print("erro app: " + error.toString());
+      // setState(() {
+      CustomSnackBar(
+        context,
+        const Text('Erro ao cadastrar usuário, verifique os campos e tente novamente!'),
+        backgroundColor: Colors.red,
+      );
+      //});
     });
   }
 
   @override
   void dispose() {
-    focusNodePassword.dispose();
+    _focusNodePassword.dispose();
     focusNodeConfirmPassword.dispose();
-    focusNodeEmail.dispose();
+    _focusNodeEmail.dispose();
     focusNodeName.dispose();
     super.dispose();
   }
@@ -115,7 +119,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 23.0),
+      padding: const EdgeInsets.only(top: 23),
       child: Column(
         children: <Widget>[
           Stack(
@@ -125,7 +129,7 @@ class _SignUpState extends State<SignUp> {
                 elevation: 2.0,
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: SizedBox(
                   width: 300.0,
@@ -133,8 +137,7 @@ class _SignUpState extends State<SignUp> {
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
+                        padding: const EdgeInsets.fromLTRB(20, 20, 25, 25),
                         child: TextField(
                           focusNode: focusNodeName,
                           controller: signupNameController,
@@ -142,9 +145,10 @@ class _SignUpState extends State<SignUp> {
                           textCapitalization: TextCapitalization.words,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black),
+                            fontFamily: 'WorkSansThin',
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             icon: Icon(
@@ -153,10 +157,12 @@ class _SignUpState extends State<SignUp> {
                             ),
                             hintText: 'Nome completo',
                             hintStyle: TextStyle(
-                                fontFamily: 'WorkSansThin', fontSize: 16.0),
+                              fontFamily: 'WorkSansThin',
+                              fontSize: 16.0,
+                            ),
                           ),
                           onSubmitted: (_) {
-                            focusNodeEmail.requestFocus();
+                            _focusNodeEmail.requestFocus();
                           },
                         ),
                       ),
@@ -166,17 +172,17 @@ class _SignUpState extends State<SignUp> {
                         color: Colors.grey[400],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
+                        padding: const EdgeInsets.fromLTRB(20, 20, 25, 25),
                         child: TextField(
-                          focusNode: focusNodeEmail,
+                          focusNode: _focusNodeEmail,
                           controller: signupEmailController,
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black),
+                            fontFamily: 'WorkSansThin',
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             icon: Icon(
@@ -185,10 +191,12 @@ class _SignUpState extends State<SignUp> {
                             ),
                             hintText: 'E-mail',
                             hintStyle: TextStyle(
-                                fontFamily: 'WorkSansThin', fontSize: 16.0),
+                              fontFamily: 'WorkSansThin',
+                              fontSize: 16.0,
+                            ),
                           ),
                           onSubmitted: (_) {
-                            focusNodePassword.requestFocus();
+                            _focusNodePassword.requestFocus();
                           },
                         ),
                       ),
@@ -198,17 +206,17 @@ class _SignUpState extends State<SignUp> {
                         color: Colors.grey[400],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
+                        padding: const EdgeInsets.fromLTRB(20, 20, 25, 25),
                         child: TextField(
-                          focusNode: focusNodePassword,
+                          focusNode: _focusNodePassword,
                           controller: signupPasswordController,
                           obscureText: _obscureTextPassword,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black),
+                            fontFamily: 'WorkSansThin',
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             icon: const Icon(
@@ -221,9 +229,7 @@ class _SignUpState extends State<SignUp> {
                             suffixIcon: GestureDetector(
                               onTap: _toggleSignup,
                               child: Icon(
-                                _obscureTextPassword
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
+                                _obscureTextPassword?FontAwesomeIcons.eye:FontAwesomeIcons.eyeSlash,
                                 size: 15.0,
                                 color: Colors.black,
                               ),
@@ -248,9 +254,10 @@ class _SignUpState extends State<SignUp> {
                           obscureText: _obscureTextConfirmPassword,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black),
+                            fontFamily: 'WorkSansThin',
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             icon: const Icon(
@@ -263,9 +270,7 @@ class _SignUpState extends State<SignUp> {
                             suffixIcon: GestureDetector(
                               onTap: _toggleSignupConfirm,
                               child: Icon(
-                                _obscureTextConfirmPassword
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
+                                _obscureTextConfirmPassword?FontAwesomeIcons.eye:FontAwesomeIcons.eyeSlash,
                                 size: 15.0,
                                 color: Colors.black,
                               ),
@@ -282,7 +287,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               Container(
-                margin: const EdgeInsets.only(top: 350.0),
+                margin: const EdgeInsets.only(top: 350),
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(15.0)),
                   boxShadow: <BoxShadow>[
@@ -311,14 +316,14 @@ class _SignUpState extends State<SignUp> {
                   highlightColor: Colors.transparent,
                   splashColor: CustomTheme.loginGradientEnd,
                   child: const Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 42),
                     child: Text(
                       'CADASTRAR',
                       style: TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 25.0,
-                          fontFamily: 'WorkSansBold'),
+                        color: Colors.yellow,
+                        fontSize: 25.0,
+                        fontFamily: 'WorkSansBold',
+                      ),
                     ),
                   ),
                   onPressed: () => _toggleSignUpButton(),

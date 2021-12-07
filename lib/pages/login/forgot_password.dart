@@ -14,7 +14,7 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  final FocusNode focusNodeEmail = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
   
   final TextEditingController forgotpasswordEmailController = TextEditingController();
   
@@ -40,7 +40,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   _sendpassword(Users users) async {
-    
+
     FirebaseAuth auth = FirebaseAuth.instance;
 
     await auth.sendPasswordResetEmail(
@@ -53,7 +53,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         ),
       );
     }).catchError((error) {
-      print("erro app: " + error.toString());
+      // print("erro app: " + error.toString());
       setState(() {
         CustomSnackBar(context, const Text('Erro ao enviar e-mail, verifique os campos e tente novamente!'), backgroundColor: Colors.red);
       });
@@ -62,7 +62,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   void dispose() {
-    focusNodeEmail.dispose();
+    _focusNodeEmail.dispose();
     super.dispose();
   }
 
@@ -90,7 +90,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         padding: const EdgeInsets.only(
                             top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
                         child: TextField(
-                          focusNode: focusNodeEmail,
+                          focusNode: _focusNodeEmail,
                           controller: forgotpasswordEmailController,
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
