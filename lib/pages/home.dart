@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hwscontrol/core/storage.dart';
+import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/login_page.dart';
-// import 'package:hwscontrol/pages/login_page.dart';
-// import 'package:hwscontrol/widgets/snackbar.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/widgets/snackbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -13,25 +14,23 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-   // desconectar do app
+  // desconectar do app
   _logOut() {
+    // Disconnect firebase
+    _logoutFirebase();
 
     // Deletar token de acesso
     DeleteAll().deleteAllTokens();
 
     Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-          const LoginPage(),
-      ),
-      (route) => false
-    );
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+        (route) => false);
   }
 
-  /*
-  _logoutUser() {
+  _logoutFirebase() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
     auth.signOut().then((value) {
@@ -46,11 +45,14 @@ class _HomeState extends State<Home> {
       );
     }).catchError((error) {
       setState(() {
-        CustomSnackBar(context, const Text('Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'), backgroundColor: Colors.red);
+        CustomSnackBar(
+            context,
+            const Text(
+                'Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
+            backgroundColor: Colors.red);
       });
     });
   }
-  */
 
   @override
   void dispose() {
@@ -60,8 +62,41 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Drawer Demo'),
+        title: const Text('Painel de controle'),
+        backgroundColor: Colors.black38,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add_alert),
+            tooltip: 'Show Snackbar',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('This is a snackbar')));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.navigate_next),
+            tooltip: 'Go to the next page',
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute<void>(
+                builder: (BuildContext context) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: const Text('Next page'),
+                    ),
+                    body: const Center(
+                      child: Text(
+                        'This is the next page',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  );
+                },
+              ));
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -69,32 +104,57 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                gradient: LinearGradient(
+                    colors: <Color>[
+                      CustomTheme.loginGradientStart,
+                      CustomTheme.loginGradientEnd
+                    ],
+                    begin: FractionalOffset(0.0, 0.0),
+                    end: FractionalOffset(1.0, 1.0),
+                    stops: <double>[0.0, 1.0],
+                    tileMode: TileMode.clamp),
               ),
-              child: Text(
-                'Drawer Header',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              child: Image(
+                height: 150,
+                fit: BoxFit.scaleDown,
+                image: AssetImage('assets/img/login_logo.png'),
               ),
             ),
-            const ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Messages'),
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: const Text('Banners'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Banners(),
+                  ),
+                );
+              },
             ),
             const ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text('Profile'),
+              leading: Icon(Icons.info),
+              title: Text('Biografia'),
             ),
             const ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              leading: Icon(Icons.audiotrack_outlined),
+              title: Text('Discografia'),
             ),
-
+            const ListTile(
+              leading: Icon(Icons.calendar_view_day),
+              title: Text('Agenda'),
+            ),
+            const ListTile(
+              leading: Icon(Icons.monochrome_photos),
+              title: Text('Fotos'),
+            ),
+            const ListTile(
+              leading: Icon(Icons.movie_creation),
+              title: Text('Vídeos'),
+            ),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('Disconnect'),
+              title: const Text('Desconectar'),
               onTap: () {
                 _logOut();
               },

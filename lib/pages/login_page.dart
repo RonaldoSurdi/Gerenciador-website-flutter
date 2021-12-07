@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/widgets/forgot_password.dart';
-import 'package:hwscontrol/pages/widgets/sign_in.dart';
-import 'package:hwscontrol/pages/widgets/sign_up.dart';
+import 'package:hwscontrol/pages/login/forgot_password.dart';
+import 'package:hwscontrol/pages/login/sign_in.dart';
+import 'package:hwscontrol/pages/login/sign_up.dart';
 import 'package:hwscontrol/theme.dart';
 //import 'package:hwscontrol/utils/bubble_indicator_painter.dart';
 
@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage>
                   style: TextStyle(
                     color: center,
                     fontSize: 14.0,
-                    fontFamily: 'WorkSansThin', 
+                    fontFamily: 'WorkSansThin',
                   ),
                 ),
               ),
@@ -176,9 +176,7 @@ class _LoginPageState extends State<LoginPage>
                 child: Text(
                   'Ajuda',
                   style: TextStyle(
-                      color: right,
-                      fontSize: 14.0,
-                      fontFamily: 'WorkSansThin'),
+                      color: right, fontSize: 14.0, fontFamily: 'WorkSansThin'),
                 ),
               ),
             ),
