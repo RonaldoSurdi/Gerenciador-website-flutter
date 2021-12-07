@@ -15,8 +15,8 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  final TextEditingController loginEmailController = TextEditingController();
-  final TextEditingController loginPasswordController = TextEditingController();
+  TextEditingController loginEmailController = TextEditingController(text:"ronaldohws@gmail.com");
+  TextEditingController loginPasswordController = TextEditingController(text:"111111");
 
   final FocusNode focusNodeEmail = FocusNode();
   final FocusNode focusNodePassword = FocusNode();
