@@ -80,12 +80,10 @@ class _SignInState extends State<SignIn> {
   _logarUsuario() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    auth
-        .signInWithEmailAndPassword(
+    auth.signInWithEmailAndPassword(
       email: loginEmailController.text,
       password: loginPasswordController.text,
-    )
-        .then((firebaseUser) {
+    ).then((firebaseUser) {
       // print(firebaseUser);
       // String uid = firebaseUser.user!.uid;
       _saveMail(loginEmailController.text);
@@ -100,9 +98,9 @@ class _SignInState extends State<SignIn> {
       setState(() {
         CustomSnackBar(
             context,
-            const Text(
-                'Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
-            backgroundColor: Colors.red);
+            const Text('Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
+            backgroundColor: Colors.red,
+        );
       });
     });
   }
