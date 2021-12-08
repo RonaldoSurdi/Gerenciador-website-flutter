@@ -1,12 +1,12 @@
 // imports nativos do flutter
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 // import dos pacotes
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:crop_image/crop_image.dart';
 
 class Banners extends StatefulWidget {
   const Banners({Key? key}) : super(key: key);
@@ -16,62 +16,60 @@ class Banners extends StatefulWidget {
 }
 
 class _BannersState extends State<Banners> {
-
   // variaveis da tela
-  var _image;
-  File? _newImage;
   final _picker = ImagePicker();
-  String? _urlImage;
-  bool _cropImage = false;
+  List<XFile>? _imageFileList;
+  String? _errorPicture;
 
-  final _controller = CropController(
-    aspectRatio: 1.7777777777777777,
-    defaultCrop: const Rect.fromLTRB(0.1, 0.1, 0.9, 0.9),
-  );
+  set _imageFile(XFile? value) {
+    _imageFileList = value == null ? null : [value];
+  }
 
   // seleciona a imagem do computador
   Future _selectPicture() async {
+    try {
+      final image = await _picker.pickImage(source: ImageSource.gallery);
 
-    final image = await _picker.pickImage(source: ImageSource.gallery);
-
-    if( image != null ){
-      setState(() {
-        _image = image;
-      });
-      print("image => $image");
-      _uploadImage();
+      if (image != null) {
+        setState(() {
+          _imageFile = image;
+        });
+        _uploadImage();
+      }
+    } catch (e) {
+      _errorPicture = e.toString();
     }
-
   }
 
   // faz o envio da imagem para o storage
   Future _uploadImage() async {
-
-    print("_image => ${_image.path}");
     firebase_storage.UploadTask uploadTask;
 
-    firebase_storage.Reference arquive = firebase_storage.FirebaseStorage.instance.ref()
+    firebase_storage.Reference arquive = firebase_storage
+      .FirebaseStorage.instance
+      .ref()
       .child("banners")
-      .child(_image.name);
+      .child(_imageFileList![0].name);
 
     final metadata = firebase_storage.SettableMetadata(
-      contentType: '${_image.mimeType}',
-      customMetadata: {'picked-file-path': _image.path},
+      contentType: '${_imageFileList![0].mimeType}',
+      customMetadata: {'picked-file-path': _imageFileList![0].path},
     );
 
-    uploadTask = arquive.putData(await _image.readAsBytes(), metadata);
+    uploadTask =
+        arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
-    _getImage();
+    // _getImage();
 
     return Future.value(uploadTask);
-
   }
 
+  /*
   // busca o link da imagem
   _getImage() async {
     String image = await firebase_storage.FirebaseStorage.instance.ref()
       .child("banners")
-      .child(_image.name)
+      .child(_imageFileList![0].name)
       .getDownloadURL();
 
     setState(() {
@@ -79,58 +77,7 @@ class _BannersState extends State<Banners> {
     });
 
   }
-
-  // controi os botoes de corte
-  Widget _buildButtons() => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: () {
-          _controller.aspectRatio = 1.0;
-          _controller.crop = const Rect.fromLTRB(0.1, 0.1, 0.9, 0.9);
-        },
-      ),
-      TextButton(
-        onPressed: _finished,
-        child: const Text('Done'),
-      ),
-    ],
-  );
-
-  // finaliza o corte da imagem
-  Future<void> _finished() async {
-    final image = await _controller.croppedImage();
-    await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          contentPadding: const EdgeInsets.all(6.0),
-          titlePadding: const EdgeInsets.all(8.0),
-          title: const Text('Cropped image'),
-          children: [
-            Text('relative: ${_controller.crop}'),
-            Text('pixels: ${_controller.cropSize}'),
-            const Text("Sua imagem ficou assim"),
-            const SizedBox(height: 5),
-            image,
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-                // _uploadImage();
-                setState(() {
-                  _cropImage = false;
-                  _image = image;
-                });
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  */
 
   @override
   void initState() {
@@ -138,56 +85,44 @@ class _BannersState extends State<Banners> {
     Firebase.initializeApp();
   }
 
-  /*
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-  */
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Galeria"),
       ),
-
-      body: ( _cropImage == false )
-      ? SingleChildScrollView(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 5),
         child: Column(
           children: [
-
             GestureDetector(
               onTap: () {
                 _selectPicture();
               },
               child: const Text("Nova imagem"),
             ),
-
-            ( _image == null )
-            ? CropImage(
-              controller: _controller,
-              image: Image.asset("assets/img/login_logo.png"),
-            )
-            : CropImage(
-              controller: _controller,
-              image: Image.file(_image!),
+            const Text(
+              "Recomendamos enviar imagens nas seguintes dimensões: Largura:1600 x Altura: 900",
             ),
-
+            (_imageFileList == null)
+            ? const Text(
+              'You have not yet picked an image.',
+              textAlign: TextAlign.center,
+            )
+            : Semantics(
+              label: 'image_picker_example_picked_image',
+              child: kIsWeb
+              ? Image.network(_imageFileList![0].path)
+              : Image.file(File(_imageFileList![0].path)),
+            ),
           ],
-        )
-      )
-      : CropImage(
-        controller: _controller,
-        image: Image.file(_image!),
-        // image: Image.file(_newImage!),
-        // image: Image.asset("assets/img/login_logo.png"),
+        ),
       ),
-      bottomNavigationBar: ( _cropImage == false )
-      ? const Padding(padding: EdgeInsets.zero)
-      : _buildButtons(),
+      bottomNavigationBar: (_errorPicture != null)
+      ? Text(
+        "$_errorPicture"
+      )
+      : const Padding(padding: EdgeInsets.zero,),
     );
   }
 }
