@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hwscontrol/core/storage.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
+import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/login_page.dart';
-import 'package:hwscontrol/theme.dart';
+import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -133,9 +134,17 @@ class _HomeState extends State<Home> {
                 );
               },
             ),
-            const ListTile(
-              leading: Icon(Icons.info),
-              title: Text('Biografia'),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('Biografia'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Biography(),
+                  ),
+                );
+              },
             ),
             const ListTile(
               leading: Icon(Icons.audiotrack_outlined),

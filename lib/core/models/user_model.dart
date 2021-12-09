@@ -1,9 +1,9 @@
-class Users {
+class UserModel {
   String? nome;
   String? email;
   String? password;
 
-  Users({ this.nome, this.email, this.password });
+  UserModel({ this.nome, this.email, this.password });
 
   Map<String, dynamic> toMap() {
 
@@ -13,6 +13,6 @@ class Users {
     };
 
     return map;
-    
+
   }
 }
