@@ -15,6 +15,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   // desconectar do app
   _logOut() {
     // Disconnect firebase
