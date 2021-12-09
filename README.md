@@ -1,5 +1,11 @@
 # HWSCONTROL
 
+run for debugging
+flutter run -d chrome --web-renderer html
+
+production release
+flutter build web --web-renderer html --release
+
 Sistema de gerenciamento de conteúdo web
 
 

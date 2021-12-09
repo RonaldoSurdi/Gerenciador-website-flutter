@@ -7,22 +7,18 @@ import 'package:hwscontrol/pages/login_page.dart';
 final ThemeData defaultTheme = ThemeData(
   primaryColor: ColorsTheme.greyDefault,
   secondaryHeaderColor: ColorsTheme.greenDefault,
-
   appBarTheme: const AppBarTheme(
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarBrightness: Brightness.light,
     ),
     backgroundColor: ColorsTheme.greyDefault,
   ),
-
-  textSelectionTheme: TextSelectionThemeData(
+  textSelectionTheme: const TextSelectionThemeData(
     cursorColor: Colors.white,
     selectionColor: Colors.white,
     selectionHandleColor: Colors.white,
   ),
-
   scaffoldBackgroundColor: ColorsTheme.greyBackground,
-
 );
 
 Future<void> main() async {

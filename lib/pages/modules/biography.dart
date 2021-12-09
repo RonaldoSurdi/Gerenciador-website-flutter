@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:convert' as convert;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/biography_model.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:hwscontrol/core/theme/custom_theme.dart';
+// import 'dart:convert' as convert;
 
 class Biography extends StatefulWidget {
   const Biography({Key? key}) : super(key: key);
@@ -14,7 +14,7 @@ class Biography extends StatefulWidget {
 }
 
 class _BiographyState extends State<Biography> {
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   _onVerifyData() {
     //Recupera dados dos campos
@@ -45,13 +45,7 @@ class _BiographyState extends State<Biography> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  void initState() {
+  _onGetData() {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("biography")
@@ -63,8 +57,16 @@ class _BiographyState extends State<Biography> {
             documentSnapshot['description'].toString();
       }
     });
-    //_descriptionController.text = description;
+  }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _onGetData();
     super.initState();
   }
 
@@ -76,9 +78,9 @@ class _BiographyState extends State<Biography> {
         title: const Text('Biografia'),
         backgroundColor: Colors.black38,
       ),
-      body: Container(
+      body: SizedBox(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 15, 20, 20),
+          padding: const EdgeInsets.fromLTRB(20, 15, 20, 20),
           child: TextField(
             controller: _descriptionController,
             keyboardType: TextInputType.multiline,
@@ -86,25 +88,25 @@ class _BiographyState extends State<Biography> {
             maxLines: 500,
             cursorColor: Colors.white,
             textAlign: TextAlign.justify,
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'WorkSansThin',
               fontSize: 14,
               color: Colors.white,
             ),
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(16, 20, 15, 20),
+              contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
               labelText: "Digite a biografia",
               filled: true,
-              labelStyle: TextStyle(
+              labelStyle: const TextStyle(
                 fontFamily: 'WorkSansThin',
                 color: Colors.white38,
               ),
-              enabledBorder: OutlineInputBorder(
+              enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(
                 color: Colors.white38,
               )),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
+                borderSide: const BorderSide(
                   color: Colors.white38,
                 ),
                 borderRadius: BorderRadius.circular(5),

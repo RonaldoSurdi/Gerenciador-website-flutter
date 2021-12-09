@@ -1,11 +1,10 @@
-// imports nativos do flutter
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:io';
-
-// import dos pacotes
+import 'package:uuid/uuid.dart';
+import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hwscontrol/core/models/media_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Banners extends StatefulWidget {
@@ -19,7 +18,8 @@ class _BannersState extends State<Banners> {
   // variaveis da tela
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;
-  String? _errorPicture;
+
+  final List<String> _widgetList = [];
 
   set _imageFile(XFile? value) {
     _imageFileList = value == null ? null : [value];
@@ -37,19 +37,21 @@ class _BannersState extends State<Banners> {
         _uploadImage();
       }
     } catch (e) {
-      _errorPicture = e.toString();
+      //
     }
   }
 
   // faz o envio da imagem para o storage
   Future _uploadImage() async {
+    String fileName = _imageFileList![0].name;
+
     firebase_storage.UploadTask uploadTask;
 
     firebase_storage.Reference arquive = firebase_storage
-      .FirebaseStorage.instance
-      .ref()
-      .child("banners")
-      .child(_imageFileList![0].name);
+        .FirebaseStorage.instance
+        .ref()
+        .child("banners")
+        .child(fileName);
 
     final metadata = firebase_storage.SettableMetadata(
       contentType: '${_imageFileList![0].mimeType}',
@@ -59,39 +61,85 @@ class _BannersState extends State<Banners> {
     uploadTask =
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
+    MediaModel mediaModel = MediaModel(filename: fileName);
+
+    var uuid = const Uuid();
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.collection("media").doc(uuid.v4()).set(mediaModel.toMap());
+
+    CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
+
     // _getImage();
 
     return Future.value(uploadTask);
   }
 
-  /*
-  // busca o link da imagem
-  _getImage() async {
-    String image = await firebase_storage.FirebaseStorage.instance.ref()
-      .child("banners")
-      .child(_imageFileList![0].name)
-      .getDownloadURL();
-
-    setState(() {
-      _urlImage = image;
-    });
-
+  Future _onGetData() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    var data = await db.collection("media").get();
+    var response = data.docs;
+    for (int i = 0; i < response.length; i++) {
+      setState(() {
+        _widgetList.add(response[i]["filename"]);
+      });
+    }
   }
-  */
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    Firebase.initializeApp();
+    _onGetData();
   }
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    final double itemWidth = size.width;
+    final double itemHeight = itemWidth / 1.78;
+    /*24 is for notification bar on Android*/
+    // final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+
     return Scaffold(
+      backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text("Galeria"),
+        title: const Text('Painel de controle'),
+        backgroundColor: Colors.black38,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add_a_photo),
+            tooltip: 'Adicionar imagem',
+            onPressed: () {
+              _selectPicture();
+            },
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: GridView.count(
+        crossAxisCount: 1,
+        childAspectRatio: (itemWidth / itemHeight),
+        controller: ScrollController(keepScrollOffset: false),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        children: _widgetList.map((String value) {
+          return Container(
+            color: Colors.green,
+            margin: const EdgeInsets.all(1.0),
+            child: Center(
+              child: Image(
+                image: NetworkImage(
+                    'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F$value?alt=media'),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+      /*SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 5),
         child: Column(
           children: [
@@ -122,7 +170,7 @@ class _BannersState extends State<Banners> {
       ? Text(
         "$_errorPicture"
       )
-      : const Padding(padding: EdgeInsets.zero,),
+      : const Padding(padding: EdgeInsets.zero,),*/
     );
   }
 }
