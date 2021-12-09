@@ -4,18 +4,17 @@ import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/widgets/snackbar.dart';
+import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class Dashboard extends StatefulWidget {
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  _DashboardState createState() => _DashboardState();
 }
 
-class _HomeState extends State<Home> {
-
+class _DashboardState extends State<Dashboard> {
   // desconectar do app
   _logOut() {
     // Disconnect firebase
@@ -210,7 +209,7 @@ class _HomeState extends State<Home> {
       ),
       body: const Center(
         child: Text(
-          'This is the home page',
+          'This is the Dashboard page',
           style: TextStyle(fontSize: 24),
         ),
       ),
@@ -262,7 +261,7 @@ class _HomeState extends State<Home> {
                           fontFamily: 'WorkSansBold'),
                     ),
                   ),
-                  onPressed: () => _toggleHomeButton(),
+                  onPressed: () => _toggleDashboardButton(),
                 )
               )
             ],
@@ -286,7 +285,7 @@ class _HomeState extends State<Home> {
   }
 
   /*
-  void _toggleHomeButton() {
+  void _toggleDashboardButton() {
     CustomSnackBar(context, const Text('Aguarde...'));
     _logoutUser();
   }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/widgets/snackbar.dart';
+import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
-import 'package:hwscontrol/pages/home.dart';
+import 'package:hwscontrol/pages/modules/dashboard.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -22,8 +22,10 @@ class _SignUpState extends State<SignUp> {
 
   final TextEditingController signupEmailController = TextEditingController();
   final TextEditingController signupNameController = TextEditingController();
-  final TextEditingController signupPasswordController = TextEditingController();
-  final TextEditingController signupConfirmPasswordController = TextEditingController();
+  final TextEditingController signupPasswordController =
+      TextEditingController();
+  final TextEditingController signupConfirmPasswordController =
+      TextEditingController();
 
   bool _obscureTextPassword = true;
   bool _obscureTextConfirmPassword = true;
@@ -43,16 +45,14 @@ class _SignUpState extends State<SignUp> {
               CustomSnackBar(context, const Text('Verificando'));
             });
 
-            UserModel userModel = UserModel(
-              nome: name,
-              email: email,
-              password: senha
-            );
+            UserModel userModel =
+                UserModel(nome: name, email: email, password: senha);
 
             _registeruser(userModel);
           } else {
             setState(() {
-              CustomSnackBar(context, const Text('As senhas não são iguais!'), backgroundColor: Colors.red);
+              CustomSnackBar(context, const Text('As senhas não são iguais!'),
+                  backgroundColor: Colors.red);
             });
           }
         } else {
@@ -62,24 +62,27 @@ class _SignUpState extends State<SignUp> {
         }
       } else {
         setState(() {
-          CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'), backgroundColor: Colors.red);
+          CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'),
+              backgroundColor: Colors.red);
         });
       }
     } else {
       setState(() {
-        CustomSnackBar(context, const Text('Preencha seu nome completo'), backgroundColor: Colors.red);
+        CustomSnackBar(context, const Text('Preencha seu nome completo'),
+            backgroundColor: Colors.red);
       });
     }
   }
 
   _registeruser(UserModel userModel) async {
-
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    await auth.createUserWithEmailAndPassword(
+    await auth
+        .createUserWithEmailAndPassword(
       email: userModel.email!,
       password: userModel.password!,
-    ).then((firebaseUser) async {
+    )
+        .then((firebaseUser) async {
       User? user = firebaseUser.user;
       user!.updateDisplayName(userModel.nome);
       await user.reload();
@@ -92,7 +95,7 @@ class _SignUpState extends State<SignUp> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const Home(),
+          builder: (builder) => const Dashboard(),
         ),
       );
     }).catchError((error) {
@@ -100,7 +103,8 @@ class _SignUpState extends State<SignUp> {
       // setState(() {
       CustomSnackBar(
         context,
-        const Text('Erro ao cadastrar usuário, verifique os campos e tente novamente!'),
+        const Text(
+            'Erro ao cadastrar usuário, verifique os campos e tente novamente!'),
         backgroundColor: Colors.red,
       );
       //});
@@ -229,7 +233,9 @@ class _SignUpState extends State<SignUp> {
                             suffixIcon: GestureDetector(
                               onTap: _toggleSignup,
                               child: Icon(
-                                _obscureTextPassword?FontAwesomeIcons.eye:FontAwesomeIcons.eyeSlash,
+                                _obscureTextPassword
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
                                 size: 15.0,
                                 color: Colors.black,
                               ),
@@ -270,7 +276,9 @@ class _SignUpState extends State<SignUp> {
                             suffixIcon: GestureDetector(
                               onTap: _toggleSignupConfirm,
                               child: Icon(
-                                _obscureTextConfirmPassword?FontAwesomeIcons.eye:FontAwesomeIcons.eyeSlash,
+                                _obscureTextConfirmPassword
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
                                 size: 15.0,
                                 color: Colors.black,
                               ),

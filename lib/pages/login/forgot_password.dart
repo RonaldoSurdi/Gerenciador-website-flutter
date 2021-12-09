@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/widgets/snackbar.dart';
+import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
-import 'package:hwscontrol/pages/home.dart';
+import 'package:hwscontrol/pages/modules/dashboard.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -15,47 +15,52 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   final FocusNode _focusNodeEmail = FocusNode();
-  
-  final TextEditingController forgotpasswordEmailController = TextEditingController();
-  
+
+  final TextEditingController forgotpasswordEmailController =
+      TextEditingController();
+
   _validateFields() {
     //Recupera dados dos campos
     String email = forgotpasswordEmailController.text;
 
     if (email.trim().isNotEmpty && email.trim().contains("@")) {
-        setState(() {
-          CustomSnackBar(context, const Text('Verificando'));
-        });
+      setState(() {
+        CustomSnackBar(context, const Text('Verificando'));
+      });
 
-        UserModel userModel = UserModel(
-          email: email
-        );
+      UserModel userModel = UserModel(email: email);
 
-        _sendpassword(userModel);
+      _sendpassword(userModel);
     } else {
       setState(() {
-        CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'), backgroundColor: Colors.red);
+        CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'),
+            backgroundColor: Colors.red);
       });
     }
   }
 
   _sendpassword(UserModel userModel) async {
-
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    await auth.sendPasswordResetEmail(
+    await auth
+        .sendPasswordResetEmail(
       email: userModel.email!,
-    ).then((firebaseUser) {
+    )
+        .then((firebaseUser) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const Home(),
+          builder: (builder) => const Dashboard(),
         ),
       );
     }).catchError((error) {
       // print("erro app: " + error.toString());
       setState(() {
-        CustomSnackBar(context, const Text('Erro ao enviar e-mail, verifique os campos e tente novamente!'), backgroundColor: Colors.red);
+        CustomSnackBar(
+            context,
+            const Text(
+                'Erro ao enviar e-mail, verifique os campos e tente novamente!'),
+            backgroundColor: Colors.red);
       });
     });
   }
@@ -119,7 +124,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         color: Colors.grey[400],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 10.0, left: 15.0, right: 15.0),
+                        padding: const EdgeInsets.only(
+                            top: 10.0, left: 15.0, right: 15.0),
                         child: TextButton(
                             onPressed: () => _toggleForgotPasswordButton(),
                             child: const Text(

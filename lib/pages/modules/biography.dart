@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert' as convert;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/widgets/snackbar.dart';
+import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/biography_model.dart';
 
 class Biography extends StatefulWidget {
-  const Biography({ Key? key }) : super(key: key);
+  const Biography({Key? key}) : super(key: key);
 
   @override
   _BiographyState createState() => _BiographyState();
@@ -21,31 +21,28 @@ class _BiographyState extends State<Biography> {
     String description = _descriptionController.text;
 
     if (description.trim().isNotEmpty && description.trim().length >= 3) {
-        setState(() {
-          CustomSnackBar(context, const Text('Verificando'));
-        });
+      setState(() {
+        CustomSnackBar(context, const Text('Verificando'));
+      });
 
-        BiographyModel biographyModel = BiographyModel(
-          description: description
-        );
+      BiographyModel biographyModel = BiographyModel(description: description);
 
-        _onSaveData(biographyModel);
+      _onSaveData(biographyModel);
     } else {
       setState(() {
-        CustomSnackBar(context, const Text('Digite a biografia!'), backgroundColor: Colors.red);
+        CustomSnackBar(context, const Text('Digite a biografia!'),
+            backgroundColor: Colors.red);
       });
     }
   }
 
   _onSaveData(BiographyModel biographyModel) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.collection("biography").doc("data").set(biographyModel.toMap());
 
-      FirebaseFirestore db = FirebaseFirestore.instance;
-      db.collection("biography").doc("data").set(biographyModel.toMap());
-
-      setState(() {
-        CustomSnackBar(context, const Text('Dados gravados com sucesso.'));
-      });
-
+    setState(() {
+      CustomSnackBar(context, const Text('Dados gravados com sucesso.'));
+    });
   }
 
   @override
@@ -55,18 +52,21 @@ class _BiographyState extends State<Biography> {
 
   @override
   void initState() {
-
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("biography").doc("data").get().then((DocumentSnapshot documentSnapshot) {
+    db
+        .collection("biography")
+        .doc("data")
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        _descriptionController.text = documentSnapshot['description'].toString();
+        _descriptionController.text =
+            documentSnapshot['description'].toString();
       }
     });
     //_descriptionController.text = description;
 
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +100,9 @@ class _BiographyState extends State<Biography> {
                 color: Colors.white38,
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.white38,
-                )
-              ),
+                  borderSide: BorderSide(
+                color: Colors.white38,
+              )),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                   color: Colors.white38,

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/widgets/snackbar.dart';
+import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hwscontrol/pages/home.dart';
+import 'package:hwscontrol/pages/modules/dashboard.dart';
 import 'package:loading_overlay_pro/animations/bouncing_line.dart';
 
 class SignIn extends StatefulWidget {
@@ -15,8 +15,10 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  TextEditingController _loginEmailController = TextEditingController(text:"ronaldohws@gmail.com");
-  TextEditingController _loginPasswordController = TextEditingController(text:"111111");
+  TextEditingController _loginEmailController =
+      TextEditingController(text: "ronaldohws@gmail.com");
+  TextEditingController _loginPasswordController =
+      TextEditingController(text: "111111");
 
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
@@ -64,23 +66,26 @@ class _SignInState extends State<SignIn> {
   _logarUsuario() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    auth.signInWithEmailAndPassword(
+    auth
+        .signInWithEmailAndPassword(
       email: _loginEmailController.text,
       password: _loginPasswordController.text,
-    ).then((firebaseUser) {
+    )
+        .then((firebaseUser) {
       _saveMail(_loginEmailController.text);
       _savePassword(_loginPasswordController.text);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const Home(),
+          builder: (builder) => const Dashboard(),
         ),
       );
     }).catchError((error) {
       // setState(() {
       CustomSnackBar(
         context,
-        const Text('Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
+        const Text(
+            'Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
         backgroundColor: Colors.red,
       );
       // });
@@ -105,7 +110,8 @@ class _SignInState extends State<SignIn> {
 
   _verifyConnect() async {
     _loginEmailController.text = (await _storage.read(key: "keyMail")) ?? "";
-    _loginPasswordController.text = (await _storage.read(key: "keyPasswd")) ?? "";
+    _loginPasswordController.text =
+        (await _storage.read(key: "keyPasswd")) ?? "";
 
     if (_loginEmailController.text.trim().isNotEmpty ||
         _loginPasswordController.text.trim().isNotEmpty) {
@@ -192,9 +198,9 @@ class _SignInState extends State<SignIn> {
                           controller: _loginPasswordController,
                           obscureText: _obscureTextPassword,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black,
+                            fontFamily: 'WorkSansThin',
+                            fontSize: 16.0,
+                            color: Colors.black,
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
@@ -205,13 +211,13 @@ class _SignInState extends State<SignIn> {
                             ),
                             hintText: 'Senha',
                             hintStyle: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 17.0
-                            ),
+                                fontFamily: 'WorkSansThin', fontSize: 17.0),
                             suffixIcon: GestureDetector(
                               onTap: _toggleLogin,
                               child: Icon(
-                                _obscureTextPassword?FontAwesomeIcons.eye:FontAwesomeIcons.eyeSlash,
+                                _obscureTextPassword
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
                                 size: 15.0,
                                 color: Colors.black,
                               ),
