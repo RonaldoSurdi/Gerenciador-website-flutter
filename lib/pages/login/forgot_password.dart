@@ -100,9 +100,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           keyboardType: TextInputType.emailAddress,
                           autocorrect: false,
                           style: const TextStyle(
-                              fontFamily: 'WorkSansThin',
-                              fontSize: 16.0,
-                              color: Colors.black),
+                            fontFamily: 'WorkSansThin',
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             icon: Icon(
@@ -111,7 +112,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                             hintText: 'E-mail cadastrado',
                             hintStyle: TextStyle(
-                                fontFamily: 'WorkSansThin', fontSize: 16.0),
+                              fontFamily: 'WorkSansThin',
+                              fontSize: 16.0,
+                            ),
                           ),
                           onSubmitted: (_) {
                             _toggleForgotPasswordButton();
@@ -127,14 +130,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         padding: const EdgeInsets.only(
                             top: 10.0, left: 15.0, right: 15.0),
                         child: TextButton(
-                            onPressed: () => _toggleForgotPasswordButton(),
-                            child: const Text(
-                              'Será enviado o link para redefinir sua senha.',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12.0,
-                                  fontFamily: 'WorkSansThin'),
-                            )),
+                          onPressed: () => _toggleForgotPasswordButton(),
+                          child: const Text(
+                            'Será enviado o link para redefinir sua senha.',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontFamily: 'WorkSansThin',
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -175,9 +180,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     child: Text(
                       'ENVIAR',
                       style: TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 25.0,
-                          fontFamily: 'WorkSansBold'),
+                        color: Colors.yellow,
+                        fontSize: 25.0,
+                        fontFamily: 'WorkSansBold',
+                      ),
                     ),
                   ),
                   onPressed: () => _toggleForgotPasswordButton(),

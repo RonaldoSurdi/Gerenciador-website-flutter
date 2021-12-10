@@ -87,23 +87,6 @@ class _BannersState extends State<Banners> {
   }
 
   Future _removePicture(fileName) async {
-    return AlertDialog(
-      title: const Text('Remover imagem'),
-      content: Text('Tem certeza que deseja remover o arquivo\n$fileName?'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => {},
-          child: const Text('Cancelar'),
-        ),
-        TextButton(
-          onPressed: () => {_onRemovePicture(fileName)},
-          child: const Text('Excluir'),
-        ),
-      ],
-    );
-  }
-
-  Future _onRemovePicture(fileName) async {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
@@ -118,7 +101,7 @@ class _BannersState extends State<Banners> {
     db.collection("banners").doc(dbDoc[0]).delete();
     setState(() {
       CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
-      Timer(const Duration(milliseconds: 150), () {
+      Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
@@ -179,7 +162,7 @@ class _BannersState extends State<Banners> {
         scrollDirection: Axis.vertical,
         children: _widgetList.map((String value) {
           return Container(
-            color: Colors.green,
+            color: Colors.black38,
             margin: const EdgeInsets.all(1.0),
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -202,12 +185,29 @@ class _BannersState extends State<Banners> {
                             'Tem certeza que deseja remover o arquivo\n$value?'),
                         actions: <Widget>[
                           TextButton(
-                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                            child: const Text('Cancelar'),
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              'Cancelar',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16.0,
+                                fontFamily: 'WorkSansMedium',
+                              ),
+                            ),
                           ),
                           TextButton(
-                            onPressed: () => _removePicture(value),
-                            child: const Text('Excluir'),
+                            onPressed: () {
+                              _removePicture(value);
+                              Navigator.pop(context);
+                            },
+                            child: const Text(
+                              'Excluir',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 16.0,
+                                fontFamily: 'WorkSansMedium',
+                              ),
+                            ),
                           ),
                         ],
                       ),
