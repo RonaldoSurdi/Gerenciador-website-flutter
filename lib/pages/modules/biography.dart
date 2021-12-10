@@ -118,21 +118,6 @@ class _BiographyState extends State<Biography> {
           ),
         ),
       ),
-      /* bottomNavigationBar: Row (
-        children: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.all(16.0),
-              primary: Colors.white,
-              textStyle: const TextStyle(fontSize: 20),
-            ),
-            onPressed: () {
-              _onVerifyData();
-            },
-            child: const Text('Gradient'),
-          ),
-        ],
-      ), */
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onVerifyData(),
         tooltip: 'Salvar dados',

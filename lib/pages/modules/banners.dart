@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/media_model.dart';
+import 'package:hwscontrol/core/models/banner_model.dart';
 import 'package:image_picker/image_picker.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:uuid/uuid.dart';
+// import 'package:path/path.dart' as p;
 
 class Banners extends StatefulWidget {
   const Banners({Key? key}) : super(key: key);
@@ -43,7 +45,12 @@ class _BannersState extends State<Banners> {
 
   // faz o envio da imagem para o storage
   Future _uploadImage() async {
+    DateTime now = DateTime.now();
+    String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
+
     String fileName = _imageFileList![0].name;
+    String filePath = _imageFileList![0].path;
+    String fileSave = '$dateNow-$fileName';
 
     firebase_storage.UploadTask uploadTask;
 
@@ -51,36 +58,49 @@ class _BannersState extends State<Banners> {
         .FirebaseStorage.instance
         .ref()
         .child("banners")
-        .child(fileName);
+        .child(fileSave);
 
     final metadata = firebase_storage.SettableMetadata(
       contentType: '${_imageFileList![0].mimeType}',
-      customMetadata: {'picked-file-path': _imageFileList![0].path},
+      customMetadata: {'picked-file-path': filePath},
     );
 
     uploadTask =
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
-    MediaModel mediaModel = MediaModel(filename: fileName);
-
-    var uuid = const Uuid();
+    BannerModel bannerModel = BannerModel(filename: fileSave, date: dateNow);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("media").doc(uuid.v4()).set(mediaModel.toMap());
+    db.collection("banners").doc(dateNow).set(bannerModel.toMap());
 
     CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
-
-    // _getImage();
 
     return Future.value(uploadTask);
   }
 
+  // seleciona a imagem do computador
+  Future _removePicture(fileName) async {
+    firebase_storage.Reference arquive = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child("banners")
+        .child(fileName);
+
+    arquive.delete();
+
+    var dbDoc = fileName.toString().split('-');
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.collection("banners").doc(dbDoc[0]).delete();
+  }
+
   Future _onGetData() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db.collection("media").get();
+    var data = await db.collection("banners").get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
+        print(response[i]);
         _widgetList.add(response[i]["filename"]);
       });
     }
@@ -130,47 +150,30 @@ class _BannersState extends State<Banners> {
           return Container(
             color: Colors.green,
             margin: const EdgeInsets.all(1.0),
-            child: Center(
-              child: Image(
-                image: NetworkImage(
-                    'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F$value?alt=media'),
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: Image(
+                    image: NetworkImage(
+                        'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F$value?alt=media'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 5, 20, 5),
+                  child: FloatingActionButton(
+                    mini: true,
+                    onPressed: () => _removePicture(value),
+                    tooltip: 'Remover imagem',
+                    child: const Icon(Icons.close),
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+              ],
             ),
           );
         }).toList(),
       ),
-      /*SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 5),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                _selectPicture();
-              },
-              child: const Text("Nova imagem"),
-            ),
-            const Text(
-              "Recomendamos enviar imagens nas seguintes dimensões: Largura:1600 x Altura: 900",
-            ),
-            (_imageFileList == null)
-            ? const Text(
-              'You have not yet picked an image.',
-              textAlign: TextAlign.center,
-            )
-            : Semantics(
-              label: 'image_picker_example_picked_image',
-              child: kIsWeb
-              ? Image.network(_imageFileList![0].path)
-              : Image.file(File(_imageFileList![0].path)),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: (_errorPicture != null)
-      ? Text(
-        "$_errorPicture"
-      )
-      : const Padding(padding: EdgeInsets.zero,),*/
     );
   }
 }
