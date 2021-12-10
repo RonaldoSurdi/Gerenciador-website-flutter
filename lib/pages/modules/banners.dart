@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/banner_model.dart';
@@ -73,7 +76,12 @@ class _BannersState extends State<Banners> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("banners").doc(dateNow).set(bannerModel.toMap());
 
-    CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
+    setState(() {
+      CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
+      Timer(const Duration(milliseconds: 500), () {
+        _onGetData();
+      });
+    });
 
     return Future.value(uploadTask);
   }
@@ -92,15 +100,22 @@ class _BannersState extends State<Banners> {
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("banners").doc(dbDoc[0]).delete();
+    setState(() {
+      CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
+      Timer(const Duration(milliseconds: 500), () {
+        _onGetData();
+      });
+    });
   }
 
   Future _onGetData() async {
+    _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db.collection("banners").get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        print(response[i]);
+        print(response[i]["filename"]);
         _widgetList.add(response[i]["filename"]);
       });
     }
