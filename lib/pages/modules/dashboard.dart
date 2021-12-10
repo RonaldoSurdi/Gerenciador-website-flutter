@@ -6,6 +6,7 @@ import 'package:hwscontrol/pages/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hwscontrol/pages/modules/photos.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -153,9 +154,17 @@ class _DashboardState extends State<Dashboard> {
               leading: Icon(Icons.calendar_view_day),
               title: Text('Agenda'),
             ),
-            const ListTile(
-              leading: Icon(Icons.monochrome_photos),
-              title: Text('Fotos'),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('Fotos'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Photos(),
+                  ),
+                );
+              },
             ),
             const ListTile(
               leading: Icon(Icons.movie_creation),

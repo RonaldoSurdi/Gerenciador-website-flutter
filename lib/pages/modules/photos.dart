@@ -6,20 +6,20 @@ import 'package:hwscontrol/core/widgets/snackbar.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/banner_model.dart';
+import 'package:hwscontrol/core/models/photo_model.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:uuid/uuid.dart';
 // import 'package:path/path.dart' as p;
 
-class Banners extends StatefulWidget {
-  const Banners({Key? key}) : super(key: key);
+class Photos extends StatefulWidget {
+  const Photos({Key? key}) : super(key: key);
 
   @override
-  _BannersState createState() => _BannersState();
+  _PhotosState createState() => _PhotosState();
 }
 
-class _BannersState extends State<Banners> {
+class _PhotosState extends State<Photos> {
   // variaveis da tela
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;
@@ -60,7 +60,7 @@ class _BannersState extends State<Banners> {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("banners")
+        .child("photos")
         .child(fileSave);
 
     final metadata = firebase_storage.SettableMetadata(
@@ -71,14 +71,14 @@ class _BannersState extends State<Banners> {
     uploadTask =
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
-    BannerModel bannerModel = BannerModel(filename: fileSave, date: dateNow);
+    PhotoModel photoModel = PhotoModel(filename: fileSave, date: dateNow);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("banners").doc(dateNow).set(bannerModel.toMap());
+    db.collection("photos").doc(dateNow).set(photoModel.toMap());
 
     setState(() {
       CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
@@ -86,28 +86,12 @@ class _BannersState extends State<Banners> {
     return Future.value(uploadTask);
   }
 
+  // seleciona a imagem do computador
   Future _removePicture(fileName) async {
-    return AlertDialog(
-      title: const Text('Remover imagem'),
-      content: Text('Tem certeza que deseja remover o arquivo\n$fileName?'),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => {},
-          child: const Text('Cancelar'),
-        ),
-        TextButton(
-          onPressed: () => {_onRemovePicture(fileName)},
-          child: const Text('Excluir'),
-        ),
-      ],
-    );
-  }
-
-  Future _onRemovePicture(fileName) async {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("banners")
+        .child("photos")
         .child(fileName);
 
     arquive.delete();
@@ -115,10 +99,10 @@ class _BannersState extends State<Banners> {
     var dbDoc = fileName.toString().split('-');
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("banners").doc(dbDoc[0]).delete();
+    db.collection("photos").doc(dbDoc[0]).delete();
     setState(() {
       CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
-      Timer(const Duration(milliseconds: 150), () {
+      Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
@@ -126,15 +110,31 @@ class _BannersState extends State<Banners> {
 
   Future _onGetData() async {
     _widgetList.clear();
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db.collection("banners").get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
+    firebase_storage.Reference arquive =
+        firebase_storage.FirebaseStorage.instance.ref().child("banners");
+    arquive.listAll().then((firebase_storage.ListResult listResult) {
+      for (int i = 0; i < listResult.items.length; i++) {
+        setState(() {
+          print(listResult.items[i].fullPath);
+          print(listResult.items[i].bucket);
+          print(listResult.items[i].name);
+        });
+      }
+      /*for (StorageReference prefix : listResult.getPrefixes()) {
+          // All the prefixes under listRef.
+          // You may call listAll() recursively on them.
+      }
+
+      for (StorageReference item : listResult.getItems()) {
+          // All the items under listRef.
+      }*/
+    });
+    /*for (int i = 0; i < response.length; i++) {
       setState(() {
         print(response[i]["filename"]);
         _widgetList.add(response[i]["filename"]);
       });
-    }
+    }*/
   }
 
   @override
@@ -187,31 +187,14 @@ class _BannersState extends State<Banners> {
                 Expanded(
                   child: Image(
                     image: NetworkImage(
-                        'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F$value?alt=media'),
+                        'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/photos%2F$value?alt=media'),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 5, 20, 5),
                   child: FloatingActionButton(
                     mini: true,
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover imagem'),
-                        content: Text(
-                            'Tem certeza que deseja remover o arquivo\n$value?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                            child: const Text('Cancelar'),
-                          ),
-                          TextButton(
-                            onPressed: () => _removePicture(value),
-                            child: const Text('Excluir'),
-                          ),
-                        ],
-                      ),
-                    ),
+                    onPressed: () => _removePicture(value),
                     tooltip: 'Remover imagem',
                     child: const Icon(Icons.close),
                     backgroundColor: Colors.red,
