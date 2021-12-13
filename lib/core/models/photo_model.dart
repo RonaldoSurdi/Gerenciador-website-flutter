@@ -1,15 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class PhotoModel {
-  String? filename;
+  String? description;
   String? date;
+  int? count;
 
-  PhotoModel({this.filename, this.date});
+  PhotoModel({this.description, this.date, this.count});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      "filename": filename,
+      "description": description,
       "date": date,
+      "count": count
     };
 
     return map;

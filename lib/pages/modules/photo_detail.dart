@@ -5,87 +5,81 @@ import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/photo_model.dart';
+import 'package:hwscontrol/core/models/banner_model.dart';
+import 'package:image_picker/image_picker.dart';
 
-class Photos extends StatefulWidget {
-  const Photos({Key? key}) : super(key: key);
+class PhotoDetail extends StatefulWidget {
+  const PhotoDetail({Key? key}) : super(key: key);
 
   @override
-  _PhotosState createState() => _PhotosState();
+  _PhotoDetailState createState() => _PhotoDetailState();
 }
 
-class _PhotosState extends State<Photos> {
-  TextEditingController _textFieldController = TextEditingController();
-  late String valueText;
+class _PhotoDetailState extends State<PhotoDetail> {
+  // variaveis da tela
+  final _picker = ImagePicker();
+  List<XFile>? _imageFileList;
 
   final List<String> _widgetList = [];
 
-  Future<void> _addNewAlbumPhotos(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Adicionar novo álbum de fotos'),
-          content: TextField(
-            onChanged: (value) {
-              setState(() {
-                valueText = value;
-              });
-            },
-            controller: _textFieldController,
-            decoration: const InputDecoration(hintText: "Digite a descrição"),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16.0,
-                  fontFamily: 'WorkSansMedium',
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                _saveData(valueText);
-                Navigator.pop(context);
-              },
-              child: const Text(
-                'Salvar',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontSize: 16.0,
-                  fontFamily: 'WorkSansMedium',
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
+  set _imageFile(XFile? value) {
+    _imageFileList = value == null ? null : [value];
+  }
+
+  // seleciona a imagem do computador
+  Future _selectPicture() async {
+    try {
+      final image = await _picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        setState(() {
+          _imageFile = image;
+        });
+        _uploadImage();
+      }
+    } catch (e) {
+      //
+    }
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(descriptionText) async {
+  Future _uploadImage() async {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
-    PhotoModel photoModel =
-        PhotoModel(description: descriptionText, date: dateNow, count: 0);
+    String fileName = _imageFileList![0].name;
+    String filePath = _imageFileList![0].path;
+    String fileSave = '$dateNow-$fileName';
+
+    firebase_storage.UploadTask uploadTask;
+
+    firebase_storage.Reference arquive = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child("photos")
+        .child(fileSave);
+
+    final metadata = firebase_storage.SettableMetadata(
+      contentType: '${_imageFileList![0].mimeType}',
+      customMetadata: {'picked-file-path': filePath},
+    );
+
+    uploadTask =
+        arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
+
+    BannerModel bannerModel = BannerModel(filename: fileSave, date: dateNow);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(dateNow).set(photoModel.toMap());
+    db.collection("photos").doc(dateNow).set(bannerModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum criado com sucesso."));
+      CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
     });
 
-    return Future.value(true);
+    return Future.value(uploadTask);
   }
 
   Future _removePicture(fileName) async {
@@ -112,13 +106,15 @@ class _PhotosState extends State<Photos> {
   Future _onGetData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data =
-        await db.collection("photos").orderBy('date', descending: true).get();
+    var data = await db
+        .collection("photos")
+        .orderBy('filename', descending: true)
+        .get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        print(response[i]["date"]);
-        _widgetList.add(response[i]["date"]);
+        print(response[i]["filename"]);
+        _widgetList.add(response[i]["filename"]);
       });
     }
   }
@@ -145,14 +141,14 @@ class _PhotosState extends State<Photos> {
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Álbum de fotos de Shows'),
+        title: const Text('Fotos do Show'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add_a_photo),
-            tooltip: 'Adicionar álbum',
+            tooltip: 'Adicionar imagem',
             onPressed: () {
-              _addNewAlbumPhotos(context);
+              _selectPicture();
             },
           ),
         ],

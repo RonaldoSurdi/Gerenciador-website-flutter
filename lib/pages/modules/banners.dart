@@ -3,14 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/banner_model.dart';
 import 'package:image_picker/image_picker.dart';
-// import 'package:flutter/foundation.dart';
-// import 'package:uuid/uuid.dart';
-// import 'package:path/path.dart' as p;
 
 class Banners extends StatefulWidget {
   const Banners({Key? key}) : super(key: key);
@@ -110,7 +106,10 @@ class _BannersState extends State<Banners> {
   Future _onGetData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db.collection("banners").get();
+    var data = await db
+        .collection("banners")
+        .orderBy('filename', descending: true)
+        .get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
@@ -142,7 +141,7 @@ class _BannersState extends State<Banners> {
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Painel de controle'),
+        title: const Text('Banners'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
@@ -162,7 +161,7 @@ class _BannersState extends State<Banners> {
         scrollDirection: Axis.vertical,
         children: _widgetList.map((String value) {
           return Container(
-            color: Colors.black38,
+            color: Colors.black26,
             margin: const EdgeInsets.all(1.0),
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -182,7 +181,7 @@ class _BannersState extends State<Banners> {
                       builder: (BuildContext context) => AlertDialog(
                         title: const Text('Remover imagem'),
                         content: Text(
-                            'Tem certeza que deseja remover o arquivo\n$value?'),
+                            'Tem certeza que deseja remover a imagem\n$value?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
