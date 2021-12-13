@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hwscontrol/core/storage.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
-import 'package:hwscontrol/pages/login_page.dart';
+import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -70,32 +70,10 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add_alert),
-            tooltip: 'Show Snackbar',
+            icon: const Icon(Icons.people),
+            tooltip: 'Users',
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.navigate_next),
-            tooltip: 'Go to the next page',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(
-                builder: (BuildContext context) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: const Text('Next page'),
-                    ),
-                    body: const Center(
-                      child: Text(
-                        'This is the next page',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  );
-                },
-              ));
+              //
             },
           ),
         ],
@@ -181,122 +159,5 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
-    /*Scaffold(
-      appBar: AppBar(
-        title: const Text('AppBar Demo'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add_alert),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('This is a snackbar')));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.navigate_next),
-            tooltip: 'Go to the next page',
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute<void>(
-                builder: (BuildContext context) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: const Text('Next page'),
-                    ),
-                    body: const Center(
-                      child: Text(
-                        'This is the next page',
-                        style: TextStyle(fontSize: 24),
-                      ),
-                    ),
-                  );
-                },
-              ));
-            },
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text(
-          'This is the Dashboard page',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );*/
-    /*return Container(
-      padding: const EdgeInsets.only(top: 23.0),
-      child: Column(
-        children: <Widget>[
-          Stack(
-            alignment: Alignment.topCenter,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(top: 180.0),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: CustomTheme.loginGradientStart,
-                      offset: Offset(1.0, 6.0),
-                      blurRadius: 20.0,
-                    ),
-                    BoxShadow(
-                      color: CustomTheme.loginGradientEnd,
-                      offset: Offset(1.0, 6.0),
-                      blurRadius: 20.0,
-                    ),
-                  ],
-                  gradient: LinearGradient(
-                      colors: <Color>[
-                        CustomTheme.loginGradientEnd,
-                        CustomTheme.loginGradientStart
-                      ],
-                      begin: FractionalOffset(0.2, 0.2),
-                      end: FractionalOffset(1.0, 1.0),
-                      stops: <double>[0.0, 1.0],
-                      tileMode: TileMode.clamp),
-                ),
-                child: MaterialButton(
-                  highlightColor: Colors.transparent,
-                  splashColor: CustomTheme.loginGradientEnd,
-                  child: const Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
-                    child: Text(
-                      'DESCONECTAR',
-                      style: TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 25.0,
-                          fontFamily: 'WorkSansBold'),
-                    ),
-                  ),
-                  onPressed: () => _toggleDashboardButton(),
-                )
-              )
-            ],
-          ),
-          /*Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: TextButton(
-                onPressed: () => _toggleForgotPasswordButton(),
-                child: const Text(
-                  'Esqueceu sua senha?',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Colors.white,
-                      fontSize: 16.0,
-                      fontFamily: 'WorkSansMedium'),
-                )),
-          ),*/
-        ],
-      ),
-    );*/
   }
-
-  /*
-  void _toggleDashboardButton() {
-    CustomSnackBar(context, const Text('Aguarde...'));
-    _logoutUser();
-  }
-  */
 }

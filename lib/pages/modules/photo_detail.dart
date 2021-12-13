@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/banner_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PhotoDetail extends StatefulWidget {
-  const PhotoDetail({Key? key}) : super(key: key);
+  final String idAlbum;
+  const PhotoDetail({Key? key, required this.idAlbum}) : super(key: key);
 
   @override
   _PhotoDetailState createState() => _PhotoDetailState();
@@ -44,12 +43,8 @@ class _PhotoDetailState extends State<PhotoDetail> {
 
   // faz o envio da imagem para o storage
   Future _uploadImage() async {
-    DateTime now = DateTime.now();
-    String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
-
     String fileName = _imageFileList![0].name;
     String filePath = _imageFileList![0].path;
-    String fileSave = '$dateNow-$fileName';
 
     firebase_storage.UploadTask uploadTask;
 
@@ -57,7 +52,8 @@ class _PhotoDetailState extends State<PhotoDetail> {
         .FirebaseStorage.instance
         .ref()
         .child("photos")
-        .child(fileSave);
+        .child(widget.idAlbum)
+        .child(fileName);
 
     final metadata = firebase_storage.SettableMetadata(
       contentType: '${_imageFileList![0].mimeType}',
@@ -66,11 +62,6 @@ class _PhotoDetailState extends State<PhotoDetail> {
 
     uploadTask =
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
-
-    BannerModel bannerModel = BannerModel(filename: fileSave, date: dateNow);
-
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(dateNow).set(bannerModel.toMap());
 
     setState(() {
       CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
@@ -87,14 +78,11 @@ class _PhotoDetailState extends State<PhotoDetail> {
         .FirebaseStorage.instance
         .ref()
         .child("photos")
+        .child(widget.idAlbum)
         .child(fileName);
 
     arquive.delete();
 
-    var dbDoc = fileName.toString().split('-');
-
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(dbDoc[0]).delete();
     setState(() {
       CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 500), () {
@@ -105,18 +93,22 @@ class _PhotoDetailState extends State<PhotoDetail> {
 
   Future _onGetData() async {
     _widgetList.clear();
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db
-        .collection("photos")
-        .orderBy('filename', descending: true)
-        .get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
-        print(response[i]["filename"]);
-        _widgetList.add(response[i]["filename"]);
-      });
-    }
+
+    firebase_storage.Reference arquive = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child("photos")
+        .child(widget.idAlbum);
+
+    arquive.listAll().then((firebase_storage.ListResult listResult) {
+      for (int i = 0; i < listResult.items.length; i++) {
+        setState(() {
+          String imageItem = listResult.items[i].fullPath;
+          imageItem = imageItem.replaceAll('/', '%2F');
+          _widgetList.add(imageItem);
+        });
+      }
+    });
   }
 
   @override
@@ -133,15 +125,15 @@ class _PhotoDetailState extends State<PhotoDetail> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final double itemWidth = size.width;
-    final double itemHeight = itemWidth / 1.78;
+    final double itemWidth = size.width / 3;
+    final double itemHeight = size.height / 2;
     /*24 is for notification bar on Android*/
     // final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
 
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Fotos do Show'),
+        title: const Text('Galeria de fotos'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
@@ -154,7 +146,7 @@ class _PhotoDetailState extends State<PhotoDetail> {
         ],
       ),
       body: GridView.count(
-        crossAxisCount: 1,
+        crossAxisCount: 3,
         childAspectRatio: (itemWidth / itemHeight),
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
@@ -166,13 +158,11 @@ class _PhotoDetailState extends State<PhotoDetail> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Expanded(
-                  child: Image(
-                    image: NetworkImage(
-                        'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/photos%2F$value?alt=media'),
-                  ),
+                Image(
+                  image: NetworkImage(
+                      'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media'),
                 ),
-                Padding(
+                Container(
                   padding: const EdgeInsets.fromLTRB(15, 5, 20, 5),
                   child: FloatingActionButton(
                     mini: true,

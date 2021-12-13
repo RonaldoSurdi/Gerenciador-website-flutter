@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hwscontrol/pages/modules/photo_detail.dart';
 import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -18,7 +19,7 @@ class _PhotosState extends State<Photos> {
   TextEditingController _textFieldController = TextEditingController();
   late String valueText;
 
-  final List<String> _widgetList = [];
+  final List<PhotoModel> _widgetList = [];
 
   Future<void> _addNewAlbumPhotos(BuildContext context) async {
     return showDialog(
@@ -88,25 +89,34 @@ class _PhotosState extends State<Photos> {
     return Future.value(true);
   }
 
-  Future _removePicture(fileName) async {
+  Future _removePicture(idAlbum) async {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
         .child("photos")
-        .child(fileName);
+        .child(idAlbum);
 
     arquive.delete();
 
-    var dbDoc = fileName.toString().split('-');
-
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(dbDoc[0]).delete();
+    db.collection("photos").doc(idAlbum).delete();
     setState(() {
-      CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
+      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
+  }
+
+  Future _redirectAlbum(idAlbum) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => PhotoDetail(
+          idAlbum: idAlbum,
+        ),
+      ),
+    );
   }
 
   Future _onGetData() async {
@@ -117,8 +127,11 @@ class _PhotosState extends State<Photos> {
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        print(response[i]["date"]);
-        _widgetList.add(response[i]["date"]);
+        PhotoModel photoModel = PhotoModel(
+            description: response[i]["description"],
+            date: response[i]["date"],
+            count: response[i]["count"]);
+        _widgetList.add(photoModel);
       });
     }
   }
@@ -138,14 +151,12 @@ class _PhotosState extends State<Photos> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
-    final double itemHeight = itemWidth / 1.78;
-    /*24 is for notification bar on Android*/
-    // final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+    const double itemHeight = 100;
 
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Álbum de fotos de Shows'),
+        title: const Text('Galeria de fotos'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
@@ -163,29 +174,64 @@ class _PhotosState extends State<Photos> {
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        children: _widgetList.map((String value) {
+        children: _widgetList.map((PhotoModel value) {
           return Container(
             color: Colors.black26,
             margin: const EdgeInsets.all(1.0),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
+                Container(
+                  height: 70,
+                  // width: 100,
+                  padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image(
+                      image: NetworkImage(value.count == 0
+                          ? 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/images%2Fdefault.jpg?alt=media'
+                          : 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/photos%2F${value.date}?alt=media'),
+                      fit: BoxFit.fill,
+                      width: 100,
+                      height: 70,
+                    ),
+                  ),
+                ),
                 Expanded(
-                  child: Image(
-                    image: NetworkImage(
-                        'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/photos%2F$value?alt=media'),
+                  child: Container(
+                      padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                      child: Text(
+                        '${value.description}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  child: FloatingActionButton(
+                    mini: true,
+                    tooltip: 'Adicionar fotos',
+                    child: const Icon(Icons.close),
+                    backgroundColor: Colors.red,
+                    onPressed: () => _redirectAlbum(value.date),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 20, 5),
+                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
                   child: FloatingActionButton(
                     mini: true,
+                    tooltip: 'Remover álbum',
+                    child: const Icon(Icons.close),
+                    backgroundColor: Colors.red,
                     onPressed: () => showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover imagem'),
+                        title: const Text('Remover álbum'),
                         content: Text(
-                            'Tem certeza que deseja remover a imagem\n$value?'),
+                            'Tem certeza que deseja remover o álbum\n${value.description}?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -200,7 +246,7 @@ class _PhotosState extends State<Photos> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _removePicture(value);
+                              _removePicture(value.date);
                               Navigator.pop(context);
                             },
                             child: const Text(
@@ -215,9 +261,6 @@ class _PhotosState extends State<Photos> {
                         ],
                       ),
                     ),
-                    tooltip: 'Remover imagem',
-                    child: const Icon(Icons.close),
-                    backgroundColor: Colors.red,
                   ),
                 ),
               ],

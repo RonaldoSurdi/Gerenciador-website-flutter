@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hwscontrol/core/theme/colors_theme.dart';
-import 'package:hwscontrol/pages/login_page.dart';
+import 'package:hwscontrol/pages/modules/login_page.dart';
 
 final ThemeData defaultTheme = ThemeData(
   primaryColor: ColorsTheme.greyDefault,
@@ -30,7 +30,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

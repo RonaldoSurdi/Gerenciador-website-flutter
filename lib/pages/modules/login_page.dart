@@ -3,7 +3,6 @@ import 'package:hwscontrol/pages/login/forgot_password.dart';
 import 'package:hwscontrol/pages/login/sign_in.dart';
 import 'package:hwscontrol/pages/login/sign_up.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-//import 'package:hwscontrol/utils/bubble_indicator_painter.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

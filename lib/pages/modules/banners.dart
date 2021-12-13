@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -113,7 +112,6 @@ class _BannersState extends State<Banners> {
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        print(response[i]["filename"]);
         _widgetList.add(response[i]["filename"]);
       });
     }
