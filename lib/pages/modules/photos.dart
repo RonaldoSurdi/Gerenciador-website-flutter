@@ -191,7 +191,7 @@ class _PhotosState extends State<Photos> {
                       image: NetworkImage(value.count == 0
                           ? 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/images%2Fdefault.jpg?alt=media'
                           : 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/photos%2F${value.date}?alt=media'),
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                       width: 100,
                       height: 70,
                     ),

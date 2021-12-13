@@ -147,15 +147,69 @@ class _PhotoDetailState extends State<PhotoDetail> {
       ),
       body: GridView.count(
         crossAxisCount: 3,
-        childAspectRatio: (itemWidth / itemHeight),
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1,
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         children: _widgetList.map((String value) {
           return Container(
             color: Colors.black26,
-            margin: const EdgeInsets.all(1.0),
-            child: Row(
+            child: Stack(
+              children: [
+                Image.network(
+                  'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media',
+                  fit: BoxFit.fitHeight,
+                  height: itemWidth,
+                ),
+                FloatingActionButton(
+                  mini: true,
+                  elevation: 6,
+                  tooltip: 'Remover imagem',
+                  child: const Icon(Icons.close),
+                  backgroundColor: Colors.red,
+                  onPressed: () => showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Remover imagem'),
+                      content: Text(
+                          'Tem certeza que deseja remover a imagem\n$value?'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Cancelar',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16.0,
+                              fontFamily: 'WorkSansMedium',
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _removePicture(value);
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Excluir',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 16.0,
+                              fontFamily: 'WorkSansMedium',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // margin: const EdgeInsets.all(1.0),
+            /*child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
                 Image(
@@ -164,53 +218,55 @@ class _PhotoDetailState extends State<PhotoDetail> {
                 ),
                 Container(
                   padding: const EdgeInsets.fromLTRB(15, 5, 20, 5),
-                  child: FloatingActionButton(
-                    mini: true,
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover imagem'),
-                        content: Text(
-                            'Tem certeza que deseja remover a imagem\n$value?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              'Cancelar',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _removePicture(value);
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Excluir',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    tooltip: 'Remover imagem',
-                    child: const Icon(Icons.close),
-                    backgroundColor: Colors.red,
-                  ),
+                  child: 
                 ),
               ],
-            ),
+            ),*/
           );
         }).toList(),
       ),
     );
   }
 }
+
+
+
+
+/*
+Scaffold(
+      key: scaffoldKey,
+      backgroundColor: Color(0xFFF5F5F5),
+      body: SafeArea(
+        child: GridView(
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1,
+          ),
+          scrollDirection: Axis.vertical,
+          children: [
+            Image.network(
+              'https://picsum.photos/seed/628/600',
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+            Image.network(
+              'https://picsum.photos/seed/11/600',
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+            Image.network(
+              'https://picsum.photos/seed/769/600',
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+          ],
+        ),
+      ),
+    );
+*/

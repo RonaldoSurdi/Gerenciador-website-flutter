@@ -34,89 +34,91 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-                colors: <Color>[
-                  CustomTheme.loginGradientStart,
-                  CustomTheme.loginGradientEnd
-                ],
-                begin: FractionalOffset(0.0, 0.0),
-                end: FractionalOffset(1.0, 1.0),
-                stops: <double>[0.0, 1.0],
-                tileMode: TileMode.clamp),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 75.0),
-                child: Image(
-                    height:
-                        MediaQuery.of(context).size.height > 800 ? 191.0 : 150,
-                    fit: BoxFit.fill,
-                    image: const AssetImage('assets/img/login_logo.png')),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: _buildMenuBar(context),
-              ),
-              Expanded(
-                flex: 2,
-                child: PageView(
-                  controller: _pageController,
-                  physics: const ClampingScrollPhysics(),
-                  onPageChanged: (int i) {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    if (i == 0) {
-                      setState(() {
-                        left = Colors.yellow;
-                        center = Colors.white;
-                        right = Colors.white;
-                      });
-                    } else if (i == 1) {
-                      setState(() {
-                        left = Colors.white;
-                        center = Colors.yellow;
-                        right = Colors.white;
-                      });
-                    } else if (i == 2) {
-                      setState(() {
-                        left = Colors.white;
-                        center = Colors.white;
-                        right = Colors.yellow;
-                      });
-                    }
-                  },
-                  children: <Widget>[
-                    ConstrainedBox(
-                      constraints: const BoxConstraints.expand(),
-                      child: const SignIn(),
-                    ),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints.expand(),
-                      child: const SignUp(),
-                    ),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints.expand(),
-                      child: const ForgotPassword(),
-                    ),
+      body: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  colors: <Color>[
+                    CustomTheme.loginGradientStart,
+                    CustomTheme.loginGradientEnd
                   ],
+                  begin: FractionalOffset(0.0, 0.0),
+                  end: FractionalOffset(1.0, 1.0),
+                  stops: <double>[0.0, 1.0],
+                  tileMode: TileMode.clamp),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 75.0),
+                  child: Image(
+                      height: MediaQuery.of(context).size.height > 800
+                          ? 191.0
+                          : 150,
+                      fit: BoxFit.fill,
+                      image: const AssetImage('assets/img/login_logo.png')),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: _buildMenuBar(context),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const ClampingScrollPhysics(),
+                    onPageChanged: (int i) {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      if (i == 0) {
+                        setState(() {
+                          left = Colors.yellow;
+                          center = Colors.white;
+                          right = Colors.white;
+                        });
+                      } else if (i == 1) {
+                        setState(() {
+                          left = Colors.white;
+                          center = Colors.yellow;
+                          right = Colors.white;
+                        });
+                      } else if (i == 2) {
+                        setState(() {
+                          left = Colors.white;
+                          center = Colors.white;
+                          right = Colors.yellow;
+                        });
+                      }
+                    },
+                    children: <Widget>[
+                      ConstrainedBox(
+                        constraints: const BoxConstraints.expand(),
+                        child: const SignIn(),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints.expand(),
+                        child: const SignUp(),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints.expand(),
+                        child: const ForgotPassword(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildMenuBar(BuildContext context) {
@@ -165,7 +167,11 @@ class _LoginPageState extends State<LoginPage>
                 ),
               ),
             ),
-            Container(height: 33.0, width: 1.0, color: Colors.white),
+            Container(
+              height: 33.0,
+              width: 1.0,
+              color: Colors.white,
+            ),
             Expanded(
               child: TextButton(
                 style: ButtonStyle(
@@ -175,7 +181,10 @@ class _LoginPageState extends State<LoginPage>
                 child: Text(
                   'Ajuda',
                   style: TextStyle(
-                      color: right, fontSize: 14.0, fontFamily: 'WorkSansThin'),
+                    color: right,
+                    fontSize: 14.0,
+                    fontFamily: 'WorkSansThin',
+                  ),
                 ),
               ),
             ),
