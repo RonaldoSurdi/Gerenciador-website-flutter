@@ -3,31 +3,28 @@ import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:hwscontrol/core/models/video_model.dart';
-import 'package:hwscontrol/core/models/youtube_model.dart';
-import 'package:hwscontrol/core/utils/youtube.dart';
+import 'package:hwscontrol/core/models/schedule_model.dart';
 
-class Videos extends StatefulWidget {
-  const Videos({Key? key}) : super(key: key);
+class Schedule extends StatefulWidget {
+  const Schedule({Key? key}) : super(key: key);
 
   @override
-  _VideosState createState() => _VideosState();
+  _ScheduleState createState() => _ScheduleState();
 }
 
-class _VideosState extends State<Videos> {
+class _ScheduleState extends State<Schedule> {
   final TextEditingController _watchController = TextEditingController();
   late String _watchValue;
 
-  final List<VideoModel> _widgetList = [];
+  final List<ScheduleModel> _widgetList = [];
 
-  Future<void> _addNewVideos(BuildContext context) async {
+  Future<void> _addNewSchedule(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (builder, setState) => AlertDialog(
-            title: const Text('Adicionar novo vídeo Youtube'),
+            title: const Text('Adicionar nova data'),
             content: TextField(
               onChanged: (value) {
                 setState(() {
@@ -35,8 +32,7 @@ class _VideosState extends State<Videos> {
                 });
               },
               controller: _watchController,
-              decoration: const InputDecoration(
-                  hintText: "Cole o link do vídeo aqui..."),
+              decoration: const InputDecoration(hintText: "Evento ou show"),
             ),
             actions: <Widget>[
               TextButton(
@@ -73,49 +69,28 @@ class _VideosState extends State<Videos> {
 
   // faz o envio da imagem para o storage
   Future _saveData(_watchText) async {
-    String _watchRes = _watchText;
-    YoutubeModel? youtubeModel;
-    try {
-      youtubeModel = await YoutubeMetaData.getData(_watchRes);
-    } catch (e) {
-      youtubeModel = await null;
+    if (_watchText.trim().isNotEmpty && _watchText.trim().length >= 3) {
+      _onSaveData(_watchText);
+    } else {
+      CustomSnackBar(
+          context, const Text('Preencha todos dados e tente novamente!'),
+          backgroundColor: Colors.red);
     }
-    setState(() {
-      _watchRes = _watchRes
-          .replaceAll('https://www.youtube.com/watch?v=', '')
-          .replaceAll('https://youtu.be/', '')
-          .replaceAll('https', '')
-          .replaceAll('http', '')
-          .replaceAll('://', '')
-          .replaceAll('/', '')
-          .replaceAll(' ', '');
-      if (youtubeModel != null &&
-          _watchRes.trim().isNotEmpty &&
-          _watchRes.trim().length >= 3) {
-        _onSaveData(youtubeModel.title, youtubeModel.thumbnailUrl, _watchRes);
-      } else {
-        CustomSnackBar(
-            context,
-            const Text(
-                'Digite ou cole a url de compartilhamento do vídeo Youtube!'),
-            backgroundColor: Colors.red);
-      }
-    });
     return Future.value(true);
   }
 
-  Future _onSaveData(_titleText, _imageText, _watchText) async {
+  Future _onSaveData(_titleText) async {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
-    VideoModel videoModel = VideoModel(
-        date: dateNow, title: _titleText, image: _imageText, watch: _watchText);
+    ScheduleModel scheduleModel = ScheduleModel(
+        id: dateNow, title: _titleText, description: _titleText, date: now);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("videos").doc(dateNow).set(videoModel.toMap());
+    db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Vídeo criado com sucesso."));
+      CustomSnackBar(context, const Text("Data adicionada com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -124,40 +99,31 @@ class _VideosState extends State<Videos> {
     return Future.value(true);
   }
 
-  Future _removeVideo(idVideo) async {
+  Future _removeSchedule(idSchedule) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("videos").doc(idVideo).delete();
+    db.collection("schedule").doc(idSchedule).delete();
     setState(() {
-      CustomSnackBar(context, const Text("Vídeo excluido com sucesso."));
+      CustomSnackBar(context, const Text("Data excluida com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
   }
 
-  Future _openVideo(idVideo) async {
-    String url = 'https://www.youtube.com/watch?v=$idVideo';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Vídeo não disponível $url';
-    }
-  }
-
   Future _onGetData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
-        await db.collection("videos").orderBy('date', descending: true).get();
+        await db.collection("schedule").orderBy('date', descending: true).get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        VideoModel videoModel = VideoModel(
-            date: response[i]["date"],
+        ScheduleModel scheduleModel = ScheduleModel(
+            id: response[i]["id"],
             title: response[i]["title"],
-            image: response[i]["image"],
-            watch: response[i]["watch"]);
-        _widgetList.add(videoModel);
+            description: response[i]["description"],
+            date: response[i]["date"]);
+        _widgetList.add(scheduleModel);
       });
     }
   }
@@ -182,7 +148,7 @@ class _VideosState extends State<Videos> {
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Vídeos Youtube'),
+        title: const Text('Incluir nova data'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
@@ -190,9 +156,9 @@ class _VideosState extends State<Videos> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar vídeo',
+            tooltip: 'Adicionar data',
             onPressed: () {
-              _addNewVideos(context);
+              _addNewSchedule(context);
             },
           ),
         ],
@@ -203,7 +169,7 @@ class _VideosState extends State<Videos> {
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        children: _widgetList.map((VideoModel value) {
+        children: _widgetList.map((ScheduleModel value) {
           return Container(
             color: Colors.black26,
             margin: const EdgeInsets.all(1.0),
@@ -216,7 +182,7 @@ class _VideosState extends State<Videos> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image(
-                      image: NetworkImage('${value.image}'),
+                      image: NetworkImage('${value.id}'),
                       fit: BoxFit.cover,
                       width: 100,
                       height: 70,
@@ -236,28 +202,18 @@ class _VideosState extends State<Videos> {
                       )),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: FloatingActionButton(
-                    mini: false,
-                    tooltip: 'Abrir vídeo Youtube',
-                    child: const Icon(Icons.movie_creation),
-                    backgroundColor: Colors.green,
-                    onPressed: () => _openVideo(value.watch),
-                  ),
-                ),
-                Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
                   child: FloatingActionButton(
                     mini: true,
-                    tooltip: 'Remover vídeo',
+                    tooltip: 'Remover data',
                     child: const Icon(Icons.close),
                     backgroundColor: Colors.red,
                     onPressed: () => showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover vídeo'),
+                        title: const Text('Remover data'),
                         content: Text(
-                            'Tem certeza que deseja remover o vídeo\n${value.title}?'),
+                            'Tem certeza que deseja remover a data\n${value.date}?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -272,7 +228,7 @@ class _VideosState extends State<Videos> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _removeVideo(value.date);
+                              _removeSchedule(value.date);
                               Navigator.pop(context);
                             },
                             child: const Text(
@@ -296,4 +252,6 @@ class _VideosState extends State<Videos> {
       ),
     );
   }
+
+  now() {}
 }

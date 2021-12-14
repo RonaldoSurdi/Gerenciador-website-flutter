@@ -188,7 +188,7 @@ class _PhotoDetailState extends State<PhotoDetail> {
                                 child: const Text(
                                   'Cancelar',
                                   style: TextStyle(
-                                    color: Colors.grey,
+                                    color: Colors.black,
                                     fontSize: 16.0,
                                     fontFamily: 'WorkSansMedium',
                                   ),
