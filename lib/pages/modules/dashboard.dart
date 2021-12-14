@@ -7,6 +7,7 @@ import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/modules/photos.dart';
+import 'package:hwscontrol/pages/modules/videos.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -144,9 +145,17 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
             ),
-            const ListTile(
-              leading: Icon(Icons.movie_creation),
-              title: Text('Vídeos'),
+            ListTile(
+              leading: const Icon(Icons.movie_creation),
+              title: const Text('Vídeos'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Videos(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.logout),

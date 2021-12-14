@@ -1,33 +1,31 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/modules/photo_detail.dart';
 import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/album_model.dart';
-import 'package:hwscontrol/core/models/photo_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:hwscontrol/core/models/video_model.dart';
 
-class Photos extends StatefulWidget {
-  const Photos({Key? key}) : super(key: key);
+class Videos extends StatefulWidget {
+  const Videos({Key? key}) : super(key: key);
 
   @override
-  _PhotosState createState() => _PhotosState();
+  _VideosState createState() => _VideosState();
 }
 
-class _PhotosState extends State<Photos> {
+class _VideosState extends State<Videos> {
   final TextEditingController _textFieldController = TextEditingController();
   late String valueText;
 
-  final List<AlbumModel> _widgetList = [];
+  final List<VideoModel> _widgetList = [];
 
-  Future<void> _addNewAlbumPhotos(BuildContext context) async {
+  Future<void> _addNewVideos(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Adicionar novo álbum de fotos'),
+          title: const Text('Adicionar novo vídeo Youtube'),
           content: TextField(
             onChanged: (value) {
               setState(() {
@@ -35,7 +33,8 @@ class _PhotosState extends State<Photos> {
               });
             },
             controller: _textFieldController,
-            decoration: const InputDecoration(hintText: "Digite a descrição"),
+            decoration: const InputDecoration(
+                hintText: "Digite o link do vídeo Youtube"),
           ),
           actions: <Widget>[
             TextButton(
@@ -74,14 +73,14 @@ class _PhotosState extends State<Photos> {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
-    PhotoModel photoModel =
-        PhotoModel(description: descriptionText, date: dateNow, count: 0);
+    VideoModel videoModel = VideoModel(
+        date: dateNow, title: descriptionText, watch: descriptionText);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(dateNow).set(photoModel.toMap());
+    db.collection("videos").doc(dateNow).set(videoModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum criado com sucesso."));
+      CustomSnackBar(context, const Text("Vídeo criado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -90,17 +89,9 @@ class _PhotosState extends State<Photos> {
     return Future.value(true);
   }
 
-  Future _removeAlbum(idAlbum) async {
-    firebase_storage.Reference arquive = firebase_storage
-        .FirebaseStorage.instance
-        .ref()
-        .child("photos")
-        .child(idAlbum);
-
-    arquive.delete();
-
+  Future _removeVideo(idVideo) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(idAlbum).delete();
+    db.collection("videos").doc(idVideo).delete();
     setState(() {
       CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
@@ -109,47 +100,31 @@ class _PhotosState extends State<Photos> {
     });
   }
 
-  Future _redirectAlbum(idAlbum) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (builder) => PhotoDetail(
-          idAlbum: idAlbum,
-        ),
-      ),
-    );
+  Future _openVideo(idVideo) async {
+    String url = 'https://www.youtube.com/watch?v=$idVideo';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Vídeo não disponível $url';
+    }
   }
 
   Future _onGetData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
-        await db.collection("photos").orderBy('date', descending: true).get();
+        await db.collection("videos").orderBy('date', descending: true).get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
-      String idAlbum = response[i]["date"];
-      String description = response[i]["description"];
-      firebase_storage.Reference arquive = firebase_storage
-          .FirebaseStorage.instance
-          .ref()
-          .child("photos")
-          .child(idAlbum);
-
-      arquive.listAll().then((firebase_storage.ListResult listResult) {
-        String imageParse = 'images%2Fdefault.jpg';
-        if (listResult.items.isNotEmpty) {
-          String imageItem = listResult.items[0].fullPath;
-          imageItem = imageItem.replaceAll('/', '%2F');
-          imageParse = imageItem;
-        }
-        description = description.toUpperCase();
-
-        AlbumModel albumModel = AlbumModel(
-            id: idAlbum, description: description, image: imageParse);
-
-        setState(() {
-          _widgetList.add(albumModel);
-        });
+      setState(() {
+        String watch = response[i]["watch"];
+        watch = watch.replaceAll('https://www.youtube.com/watch?v=', '');
+        watch = watch.replaceAll('https://youtu.be/', '');
+        VideoModel videoModel = VideoModel(
+            date: response[i]["date"],
+            title: response[i]["title"],
+            watch: watch);
+        _widgetList.add(videoModel);
       });
     }
   }
@@ -181,7 +156,7 @@ class _PhotosState extends State<Photos> {
             icon: const Icon(Icons.add_a_photo),
             tooltip: 'Adicionar álbum',
             onPressed: () {
-              _addNewAlbumPhotos(context);
+              _addNewVideos(context);
             },
           ),
         ],
@@ -192,7 +167,7 @@ class _PhotosState extends State<Photos> {
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        children: _widgetList.map((AlbumModel value) {
+        children: _widgetList.map((VideoModel value) {
           return Container(
             color: Colors.black26,
             margin: const EdgeInsets.all(1.0),
@@ -203,12 +178,12 @@ class _PhotosState extends State<Photos> {
                   height: 70,
                   padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(16.0),
                     child: Image(
                       image: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${value.image}?alt=media'),
+                          'https://i1.ytimg.com/vi/${value.watch}/default.jpg'),
                       fit: BoxFit.cover,
-                      width: 90,
+                      width: 100,
                       height: 70,
                     ),
                   ),
@@ -217,7 +192,7 @@ class _PhotosState extends State<Photos> {
                   child: Container(
                       padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
                       child: Text(
-                        '${value.description}',
+                        '${value.title}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -228,11 +203,11 @@ class _PhotosState extends State<Photos> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                   child: FloatingActionButton(
-                    mini: false,
+                    mini: true,
                     tooltip: 'Adicionar fotos',
-                    child: const Icon(Icons.add_a_photo),
-                    backgroundColor: Colors.green,
-                    onPressed: () => _redirectAlbum(value.id),
+                    child: const Icon(Icons.close),
+                    backgroundColor: Colors.red,
+                    onPressed: () => _openVideo(value.watch),
                   ),
                 ),
                 Padding(
@@ -247,7 +222,7 @@ class _PhotosState extends State<Photos> {
                       builder: (BuildContext context) => AlertDialog(
                         title: const Text('Remover álbum'),
                         content: Text(
-                            'Tem certeza que deseja remover o álbum\n${value.description}?'),
+                            'Tem certeza que deseja remover o álbum\n${value.title}?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -262,7 +237,7 @@ class _PhotosState extends State<Photos> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _removeAlbum(value.id);
+                              _removeVideo(value.date);
                               Navigator.pop(context);
                             },
                             child: const Text(
