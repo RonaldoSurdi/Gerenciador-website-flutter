@@ -1,11 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hwscontrol/core/models/video_model.dart';
+import 'package:hwscontrol/core/models/youtube_model.dart';
+import 'package:hwscontrol/core/utils/youtube.dart';
 
 class Videos extends StatefulWidget {
   const Videos({Key? key}) : super(key: key);
@@ -15,8 +16,8 @@ class Videos extends StatefulWidget {
 }
 
 class _VideosState extends State<Videos> {
-  final TextEditingController _textFieldController = TextEditingController();
-  late String valueText;
+  final TextEditingController _watchController = TextEditingController();
+  late String _watchValue;
 
   final List<VideoModel> _widgetList = [];
 
@@ -24,57 +25,91 @@ class _VideosState extends State<Videos> {
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Adicionar novo vídeo Youtube'),
-          content: TextField(
-            onChanged: (value) {
-              setState(() {
-                valueText = value;
-              });
-            },
-            controller: _textFieldController,
-            decoration: const InputDecoration(
-                hintText: "Digite o link do vídeo Youtube"),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16.0,
-                  fontFamily: 'WorkSansMedium',
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                _saveData(valueText);
-                Navigator.pop(context);
+        return StatefulBuilder(
+          builder: (builder, setState) => AlertDialog(
+            title: const Text('Adicionar novo vídeo Youtube'),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _watchValue = value;
+                });
               },
-              child: const Text(
-                'Salvar',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontSize: 16.0,
-                  fontFamily: 'WorkSansMedium',
+              controller: _watchController,
+              decoration: const InputDecoration(
+                  hintText: "Cole o link do vídeo aqui..."),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
                 ),
               ),
-            ),
-          ],
+              TextButton(
+                onPressed: () {
+                  _saveData(_watchValue);
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Salvar',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(descriptionText) async {
+  Future _saveData(_watchText) async {
+    String _watchRes = _watchText;
+    YoutubeModel? youtubeModel;
+    try {
+      youtubeModel = await YoutubeMetaData.getData(_watchRes);
+    } catch (e) {
+      youtubeModel = await null;
+    }
+    setState(() {
+      _watchRes = _watchRes
+          .replaceAll('https://www.youtube.com/watch?v=', '')
+          .replaceAll('https://youtu.be/', '')
+          .replaceAll('https', '')
+          .replaceAll('http', '')
+          .replaceAll('://', '')
+          .replaceAll('/', '')
+          .replaceAll(' ', '');
+      if (youtubeModel != null &&
+          _watchRes.trim().isNotEmpty &&
+          _watchRes.trim().length >= 3) {
+        _onSaveData(youtubeModel.title, youtubeModel.thumbnailUrl, _watchRes);
+      } else {
+        CustomSnackBar(
+            context,
+            const Text(
+                'Digite ou cole a url de compartilhamento do vídeo Youtube!'),
+            backgroundColor: Colors.red);
+      }
+    });
+    return Future.value(true);
+  }
+
+  Future _onSaveData(_titleText, _imageText, _watchText) async {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
     VideoModel videoModel = VideoModel(
-        date: dateNow, title: descriptionText, watch: descriptionText);
+        date: dateNow, title: _titleText, image: _imageText, watch: _watchText);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("videos").doc(dateNow).set(videoModel.toMap());
@@ -117,13 +152,11 @@ class _VideosState extends State<Videos> {
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        String watch = response[i]["watch"];
-        watch = watch.replaceAll('https://www.youtube.com/watch?v=', '');
-        watch = watch.replaceAll('https://youtu.be/', '');
         VideoModel videoModel = VideoModel(
             date: response[i]["date"],
             title: response[i]["title"],
-            watch: watch);
+            image: response[i]["image"],
+            watch: response[i]["watch"]);
         _widgetList.add(videoModel);
       });
     }
@@ -183,8 +216,7 @@ class _VideosState extends State<Videos> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image(
-                      image: NetworkImage(
-                          'https://i1.ytimg.com/vi/${value.watch}/default.jpg'),
+                      image: NetworkImage('${value.image}'),
                       fit: BoxFit.cover,
                       width: 100,
                       height: 70,
