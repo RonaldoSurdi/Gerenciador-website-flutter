@@ -144,6 +144,9 @@ class _BannersState extends State<Banners> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add_a_photo),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
             tooltip: 'Adicionar imagem',
             onPressed: () {
               _selectPicture();

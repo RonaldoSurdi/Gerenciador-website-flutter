@@ -102,7 +102,7 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.image),
+              leading: const Icon(Icons.picture_in_picture),
               title: const Text('Banners'),
               onTap: () {
                 Navigator.push(
@@ -130,11 +130,11 @@ class _DashboardState extends State<Dashboard> {
               title: Text('Discografia'),
             ),
             const ListTile(
-              leading: Icon(Icons.calendar_view_day),
+              leading: Icon(Icons.schedule_outlined),
               title: Text('Agenda'),
             ),
             ListTile(
-              leading: const Icon(Icons.info),
+              leading: const Icon(Icons.image),
               title: const Text('Fotos'),
               onTap: () {
                 Navigator.push(
@@ -160,9 +160,40 @@ class _DashboardState extends State<Dashboard> {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Desconectar'),
-              onTap: () {
-                _logOut();
-              },
+              onTap: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Desconectar'),
+                  content: const Text('Desconectar do sistema?'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        'Cancelar',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansMedium',
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _logOut();
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Desconectar',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansMedium',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

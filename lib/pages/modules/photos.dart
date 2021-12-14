@@ -178,7 +178,10 @@ class _PhotosState extends State<Photos> {
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add_a_photo),
+            icon: const Icon(Icons.add_photo_alternate),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
             tooltip: 'Adicionar álbum',
             onPressed: () {
               _addNewAlbumPhotos(context);

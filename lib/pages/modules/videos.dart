@@ -93,7 +93,7 @@ class _VideosState extends State<Videos> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("videos").doc(idVideo).delete();
     setState(() {
-      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
+      CustomSnackBar(context, const Text("Vídeo excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
@@ -149,12 +149,15 @@ class _VideosState extends State<Videos> {
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Galeria de fotos'),
+        title: const Text('Vídeos Youtube'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add_a_photo),
-            tooltip: 'Adicionar álbum',
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
+            tooltip: 'Adicionar vídeo',
             onPressed: () {
               _addNewVideos(context);
             },
@@ -203,10 +206,10 @@ class _VideosState extends State<Videos> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
                   child: FloatingActionButton(
-                    mini: true,
-                    tooltip: 'Adicionar fotos',
-                    child: const Icon(Icons.close),
-                    backgroundColor: Colors.red,
+                    mini: false,
+                    tooltip: 'Abrir vídeo Youtube',
+                    child: const Icon(Icons.movie_creation),
+                    backgroundColor: Colors.green,
                     onPressed: () => _openVideo(value.watch),
                   ),
                 ),
@@ -214,15 +217,15 @@ class _VideosState extends State<Videos> {
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
                   child: FloatingActionButton(
                     mini: true,
-                    tooltip: 'Remover álbum',
+                    tooltip: 'Remover vídeo',
                     child: const Icon(Icons.close),
                     backgroundColor: Colors.red,
                     onPressed: () => showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover álbum'),
+                        title: const Text('Remover vídeo'),
                         content: Text(
-                            'Tem certeza que deseja remover o álbum\n${value.title}?'),
+                            'Tem certeza que deseja remover o vídeo\n${value.title}?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),

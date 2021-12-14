@@ -77,6 +77,16 @@ class _BiographyState extends State<Biography> {
       appBar: AppBar(
         title: const Text('Biografia'),
         backgroundColor: Colors.black38,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.save),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
+            tooltip: 'Salvar alterações',
+            onPressed: () => _onVerifyData(),
+          ),
+        ],
       ),
       body: SizedBox(
         child: Padding(
@@ -120,7 +130,7 @@ class _BiographyState extends State<Biography> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onVerifyData(),
-        tooltip: 'Salvar dados',
+        tooltip: 'Salvar alterações',
         child: const Icon(Icons.save),
         backgroundColor: Colors.green,
       ),

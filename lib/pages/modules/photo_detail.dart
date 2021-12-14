@@ -133,6 +133,9 @@ class _PhotoDetailState extends State<PhotoDetail> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add_a_photo),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
             tooltip: 'Adicionar imagem',
             onPressed: () {
               _selectPicture();
