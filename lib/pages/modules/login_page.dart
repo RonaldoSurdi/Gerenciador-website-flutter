@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage>
             ),
             child: Column(
               mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
+              children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 75.0),
                   child: Image(
@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage>
                         });
                       }
                     },
-                    children: <Widget>[
+                    children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints.expand(),
                         child: const SignIn(),
@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage>
         //painter: BubbleIndicatorPainter(pageController: _pageController),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+          children: [
             Expanded(
               child: TextButton(
                 style: ButtonStyle(

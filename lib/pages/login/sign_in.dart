@@ -136,10 +136,10 @@ class _SignInState extends State<SignIn> {
     return Container(
       padding: const EdgeInsets.only(top: 23),
       child: Column(
-        children: <Widget>[
+        children: [
           Stack(
             alignment: Alignment.topCenter,
-            children: <Widget>[
+            children: [
               Card(
                 elevation: 2.0,
                 color: Colors.white,
@@ -150,7 +150,7 @@ class _SignInState extends State<SignIn> {
                   width: 300.0,
                   height: 200.0,
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       Padding(
                         padding: const EdgeInsets.only(
                           top: 20.0,

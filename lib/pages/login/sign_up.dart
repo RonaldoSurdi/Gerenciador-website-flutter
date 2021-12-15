@@ -125,10 +125,10 @@ class _SignUpState extends State<SignUp> {
     return Container(
       padding: const EdgeInsets.only(top: 23),
       child: Column(
-        children: <Widget>[
+        children: [
           Stack(
             alignment: Alignment.topCenter,
-            children: <Widget>[
+            children: [
               Card(
                 elevation: 2.0,
                 color: Colors.white,
@@ -139,7 +139,7 @@ class _SignUpState extends State<SignUp> {
                   width: 300.0,
                   height: 370.0,
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(20, 20, 25, 25),
                         child: TextField(

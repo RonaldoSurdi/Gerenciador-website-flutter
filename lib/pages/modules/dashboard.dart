@@ -84,7 +84,7 @@ class _DashboardState extends State<Dashboard> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: <Widget>[
+          children: [
             const DrawerHeader(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

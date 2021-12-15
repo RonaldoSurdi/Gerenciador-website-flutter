@@ -76,10 +76,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Container(
       padding: const EdgeInsets.only(top: 23.0),
       child: Column(
-        children: <Widget>[
+        children: [
           Stack(
             alignment: Alignment.topCenter,
-            children: <Widget>[
+            children: [
               Card(
                 elevation: 2.0,
                 color: Colors.white,
@@ -90,7 +90,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   width: 300.0,
                   height: 160.0,
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       Padding(
                         padding: const EdgeInsets.only(
                             top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
