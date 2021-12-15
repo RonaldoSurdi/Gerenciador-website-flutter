@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hwscontrol/core/storage.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
+import 'package:hwscontrol/pages/modules/discography.dart';
 import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/modules/photos.dart';
+import 'package:hwscontrol/pages/modules/schedule.dart';
 import 'package:hwscontrol/pages/modules/videos.dart';
 
 class Dashboard extends StatefulWidget {
@@ -125,17 +127,33 @@ class _DashboardState extends State<Dashboard> {
                 );
               },
             ),
-            const ListTile(
-              leading: Icon(Icons.audiotrack_outlined),
-              title: Text('Discografia'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.schedule_outlined),
-              title: Text('Agenda'),
+            ListTile(
+              leading: const Icon(Icons.movie_creation),
+              title: const Text('Discografia'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Discography(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.image),
-              title: const Text('Fotos'),
+              title: const Text('Agenda de Shows'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Schedule(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: const Text('Fotos Shows'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -147,7 +165,7 @@ class _DashboardState extends State<Dashboard> {
             ),
             ListTile(
               leading: const Icon(Icons.movie_creation),
-              title: const Text('Vídeos'),
+              title: const Text('Vídeos Youtube'),
               onTap: () {
                 Navigator.push(
                   context,

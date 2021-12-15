@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hwscontrol/core/theme/colors_theme.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      //supportedLocales: const [Locale('pt', 'BR')],
       home: const LoginPage(),
     );
   }

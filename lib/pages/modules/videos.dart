@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -261,12 +262,16 @@ class _VideosState extends State<Videos> {
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              'Cancelar',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                              color: Colors.red,
+                              child: const Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
                               ),
                             ),
                           ),
@@ -275,12 +280,41 @@ class _VideosState extends State<Videos> {
                               _removeVideo(value.date);
                               Navigator.pop(context);
                             },
-                            child: const Text(
-                              'Excluir',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: CustomTheme.loginGradientStart,
+                                    offset: Offset(1.0, 6.0),
+                                    blurRadius: 20.0,
+                                  ),
+                                  BoxShadow(
+                                    color: CustomTheme.loginGradientEnd,
+                                    offset: Offset(1.0, 6.0),
+                                    blurRadius: 20.0,
+                                  ),
+                                ],
+                                gradient: LinearGradient(
+                                    colors: <Color>[
+                                      CustomTheme.loginGradientEnd,
+                                      CustomTheme.loginGradientStart
+                                    ],
+                                    begin: FractionalOffset(0.2, 0.2),
+                                    end: FractionalOffset(1.0, 1.0),
+                                    stops: <double>[0.0, 1.0],
+                                    tileMode: TileMode.clamp),
+                              ),
+                              padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                              color: Colors.amber,
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
                               ),
                             ),
                           ),

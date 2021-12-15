@@ -24,8 +24,7 @@ dependencies:
   cloud_firestore: ^3.1.0
   firebase_database: ^9.0.3
   url_launcher: ^6.0.17
-  calendar_timeline: ^1.0.4
-  day_night_time_picker: ^1.0.3+1
+  flutter_masked_text2: ^0.9.1
   html: ^0.15.0
 
 dev_dependencies:

@@ -77,16 +77,6 @@ class _BiographyState extends State<Biography> {
       appBar: AppBar(
         title: const Text('Biografia'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.save),
-            iconSize: 40,
-            color: Colors.amber,
-            splashColor: Colors.yellow,
-            tooltip: 'Salvar alterações',
-            onPressed: () => _onVerifyData(),
-          ),
-        ],
       ),
       body: SizedBox(
         child: Padding(
@@ -97,7 +87,7 @@ class _BiographyState extends State<Biography> {
             textInputAction: TextInputAction.next,
             maxLines: 500,
             cursorColor: Colors.white,
-            textAlign: TextAlign.justify,
+            textAlign: TextAlign.left,
             style: const TextStyle(
               fontFamily: 'WorkSansThin',
               fontSize: 14,

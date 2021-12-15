@@ -3,85 +3,36 @@ import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/schedule_model.dart';
-import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:hwscontrol/core/models/discography_model.dart';
 
-class Schedule extends StatefulWidget {
-  const Schedule({Key? key}) : super(key: key);
+class Discography extends StatefulWidget {
+  const Discography({Key? key}) : super(key: key);
 
   @override
-  _ScheduleState createState() => _ScheduleState();
+  _DiscographyState createState() => _DiscographyState();
 }
 
-class _ScheduleState extends State<Schedule> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final MaskedTextController _dataIniController =
-      MaskedTextController(mask: '00/00/0000 00:00');
-  final MaskedTextController _dataEndController =
-      MaskedTextController(mask: '00/00/0000 00:00');
-  late String _titleValue;
-  late String _descriptionValue;
-  late String _dataIniValue;
-  late String _dataEndValue;
+class _DiscographyState extends State<Discography> {
+  final TextEditingController _watchController = TextEditingController();
+  late String _watchValue;
 
-  final List<ScheduleModel> _widgetList = [];
+  final List<DiscographyModel> _widgetList = [];
 
-  Future<void> _addNewSchedule(BuildContext context) async {
+  Future<void> _addNewDiscography(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (builder, setState) => AlertDialog(
-            title: const Text('Adicionar evento'),
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _titleValue = value;
-                    });
-                  },
-                  controller: _titleController,
-                  maxLength: 10,
-                  decoration:
-                      const InputDecoration(hintText: "Título (max.100)"),
-                ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _dataIniValue = value;
-                    });
-                  },
-                  controller: _dataIniController,
-                  decoration: const InputDecoration(
-                      hintText: "Abertura (DD/MM/YYYY HH:MM)"),
-                ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _dataEndValue = value;
-                    });
-                  },
-                  controller: _dataEndController,
-                  maxLength: 16,
-                  decoration: const InputDecoration(
-                      hintText: "Fechamento (DD/MM/YYYY HH:MM)"),
-                ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _descriptionValue = value;
-                    });
-                  },
-                  controller: _descriptionController,
-                  maxLength: 16,
-                  maxLines: 5,
-                  decoration: const InputDecoration(hintText: "Descrição"),
-                ),
-              ],
+            title: const Text('Adicionar novo álbum'),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _watchValue = value;
+                });
+              },
+              controller: _watchController,
+              decoration: const InputDecoration(hintText: "Título do álbum"),
             ),
             actions: <Widget>[
               TextButton(
@@ -97,13 +48,13 @@ class _ScheduleState extends State<Schedule> {
               ),
               TextButton(
                 onPressed: () {
-                  _saveData(_titleValue);
+                  _saveData(_watchValue);
                   Navigator.pop(context);
                 },
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Color.fromARGB(1, 0, 0, 0),
+                    color: Colors.green,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -132,19 +83,14 @@ class _ScheduleState extends State<Schedule> {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
-    ScheduleModel scheduleModel = ScheduleModel(
-        id: dateNow,
-        title: _titleText,
-        description: _titleText,
-        dateini: now,
-        dateend: now,
-        view: true);
+    DiscographyModel discographyModel = DiscographyModel(
+        id: dateNow, title: _titleText, description: _titleText, date: now);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
+    db.collection("discography").doc(dateNow).set(discographyModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Data adicionada com sucesso."));
+      CustomSnackBar(context, const Text("Álbum adicionado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -153,11 +99,11 @@ class _ScheduleState extends State<Schedule> {
     return Future.value(true);
   }
 
-  Future _removeSchedule(idSchedule) async {
+  Future _removeDiscography(idDiscography) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("schedule").doc(idSchedule).delete();
+    db.collection("discography").doc(idDiscography).delete();
     setState(() {
-      CustomSnackBar(context, const Text("Data excluida com sucesso."));
+      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
@@ -167,19 +113,19 @@ class _ScheduleState extends State<Schedule> {
   Future _onGetData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data =
-        await db.collection("schedule").orderBy('date', descending: true).get();
+    var data = await db
+        .collection("discography")
+        .orderBy('date', descending: true)
+        .get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        ScheduleModel scheduleModel = ScheduleModel(
+        DiscographyModel discographyModel = DiscographyModel(
             id: response[i]["id"],
             title: response[i]["title"],
             description: response[i]["description"],
-            dateini: response[i]["dateini"],
-            dateend: response[i]["dateend"],
-            view: response[i]["view"]);
-        _widgetList.add(scheduleModel);
+            date: response[i]["date"]);
+        _widgetList.add(discographyModel);
       });
     }
   }
@@ -204,7 +150,7 @@ class _ScheduleState extends State<Schedule> {
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Agenda de Shows'),
+        title: const Text('Discografia'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
@@ -212,9 +158,9 @@ class _ScheduleState extends State<Schedule> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar data',
+            tooltip: 'Adicionar álbum',
             onPressed: () {
-              _addNewSchedule(context);
+              _addNewDiscography(context);
             },
           ),
         ],
@@ -225,7 +171,7 @@ class _ScheduleState extends State<Schedule> {
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        children: _widgetList.map((ScheduleModel value) {
+        children: _widgetList.map((DiscographyModel value) {
           return Container(
             color: Colors.black26,
             margin: const EdgeInsets.all(1.0),
@@ -261,15 +207,15 @@ class _ScheduleState extends State<Schedule> {
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
                   child: FloatingActionButton(
                     mini: true,
-                    tooltip: 'Remover data',
+                    tooltip: 'Remover álbum',
                     child: const Icon(Icons.close),
                     backgroundColor: Colors.red,
                     onPressed: () => showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover data'),
+                        title: const Text('Remover álbum'),
                         content: Text(
-                            'Tem certeza que deseja remover a data\n${value.title}?'),
+                            'Tem certeza que deseja remover o álbum\n${value.title}?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -284,7 +230,7 @@ class _ScheduleState extends State<Schedule> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _removeSchedule(value.id);
+                              _removeDiscography(value.date);
                               Navigator.pop(context);
                             },
                             child: const Text(
