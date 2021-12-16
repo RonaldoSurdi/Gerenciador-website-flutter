@@ -26,7 +26,10 @@ dependencies:
   firebase_database: ^9.0.3
   url_launcher: ^6.0.17
   flutter_masked_text2: ^0.9.1
-  calendar_timeline: ^1.0.4
+  date_range_form_field: ^1.0.2
+  flutter_material_pickers: ^3.1.2
+  syncfusion_flutter_calendar: ^19.3.59
+  datetime_picker_formfield: ^2.0.0
 
 dev_dependencies:
   flutter_test:

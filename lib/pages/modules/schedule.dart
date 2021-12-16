@@ -1,12 +1,12 @@
-import 'package:calendar_timeline/calendar_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/schedule_model.dart';
-// import 'package:flutter/services.dart';
-// import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key? key}) : super(key: key);
@@ -16,20 +16,18 @@ class Schedule extends StatefulWidget {
 }
 
 class _ScheduleState extends State<Schedule> {
-  /* final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final MaskedTextController _dataIniController =
       MaskedTextController(mask: '00/00/0000 00:00');
   final MaskedTextController _dataEndController =
-      MaskedTextController(mask: '00/00/0000 00:00');*/
-/*  late String _titleValue;
+      MaskedTextController(mask: '00/00/0000 00:00');
+  late String _titleValue;
   late String _descriptionValue;
   late String _dataIniValue;
-  late String _dataEndValue;*/
+  late String _dataEndValue;
 
   final List<ScheduleModel> _widgetList = [];
-
-  DateTime? _selectedDate;
 
   Future<void> _addNewSchedule(BuildContext context) async {
     return showDialog(
@@ -39,57 +37,6 @@ class _ScheduleState extends State<Schedule> {
           builder: (builder, setState) => AlertDialog(
             title: const Text('Adicionar evento'),
             content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'Selecione a data do evento',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6
-                        ?.copyWith(color: Colors.tealAccent[100]),
-                  ),
-                ),
-                /*CalendarTimeline(
-                  showYears: true,
-                  initialDate: _selectedDate!,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365)),
-                  onDateSelected: (date) {
-                    setState(() {
-                      _selectedDate = date!;
-                    });
-                  },
-                  leftMargin: 20,
-                  monthColor: Colors.white70,
-                  dayColor: Colors.teal[200],
-                  dayNameColor: const Color(0xFF333A47),
-                  activeDayColor: Colors.white,
-                  activeBackgroundDayColor: Colors.redAccent[100],
-                  dotsColor: const Color(0xFF333A47),
-                  selectableDayPredicate: (date) => date.day != 23,
-                  locale: 'pt_BR',
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.teal[200])),
-                    child: const Text('RESET',
-                        style: TextStyle(color: Color(0xFF333A47))),
-                    onPressed: () => setState(() => _resetSelectedDate()),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                    child: Text('Selected date is $_selectedDate',
-                        style: const TextStyle(color: Colors.white)))*/
-              ],
-            ),
-            /* Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -137,7 +84,7 @@ class _ScheduleState extends State<Schedule> {
                   decoration: const InputDecoration(hintText: "Descrição"),
                 ),
               ],
-            ), */
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -239,10 +186,6 @@ class _ScheduleState extends State<Schedule> {
     }
   }
 
-  void _resetSelectedDate() {
-    _selectedDate = DateTime.now().add(const Duration(days: 5));
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -252,7 +195,6 @@ class _ScheduleState extends State<Schedule> {
   void initState() {
     super.initState();
     _onGetData();
-    _resetSelectedDate();
   }
 
   @override
@@ -279,57 +221,7 @@ class _ScheduleState extends State<Schedule> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Selecione a data do evento',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6
-                  ?.copyWith(color: Colors.tealAccent[100]),
-            ),
-          ),
-          CalendarTimeline(
-            showYears: true,
-            initialDate: _selectedDate!,
-            firstDate: DateTime.now(),
-            lastDate: DateTime.now().add(const Duration(days: 365)),
-            onDateSelected: (date) {
-              setState(() {
-                _selectedDate = date!;
-              });
-            },
-            leftMargin: 20,
-            monthColor: Colors.white70,
-            dayColor: Colors.teal[200],
-            dayNameColor: const Color(0xFF333A47),
-            activeDayColor: Colors.white,
-            activeBackgroundDayColor: Colors.redAccent[100],
-            dotsColor: const Color(0xFF333A47),
-            selectableDayPredicate: (date) => date.day != 23,
-            locale: 'pt_BR',
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: TextButton(
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.teal[200])),
-              child: const Text('RESET',
-                  style: TextStyle(color: Color(0xFF333A47))),
-              onPressed: () => setState(() => _resetSelectedDate()),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Center(
-              child: Text('Selected date is $_selectedDate',
-                  style: const TextStyle(color: Colors.white)))
-        ],
-      ),
-      /*GridView.count(
+      body: GridView.count(
         crossAxisCount: 1,
         childAspectRatio: (itemWidth / itemHeight),
         controller: ScrollController(keepScrollOffset: false),
@@ -415,9 +307,7 @@ class _ScheduleState extends State<Schedule> {
             ),
           );
         }).toList(),
-      ),*/
+      ),
     );
   }
-
-  now() {}
 }
