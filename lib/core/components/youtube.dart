@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:hwscontrol/core/models/youtube_model.dart';
+import 'package:hwscontrol/core/components/models/youtube_model.dart';
 
 class YoutubeMetaData {
   static Future<YoutubeModel> getData(String link) async {

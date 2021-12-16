@@ -5,8 +5,9 @@ import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/schedule_model.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+// import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:hwscontrol/core/components/google_places_flutter.dart';
+import 'package:hwscontrol/core/components/models/prediction.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key? key}) : super(key: key);
@@ -18,14 +19,15 @@ class Schedule extends StatefulWidget {
 class _ScheduleState extends State<Schedule> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final MaskedTextController _dataIniController =
-      MaskedTextController(mask: '00/00/0000 00:00');
-  final MaskedTextController _dataEndController =
-      MaskedTextController(mask: '00/00/0000 00:00');
-  late String _titleValue;
-  late String _descriptionValue;
-  late String _dataIniValue;
-  late String _dataEndValue;
+  final TextEditingController _addressController = TextEditingController();
+  String? _titleValue;
+  String? _descriptionValue;
+  String? _addressValue;
+  DateTime? _dataIniValue;
+  DateTime? _dataEndValue;
+  bool? _viewValue = true;
+
+  final formatDate = DateFormat("yyyy-MM-dd HH:mm");
 
   final List<ScheduleModel> _widgetList = [];
 
@@ -47,30 +49,163 @@ class _ScheduleState extends State<Schedule> {
                     });
                   },
                   controller: _titleController,
-                  maxLength: 10,
+                  maxLength: 100,
                   decoration:
-                      const InputDecoration(hintText: "Título (max.100)"),
+                      const InputDecoration(hintText: "Título do evento"),
                 ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _dataIniValue = value;
-                    });
-                  },
-                  controller: _dataIniController,
-                  decoration: const InputDecoration(
-                      hintText: "Abertura (DD/MM/YYYY HH:MM)"),
+                const Text(
+                  'Status:',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
                 ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _dataEndValue = value;
-                    });
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Radio(
+                      value: false,
+                      groupValue: _viewValue,
+                      onChanged: (value) {
+                        setState(() {
+                          _viewValue = value as bool?;
+                        });
+                      },
+                    ),
+                    const Text(
+                      'Reservado',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansMedium',
+                      ),
+                    ),
+                    Radio(
+                      value: true,
+                      groupValue: _viewValue,
+                      onChanged: (value) {
+                        setState(() {
+                          _viewValue = value as bool?;
+                        });
+                      },
+                    ),
+                    const Text(
+                      'Confirmado',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansMedium',
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: GooglePlaceAutoCompleteTextField(
+                    textEditingController: _addressController,
+                    googleAPIKey: "AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM",
+                    inputDecoration: const InputDecoration(
+                        hintText: "Selecione o local do evento"),
+                    debounceTime: 800,
+                    // countries: const ["pt_BR"],
+                    isLatLngRequired: true,
+                    getPlaceDetailWithLatLng: (Prediction prediction) {
+                      print("placeDetails" + prediction.lng.toString());
+                      print("placeDetails" + prediction.lng.toString());
+                    },
+                    itmClick: (Prediction prediction) {
+                      _addressController.text = prediction.description!;
+
+                      _addressController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: prediction.description!.length));
+                    },
+                    // default 600 ms ,
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    'Horário de abertura',
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansMedium',
+                    ),
+                  ),
+                ),
+                DateTimeField(
+                  format: formatDate,
+                  decoration:
+                      const InputDecoration(hintText: "0000-00-00 00:00"),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                  onShowPicker: (context, currentValue) async {
+                    if (currentValue == null) {
+                      final date = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime(DateTime.now().year),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(DateTime.now().year + 1),
+                      );
+                      if (date != null) {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(
+                            currentValue ?? DateTime.now(),
+                          ),
+                        );
+                        _dataIniValue = DateTimeField.combine(date, time);
+                        return _dataIniValue;
+                      }
+                    }
+                    return currentValue;
                   },
-                  controller: _dataEndController,
-                  maxLength: 16,
-                  decoration: const InputDecoration(
-                      hintText: "Fechamento (DD/MM/YYYY HH:MM)"),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    'Horário de término',
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansMedium',
+                    ),
+                  ),
+                ),
+                DateTimeField(
+                  format: formatDate,
+                  decoration:
+                      const InputDecoration(hintText: "0000-00-00 00:00"),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                  onShowPicker: (context, currentValue) async {
+                    if (currentValue == null) {
+                      final date = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime(DateTime.now().year),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(DateTime.now().year + 1),
+                      );
+                      if (date != null) {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(
+                            currentValue ?? DateTime.now(),
+                          ),
+                        );
+                        _dataEndValue = DateTimeField.combine(date, time);
+                        return _dataEndValue;
+                      }
+                    }
+                    return currentValue;
+                  },
                 ),
                 TextField(
                   onChanged: (value) {
@@ -81,7 +216,7 @@ class _ScheduleState extends State<Schedule> {
                   controller: _descriptionController,
                   maxLength: 16,
                   maxLines: 5,
-                  decoration: const InputDecoration(hintText: "Descrição"),
+                  decoration: const InputDecoration(hintText: "Observações"),
                 ),
               ],
             ),
@@ -99,13 +234,14 @@ class _ScheduleState extends State<Schedule> {
               ),
               TextButton(
                 onPressed: () {
-                  // _saveData(_titleValue);
+                  _saveData(_titleValue, _dataIniValue, _dataEndValue,
+                      _descriptionValue);
                   Navigator.pop(context);
                 },
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Color.fromARGB(1, 0, 0, 0),
+                    color: Color.fromARGB(0, 0, 0, 0),
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -119,9 +255,15 @@ class _ScheduleState extends State<Schedule> {
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(_watchText) async {
-    if (_watchText.trim().isNotEmpty && _watchText.trim().length >= 3) {
-      _onSaveData(_watchText);
+  Future _saveData(
+      _titleValue, _dataIniValue, _dataEndValue, _descriptionValue) async {
+    if (_titleValue.trim().isNotEmpty &&
+        _titleValue.trim().length >= 3 &&
+        _descriptionValue.trim().isNotEmpty &&
+        _descriptionValue.trim().length >= 3 &&
+        _dataIniValue != null &&
+        _dataEndValue != null) {
+      _onSaveData(_titleValue, _dataIniValue, _dataEndValue, _descriptionValue);
     } else {
       CustomSnackBar(
           context, const Text('Preencha todos dados e tente novamente!'),
@@ -130,16 +272,16 @@ class _ScheduleState extends State<Schedule> {
     return Future.value(true);
   }
 
-  Future _onSaveData(_titleText) async {
-    DateTime now = DateTime.now();
-    String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
+  Future _onSaveData(
+      _titleValue, _dataIniValue, _dataEndValue, _descriptionValue) async {
+    String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataIniValue);
 
     ScheduleModel scheduleModel = ScheduleModel(
         id: dateNow,
-        title: _titleText,
-        description: _titleText,
-        dateini: now,
-        dateend: now,
+        title: _titleValue,
+        description: _descriptionValue,
+        dateini: _dataIniValue,
+        dateend: _dataEndValue,
         view: true);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -210,7 +352,7 @@ class _ScheduleState extends State<Schedule> {
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add_a_photo),
+            icon: const Icon(Icons.add_alarm_rounded),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,

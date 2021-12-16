@@ -6,8 +6,8 @@ import 'package:hwscontrol/core/widgets/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hwscontrol/core/models/video_model.dart';
-import 'package:hwscontrol/core/models/youtube_model.dart';
-import 'package:hwscontrol/core/utils/youtube.dart';
+import 'package:hwscontrol/core/components/models/youtube_model.dart';
+import 'package:hwscontrol/core/components/youtube.dart';
 
 class Videos extends StatefulWidget {
   const Videos({Key? key}) : super(key: key);
@@ -263,7 +263,8 @@ class _VideosState extends State<Videos> {
                           TextButton(
                             onPressed: () => Navigator.pop(context),
                             child: Container(
-                              padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                              padding:
+                                  const EdgeInsets.fromLTRB(30, 10, 30, 10),
                               color: Colors.red,
                               child: const Text(
                                 'Cancelar',
@@ -297,16 +298,18 @@ class _VideosState extends State<Videos> {
                                   ),
                                 ],
                                 gradient: LinearGradient(
-                                    colors: <Color>[
-                                      CustomTheme.loginGradientEnd,
-                                      CustomTheme.loginGradientStart
-                                    ],
-                                    begin: FractionalOffset(0.2, 0.2),
-                                    end: FractionalOffset(1.0, 1.0),
-                                    stops: <double>[0.0, 1.0],
-                                    tileMode: TileMode.clamp),
+                                  colors: <Color>[
+                                    CustomTheme.loginGradientEnd,
+                                    CustomTheme.loginGradientStart
+                                  ],
+                                  begin: FractionalOffset(0.2, 0.2),
+                                  end: FractionalOffset(1.0, 1.0),
+                                  stops: <double>[0.0, 1.0],
+                                  tileMode: TileMode.clamp,
+                                ),
                               ),
-                              padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                              padding:
+                                  const EdgeInsets.fromLTRB(30, 10, 30, 10),
                               color: Colors.amber,
                               child: const Text(
                                 'Excluir',
