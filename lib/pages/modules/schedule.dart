@@ -220,8 +220,10 @@ class _ScheduleState extends State<Schedule> {
               TextButton(
                 onPressed: () {
                   _saveData(_titleValue, _placeValue, _descriptionValue,
-                      _dataIniValue, _dataEndValue);
-                  Navigator.pop(context);
+                          _dataIniValue, _dataEndValue)
+                      .then((value) => {
+                            if (value) {Navigator.pop(context)}
+                          });
                 },
                 child: const Text(
                   'Salvar',
@@ -240,14 +242,16 @@ class _ScheduleState extends State<Schedule> {
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
-      _dataEndValue) async {
+  Future<bool> _saveData(_titleValue, _placeValue, _descriptionValue,
+      _dataIniValue, _dataEndValue) async {
+    bool validate = false;
     if (_titleValue.trim().isNotEmpty &&
         _titleValue.trim().length >= 3 &&
         _placeValue.trim().isNotEmpty &&
         _placeValue.trim().length >= 3 &&
         _dataIniValue != null &&
         _dataEndValue != null) {
+      validate = true;
       _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
           _dataEndValue);
     } else {
@@ -255,7 +259,7 @@ class _ScheduleState extends State<Schedule> {
           context, const Text('Preencha todos dados e tente novamente!'),
           backgroundColor: Colors.red);
     }
-    return Future.value(true);
+    return Future.value(validate);
   }
 
   Future _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
