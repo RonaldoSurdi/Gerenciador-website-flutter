@@ -1,14 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ScheduleModel {
   String? id;
   String? title;
+  String? place;
   String? description;
-  DateTime? dateini;
-  DateTime? dateend;
+  Timestamp? dateini;
+  Timestamp? dateend;
   bool? view;
 
   ScheduleModel(
       {this.id,
       this.title,
+      this.place,
       this.description,
       this.dateini,
       this.dateend,
@@ -18,9 +22,10 @@ class ScheduleModel {
     Map<String, dynamic> map = {
       "id": id,
       "title": title,
+      "place": place,
       "description": description,
-      "date_ini": dateini,
-      "date_end": dateend,
+      "dateini": dateini,
+      "dateend": dateend,
       "view": view
     };
 

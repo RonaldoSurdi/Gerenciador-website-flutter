@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/core/widgets/snackbar.dart';
+import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hwscontrol/core/models/video_model.dart';
-import 'package:hwscontrol/core/components/models/youtube_model.dart';
+import 'package:hwscontrol/core/models/youtube_model.dart';
 import 'package:hwscontrol/core/components/youtube.dart';
 
 class Videos extends StatefulWidget {

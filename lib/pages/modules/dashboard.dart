@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/core/storage.dart';
+import 'package:hwscontrol/core/components/storage.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/modules/discography.dart';
 import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
-import 'package:hwscontrol/core/widgets/snackbar.dart';
+import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/modules/photos.dart';
 import 'package:hwscontrol/pages/modules/schedule.dart';

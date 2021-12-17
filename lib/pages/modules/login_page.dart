@@ -130,7 +130,6 @@ class _LoginPageState extends State<LoginPage>
         borderRadius: BorderRadius.all(Radius.circular(21.0)),
       ),
       child: CustomPaint(
-        //painter: BubbleIndicatorPainter(pageController: _pageController),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

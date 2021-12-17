@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-import 'package:hwscontrol/core/widgets/snackbar.dart';
+import 'package:hwscontrol/core/theme/custom_theme.dart';
+import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/schedule_model.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 // import 'package:syncfusion_flutter_calendar/calendar.dart';
-// import 'package:hwscontrol/core/components/google_places_flutter.dart';
-// import 'package:hwscontrol/core/components/models/prediction.dart';
-import 'package:google_place/google_place.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key? key}) : super(key: key);
@@ -20,23 +17,16 @@ class Schedule extends StatefulWidget {
 
 class _ScheduleState extends State<Schedule> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final List<ScheduleModel> _widgetList = [];
+  final formatDate = DateFormat("yyyy-MM-dd HH:mm");
   String? _titleValue;
+  String? _placeValue;
   String? _descriptionValue;
   DateTime? _dataIniValue;
   DateTime? _dataEndValue;
   bool? _viewValue = true;
-
-  final formatDate = DateFormat("yyyy-MM-dd HH:mm");
-
-  GooglePlace? googlePlace;
-  String? _placeId;
-  // List<AutocompletePrediction> predictions = [];
-
-  late List<AutocompletePrediction> _predictions = [];
-
-  final List<ScheduleModel> _widgetList = [];
 
   Future<void> _addNewSchedule(BuildContext context) async {
     return showDialog(
@@ -110,69 +100,13 @@ class _ScheduleState extends State<Schedule> {
                 TextField(
                   onChanged: (value) {
                     setState(() {
-                      if (value.isNotEmpty) {
-                        autoCompleteSearch(value);
-                      } else {
-                        if (_predictions.isNotEmpty && mounted) {
-                          setState(() {
-                            _predictions = [];
-                          });
-                        }
-                      }
+                      _placeValue = value;
                     });
                   },
                   controller: _placeController,
                   maxLength: 100,
-                  decoration:
-                      const InputDecoration(hintText: "Local do evento"),
-                  /*decoration: const InputDecoration(
-                    labelText: "Search",
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.blue,
-                        width: 2.0,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black54,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),*/
-                  /*onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      autoCompleteSearch(value);
-                    } else {
-                      if (_predictions.isNotEmpty && mounted) {
-                        setState(() {
-                          _predictions = [];
-                        });
-                      }
-                    }
-                  },*/
+                  decoration: const InputDecoration(hintText: "Cidade / UF"),
                 ),
-                /*Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: ListView.builder(
-                    itemCount: _predictions.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(
-                            Icons.pin_drop,
-                            color: Colors.white,
-                          ),
-                        ),
-                        title: Text('${_predictions[index].description}'),
-                        onTap: () {
-                          _placeId = _predictions[index].placeId;
-                          print(_placeId);
-                        },
-                      );
-                    },
-                  ),
-                ),*/
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Text(
@@ -266,7 +200,8 @@ class _ScheduleState extends State<Schedule> {
                   controller: _descriptionController,
                   maxLength: 16,
                   maxLines: 5,
-                  decoration: const InputDecoration(hintText: "Observações"),
+                  decoration:
+                      const InputDecoration(hintText: "Observações (opcional)"),
                 ),
               ],
             ),
@@ -284,14 +219,14 @@ class _ScheduleState extends State<Schedule> {
               ),
               TextButton(
                 onPressed: () {
-                  _saveData(_titleValue, _dataIniValue, _dataEndValue,
-                      _descriptionValue);
+                  _saveData(_titleValue, _placeValue, _descriptionValue,
+                      _dataIniValue, _dataEndValue);
                   Navigator.pop(context);
                 },
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Color.fromARGB(0, 0, 0, 0),
+                    color: Colors.green,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -304,27 +239,17 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 
-  Future autoCompleteSearch(String value) async {
-    var result = await googlePlace?.autocomplete.get(value);
-    setState(() {
-      print(result);
-      if (result != null && result.predictions != null && mounted) {
-        _predictions = result.predictions!;
-        print(_predictions[0].description);
-      }
-    });
-  }
-
   // faz o envio da imagem para o storage
-  Future _saveData(
-      _titleValue, _dataIniValue, _dataEndValue, _descriptionValue) async {
+  Future _saveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
+      _dataEndValue) async {
     if (_titleValue.trim().isNotEmpty &&
         _titleValue.trim().length >= 3 &&
-        _descriptionValue.trim().isNotEmpty &&
-        _descriptionValue.trim().length >= 3 &&
+        _placeValue.trim().isNotEmpty &&
+        _placeValue.trim().length >= 3 &&
         _dataIniValue != null &&
         _dataEndValue != null) {
-      _onSaveData(_titleValue, _dataIniValue, _dataEndValue, _descriptionValue);
+      _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
+          _dataEndValue);
     } else {
       CustomSnackBar(
           context, const Text('Preencha todos dados e tente novamente!'),
@@ -333,16 +258,20 @@ class _ScheduleState extends State<Schedule> {
     return Future.value(true);
   }
 
-  Future _onSaveData(
-      _titleValue, _dataIniValue, _dataEndValue, _descriptionValue) async {
+  Future _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
+      _dataEndValue) async {
     String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataIniValue);
+
+    Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataIniValue);
+    Timestamp _dataEndTimestamp = Timestamp.fromDate(_dataEndValue);
 
     ScheduleModel scheduleModel = ScheduleModel(
         id: dateNow,
         title: _titleValue,
+        place: _placeValue,
         description: _descriptionValue,
-        dateini: _dataIniValue,
-        dateend: _dataEndValue,
+        dateini: _dataIniTimestamp,
+        dateend: _dataEndTimestamp,
         view: true);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -373,13 +302,14 @@ class _ScheduleState extends State<Schedule> {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
-        await db.collection("schedule").orderBy('date', descending: true).get();
+        await db.collection("schedule").orderBy('id', descending: true).get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
         ScheduleModel scheduleModel = ScheduleModel(
             id: response[i]["id"],
             title: response[i]["title"],
+            place: response[i]["place"],
             description: response[i]["description"],
             dateini: response[i]["dateini"],
             dateend: response[i]["dateend"],
@@ -387,14 +317,6 @@ class _ScheduleState extends State<Schedule> {
         _widgetList.add(scheduleModel);
       });
     }
-  }
-
-  Future _getEnv() async {
-    // await DotEnv().load(fileName: '.env');
-    String? apiKey = 'AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM';
-    // DotEnv().env['API_KEY'];
-    // googlePlace = GooglePlace(apiKey);
-    googlePlace = GooglePlace(apiKey, proxyUrl: 'cors-anywhere.herokuapp.com');
   }
 
   @override
@@ -406,7 +328,6 @@ class _ScheduleState extends State<Schedule> {
   void initState() {
     super.initState();
     _onGetData();
-    _getEnv();
   }
 
   @override
@@ -447,29 +368,31 @@ class _ScheduleState extends State<Schedule> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Container(
-                  height: 70,
-                  padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
-                    child: Image(
-                      image: NetworkImage('${value.id}'),
-                      fit: BoxFit.cover,
-                      width: 100,
-                      height: 70,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Text(
+                      DateFormat('dd/MM/yyyy kk:mm')
+                          .format(value.dateini!.toDate()),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
                     ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                      child: Text(
-                        '${value.title}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansLigth',
-                        ),
-                      )),
+                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Text(
+                      '${value.title}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
