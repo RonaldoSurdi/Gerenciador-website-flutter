@@ -6,8 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/schedule_model.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 // import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:hwscontrol/core/components/google_places_flutter.dart';
-import 'package:hwscontrol/core/components/models/prediction.dart';
+// import 'package:hwscontrol/core/components/google_places_flutter.dart';
+// import 'package:hwscontrol/core/components/models/prediction.dart';
+import 'package:google_place/google_place.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key? key}) : super(key: key);
@@ -19,15 +21,20 @@ class Schedule extends StatefulWidget {
 class _ScheduleState extends State<Schedule> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _placeController = TextEditingController();
   String? _titleValue;
   String? _descriptionValue;
-  String? _addressValue;
   DateTime? _dataIniValue;
   DateTime? _dataEndValue;
   bool? _viewValue = true;
 
   final formatDate = DateFormat("yyyy-MM-dd HH:mm");
+
+  GooglePlace? googlePlace;
+  String? _placeId;
+  // List<AutocompletePrediction> predictions = [];
+
+  late List<AutocompletePrediction> _predictions = [];
 
   final List<ScheduleModel> _widgetList = [];
 
@@ -100,29 +107,72 @@ class _ScheduleState extends State<Schedule> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: GooglePlaceAutoCompleteTextField(
-                    textEditingController: _addressController,
-                    googleAPIKey: "AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM",
-                    inputDecoration: const InputDecoration(
-                        hintText: "Selecione o local do evento"),
-                    debounceTime: 800,
-                    // countries: const ["pt_BR"],
-                    isLatLngRequired: true,
-                    getPlaceDetailWithLatLng: (Prediction prediction) {
-                      print("placeDetails" + prediction.lng.toString());
-                      print("placeDetails" + prediction.lng.toString());
-                    },
-                    itmClick: (Prediction prediction) {
-                      _addressController.text = prediction.description!;
-
-                      _addressController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: prediction.description!.length));
-                    },
-                    // default 600 ms ,
-                  ),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      if (value.isNotEmpty) {
+                        autoCompleteSearch(value);
+                      } else {
+                        if (_predictions.isNotEmpty && mounted) {
+                          setState(() {
+                            _predictions = [];
+                          });
+                        }
+                      }
+                    });
+                  },
+                  controller: _placeController,
+                  maxLength: 100,
+                  decoration:
+                      const InputDecoration(hintText: "Local do evento"),
+                  /*decoration: const InputDecoration(
+                    labelText: "Search",
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2.0,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black54,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),*/
+                  /*onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      autoCompleteSearch(value);
+                    } else {
+                      if (_predictions.isNotEmpty && mounted) {
+                        setState(() {
+                          _predictions = [];
+                        });
+                      }
+                    }
+                  },*/
                 ),
+                /*Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: ListView.builder(
+                    itemCount: _predictions.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: const CircleAvatar(
+                          child: Icon(
+                            Icons.pin_drop,
+                            color: Colors.white,
+                          ),
+                        ),
+                        title: Text('${_predictions[index].description}'),
+                        onTap: () {
+                          _placeId = _predictions[index].placeId;
+                          print(_placeId);
+                        },
+                      );
+                    },
+                  ),
+                ),*/
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Text(
@@ -254,6 +304,17 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 
+  Future autoCompleteSearch(String value) async {
+    var result = await googlePlace?.autocomplete.get(value);
+    setState(() {
+      print(result);
+      if (result != null && result.predictions != null && mounted) {
+        _predictions = result.predictions!;
+        print(_predictions[0].description);
+      }
+    });
+  }
+
   // faz o envio da imagem para o storage
   Future _saveData(
       _titleValue, _dataIniValue, _dataEndValue, _descriptionValue) async {
@@ -328,6 +389,14 @@ class _ScheduleState extends State<Schedule> {
     }
   }
 
+  Future _getEnv() async {
+    // await DotEnv().load(fileName: '.env');
+    String? apiKey = 'AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM';
+    // DotEnv().env['API_KEY'];
+    // googlePlace = GooglePlace(apiKey);
+    googlePlace = GooglePlace(apiKey, proxyUrl: 'cors-anywhere.herokuapp.com');
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -337,6 +406,7 @@ class _ScheduleState extends State<Schedule> {
   void initState() {
     super.initState();
     _onGetData();
+    _getEnv();
   }
 
   @override

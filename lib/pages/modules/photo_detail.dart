@@ -160,8 +160,9 @@ class _PhotoDetailState extends State<PhotoDetail> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
-                    child: Image.network(
-                      'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media',
+                    child: Image(
+                      image: NetworkImage(
+                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media'),
                       fit: BoxFit.fitWidth,
                       width: imageSize,
                     ),
