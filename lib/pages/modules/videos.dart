@@ -238,90 +238,98 @@ class _VideosState extends State<Videos> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: FloatingActionButton(
-                    mini: false,
-                    tooltip: 'Abrir vídeo Youtube',
-                    child: const Icon(Icons.movie_creation),
-                    backgroundColor: Colors.green,
-                    onPressed: () => _openVideo(value.watch),
+                  child: SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: FloatingActionButton(
+                      mini: false,
+                      tooltip: 'Abrir vídeo Youtube',
+                      child: const Icon(Icons.movie_creation),
+                      backgroundColor: Colors.green,
+                      onPressed: () => _openVideo(value.watch),
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                  child: FloatingActionButton(
-                    mini: true,
-                    tooltip: 'Remover vídeo',
-                    child: const Icon(Icons.close),
-                    backgroundColor: Colors.red,
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover vídeo'),
-                        content: Text(
-                            'Tem certeza que deseja remover o vídeo\n${value.title}?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                              color: Colors.red,
-                              child: const Text(
-                                'Cancelar',
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 16.0,
-                                  fontFamily: 'WorkSansMedium',
+                  child: SizedBox(
+                    height: 25.0,
+                    width: 25.0,
+                    child: FloatingActionButton(
+                      mini: true,
+                      tooltip: 'Remover vídeo',
+                      child: const Icon(Icons.close),
+                      backgroundColor: Colors.red,
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Remover vídeo'),
+                          content: Text(
+                              'Tem certeza que deseja remover o vídeo\n${value.title}?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                color: Colors.red,
+                                child: const Text(
+                                  'Cancelar',
+                                  style: TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 16.0,
+                                    fontFamily: 'WorkSansMedium',
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _removeVideo(value.date);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                    color: CustomTheme.loginGradientStart,
-                                    offset: Offset(1.0, 6.0),
-                                    blurRadius: 20.0,
-                                  ),
-                                  BoxShadow(
-                                    color: CustomTheme.loginGradientEnd,
-                                    offset: Offset(1.0, 6.0),
-                                    blurRadius: 20.0,
-                                  ),
-                                ],
-                                gradient: LinearGradient(
-                                  colors: <Color>[
-                                    CustomTheme.loginGradientEnd,
-                                    CustomTheme.loginGradientStart
+                            TextButton(
+                              onPressed: () {
+                                _removeVideo(value.date);
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                      color: CustomTheme.loginGradientStart,
+                                      offset: Offset(1.0, 6.0),
+                                      blurRadius: 20.0,
+                                    ),
+                                    BoxShadow(
+                                      color: CustomTheme.loginGradientEnd,
+                                      offset: Offset(1.0, 6.0),
+                                      blurRadius: 20.0,
+                                    ),
                                   ],
-                                  begin: FractionalOffset(0.2, 0.2),
-                                  end: FractionalOffset(1.0, 1.0),
-                                  stops: <double>[0.0, 1.0],
-                                  tileMode: TileMode.clamp,
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      CustomTheme.loginGradientEnd,
+                                      CustomTheme.loginGradientStart
+                                    ],
+                                    begin: FractionalOffset(0.2, 0.2),
+                                    end: FractionalOffset(1.0, 1.0),
+                                    stops: <double>[0.0, 1.0],
+                                    tileMode: TileMode.clamp,
+                                  ),
                                 ),
-                              ),
-                              padding:
-                                  const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                              color: Colors.amber,
-                              child: const Text(
-                                'Excluir',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 16.0,
-                                  fontFamily: 'WorkSansMedium',
+                                padding:
+                                    const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                                color: Colors.amber,
+                                child: const Text(
+                                  'Excluir',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 16.0,
+                                    fontFamily: 'WorkSansMedium',
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

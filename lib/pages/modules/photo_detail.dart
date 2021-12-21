@@ -170,46 +170,50 @@ class _PhotoDetailState extends State<PhotoDetail> {
                   Align(
                     alignment: Alignment.topRight,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                      child: FloatingActionButton(
-                        mini: true,
-                        elevation: 2,
-                        tooltip: 'Remover imagem',
-                        child: const Icon(Icons.close),
-                        backgroundColor: Colors.red,
-                        onPressed: () => showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Remover imagem'),
-                            content: Text(
-                                'Tem certeza que deseja remover a imagem\n$value?'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text(
-                                  'Cancelar',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontFamily: 'WorkSansMedium',
+                      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                      child: SizedBox(
+                        height: 25.0,
+                        width: 25.0,
+                        child: FloatingActionButton(
+                          mini: true,
+                          elevation: 2,
+                          tooltip: 'Remover imagem',
+                          child: const Icon(Icons.close),
+                          backgroundColor: Colors.red,
+                          onPressed: () => showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Remover imagem'),
+                              content: Text(
+                                  'Tem certeza que deseja remover a imagem\n$value?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text(
+                                    'Cancelar',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontFamily: 'WorkSansMedium',
+                                    ),
                                   ),
                                 ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  _removePicture(value);
-                                  Navigator.pop(context);
-                                },
-                                child: const Text(
-                                  'Excluir',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 16.0,
-                                    fontFamily: 'WorkSansMedium',
+                                TextButton(
+                                  onPressed: () {
+                                    _removePicture(value);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    'Excluir',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 16.0,
+                                      fontFamily: 'WorkSansMedium',
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

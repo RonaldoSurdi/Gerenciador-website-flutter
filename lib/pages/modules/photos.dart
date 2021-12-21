@@ -230,54 +230,62 @@ class _PhotosState extends State<Photos> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: FloatingActionButton(
-                    mini: false,
-                    tooltip: 'Adicionar fotos',
-                    child: const Icon(Icons.add_a_photo),
-                    backgroundColor: Colors.green,
-                    onPressed: () => _redirectAlbum(value.id),
+                  child: SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: FloatingActionButton(
+                      mini: false,
+                      tooltip: 'Adicionar fotos',
+                      child: const Icon(Icons.add_a_photo),
+                      backgroundColor: Colors.green,
+                      onPressed: () => _redirectAlbum(value.id),
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                  child: FloatingActionButton(
-                    mini: true,
-                    tooltip: 'Remover álbum',
-                    child: const Icon(Icons.close),
-                    backgroundColor: Colors.red,
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover álbum'),
-                        content: Text(
-                            'Tem certeza que deseja remover o álbum\n${value.description}?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              'Cancelar',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
+                  child: SizedBox(
+                    height: 25.0,
+                    width: 25.0,
+                    child: FloatingActionButton(
+                      mini: true,
+                      tooltip: 'Remover álbum',
+                      child: const Icon(Icons.close),
+                      backgroundColor: Colors.red,
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Remover álbum'),
+                          content: Text(
+                              'Tem certeza que deseja remover o álbum\n${value.description}?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
                               ),
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _removeAlbum(value.id);
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Excluir',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
+                            TextButton(
+                              onPressed: () {
+                                _removeAlbum(value.id);
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hwscontrol/pages/modules/disco_detail.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:hwscontrol/core/components/snackbar.dart';
@@ -24,7 +25,7 @@ class _DiscographyState extends State<Discography> {
       builder: (context) {
         return StatefulBuilder(
           builder: (builder, setState) => AlertDialog(
-            title: const Text('Adicionar novo álbum'),
+            title: const Text('Adicionar novo disco'),
             content: TextField(
               onChanged: (value) {
                 setState(() {
@@ -32,7 +33,7 @@ class _DiscographyState extends State<Discography> {
                 });
               },
               controller: _watchController,
-              decoration: const InputDecoration(hintText: "Título do álbum"),
+              decoration: const InputDecoration(hintText: "Título do disco"),
             ),
             actions: <Widget>[
               TextButton(
@@ -84,13 +85,17 @@ class _DiscographyState extends State<Discography> {
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
     DiscographyModel discographyModel = DiscographyModel(
-        id: dateNow, title: _titleText, description: _titleText, date: now);
+        id: dateNow,
+        number: 0,
+        title: _titleText,
+        date: now,
+        description: _titleText);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("discography").doc(dateNow).set(discographyModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum adicionado com sucesso."));
+      CustomSnackBar(context, const Text("Disco adicionado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -103,11 +108,22 @@ class _DiscographyState extends State<Discography> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("discography").doc(idDiscography).delete();
     setState(() {
-      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
+      CustomSnackBar(context, const Text("Disco excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
+  }
+
+  Future _redirectDisco(idDisco) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => DiscoDetail(
+          idDisco: idDisco,
+        ),
+      ),
+    );
   }
 
   Future _onGetData() async {
@@ -115,16 +131,17 @@ class _DiscographyState extends State<Discography> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db
         .collection("discography")
-        .orderBy('date', descending: true)
+        .orderBy('id', descending: true)
         .get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
         DiscographyModel discographyModel = DiscographyModel(
             id: response[i]["id"],
+            number: response[i]["number"],
             title: response[i]["title"],
-            description: response[i]["description"],
-            date: response[i]["date"]);
+            date: response[i]["date"],
+            description: response[i]["description"]);
         _widgetList.add(discographyModel);
       });
     }
@@ -158,7 +175,7 @@ class _DiscographyState extends State<Discography> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar álbum',
+            tooltip: 'Adicionar disco',
             onPressed: () {
               _addNewDiscography(context);
             },
@@ -204,18 +221,80 @@ class _DiscographyState extends State<Discography> {
                       )),
                 ),
                 Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  child: SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: FloatingActionButton(
+                      mini: false,
+                      tooltip: 'Adicionar músicas',
+                      child: const Icon(Icons.add_a_photo),
+                      backgroundColor: Colors.green,
+                      onPressed: () => _redirectDisco(value.id),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
+                  child: SizedBox(
+                    height: 25.0,
+                    width: 25.0,
+                    child: FloatingActionButton(
+                      mini: true,
+                      tooltip: 'Remover disco',
+                      child: const Icon(Icons.close),
+                      backgroundColor: Colors.red,
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Remover disco'),
+                          content: Text(
+                              'Tem certeza que deseja remover o disco\n${value.description}?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _removeDiscography(value.id);
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
                   child: FloatingActionButton(
                     mini: true,
-                    tooltip: 'Remover álbum',
+                    tooltip: 'Remover disco',
                     child: const Icon(Icons.close),
                     backgroundColor: Colors.red,
                     onPressed: () => showDialog<String>(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover álbum'),
+                        title: const Text('Remover disco'),
                         content: Text(
-                            'Tem certeza que deseja remover o álbum\n${value.title}?'),
+                            'Tem certeza que deseja remover o disco\n${value.title}?'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -230,7 +309,7 @@ class _DiscographyState extends State<Discography> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _removeDiscography(value.date);
+                              _removeDiscography(value.id);
                               Navigator.pop(context);
                             },
                             child: const Text(

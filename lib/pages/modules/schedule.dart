@@ -59,7 +59,7 @@ class _ScheduleState extends State<Schedule> {
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     Radio(
                       value: false,
@@ -74,8 +74,9 @@ class _ScheduleState extends State<Schedule> {
                       'Reservado',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 14.0,
                         fontFamily: 'WorkSansMedium',
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                     Radio(
@@ -91,8 +92,9 @@ class _ScheduleState extends State<Schedule> {
                       'Confirmado',
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 14.0,
                         fontFamily: 'WorkSansMedium',
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
@@ -372,22 +374,20 @@ class _ScheduleState extends State<Schedule> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Container(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    child: Text(
-                      DateFormat('dd/MM/yyyy kk:mm')
-                          .format(value.dateini!.toDate()),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
-                      ),
+                  padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
+                  child: Text(
+                    DateFormat('dd/MM/yy kk:mm')
+                        .format(value.dateini!.toDate()),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansLigth',
                     ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
                     child: Text(
                       '${value.title}',
                       style: const TextStyle(
@@ -400,44 +400,48 @@ class _ScheduleState extends State<Schedule> {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                  child: FloatingActionButton(
-                    mini: true,
-                    tooltip: 'Remover data',
-                    child: const Icon(Icons.close),
-                    backgroundColor: Colors.red,
-                    onPressed: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Remover data'),
-                        content: Text(
-                            'Tem certeza que deseja remover a data\n${value.title}?'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              'Cancelar',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
+                  child: SizedBox(
+                    height: 25.0,
+                    width: 25.0,
+                    child: FloatingActionButton(
+                      mini: true,
+                      tooltip: 'Remover data',
+                      child: const Icon(Icons.close),
+                      backgroundColor: Colors.red,
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Remover data'),
+                          content: Text(
+                              'Tem certeza que deseja remover a data\n${value.title}?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
                               ),
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _removeSchedule(value.id);
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              'Excluir',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 16.0,
-                                fontFamily: 'WorkSansMedium',
+                            TextButton(
+                              onPressed: () {
+                                _removeSchedule(value.id);
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

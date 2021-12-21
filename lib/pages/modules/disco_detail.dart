@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/banner_model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:hwscontrol/core/models/disco_model.dart';
 
-class Banners extends StatefulWidget {
-  const Banners({Key? key}) : super(key: key);
+class DiscoDetail extends StatefulWidget {
+  final String idDisco;
+  const DiscoDetail({Key? key, required this.idDisco}) : super(key: key);
 
   @override
-  _BannersState createState() => _BannersState();
+  _DiscoDetailState createState() => _DiscoDetailState();
 }
 
-class _BannersState extends State<Banners> {
+class _DiscoDetailState extends State<DiscoDetail> {
   // variaveis da tela
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;
@@ -25,7 +25,7 @@ class _BannersState extends State<Banners> {
     _imageFileList = value == null ? null : [value];
   }
 
-  // seleciona a imagem do computador
+  // seleciona a música do computador
   Future _selectPicture() async {
     try {
       final image = await _picker.pickImage(source: ImageSource.gallery);
@@ -41,22 +41,19 @@ class _BannersState extends State<Banners> {
     }
   }
 
-  // faz o envio da imagem para o storage
+  // faz o envio da música para o storage
   Future _uploadImage() async {
-    DateTime now = DateTime.now();
-    String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
-
     String fileName = _imageFileList![0].name;
     String filePath = _imageFileList![0].path;
-    String fileSave = '$dateNow-$fileName';
 
     firebase_storage.UploadTask uploadTask;
 
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("banners")
-        .child(fileSave);
+        .child("discos")
+        .child(widget.idDisco)
+        .child(fileName);
 
     final metadata = firebase_storage.SettableMetadata(
       contentType: '${_imageFileList![0].mimeType}',
@@ -66,13 +63,8 @@ class _BannersState extends State<Banners> {
     uploadTask =
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
-    BannerModel bannerModel = BannerModel(filename: fileSave, date: dateNow);
-
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("banners").doc(dateNow).set(bannerModel.toMap());
-
     setState(() {
-      CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
+      CustomSnackBar(context, Text("Música importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -85,17 +77,14 @@ class _BannersState extends State<Banners> {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("banners")
+        .child("discos")
+        .child(widget.idDisco)
         .child(fileName);
 
     arquive.delete();
 
-    var dbDoc = fileName.toString().split('-');
-
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("banners").doc(dbDoc[0]).delete();
     setState(() {
-      CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
+      CustomSnackBar(context, Text("Música excluida com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
@@ -104,17 +93,22 @@ class _BannersState extends State<Banners> {
 
   Future _onGetData() async {
     _widgetList.clear();
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db
-        .collection("banners")
-        .orderBy('filename', descending: true)
-        .get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
-        _widgetList.add(response[i]["filename"]);
-      });
-    }
+
+    firebase_storage.Reference arquive = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child("discos")
+        .child(widget.idDisco);
+
+    arquive.listAll().then((firebase_storage.ListResult listResult) {
+      for (int i = 0; i < listResult.items.length; i++) {
+        setState(() {
+          String imageItem = listResult.items[i].fullPath;
+          imageItem = imageItem.replaceAll('/', '%2F');
+          _widgetList.add(imageItem);
+        });
+      }
+    });
   }
 
   @override
@@ -131,15 +125,11 @@ class _BannersState extends State<Banners> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final double itemWidth = size.width;
-    final double itemHeight = itemWidth / 1.78;
-    /*24 is for notification bar on Android*/
-    // final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-
+    final double imageSize = size.width / 3;
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Banners'),
+        title: const Text('Disco'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
@@ -147,7 +137,7 @@ class _BannersState extends State<Banners> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar imagem',
+            tooltip: 'Adicionar música',
             onPressed: () {
               _selectPicture();
             },
@@ -157,10 +147,10 @@ class _BannersState extends State<Banners> {
       body: Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: GridView.count(
-          crossAxisCount: 1,
-          childAspectRatio: (itemWidth / itemHeight),
+          crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
+          childAspectRatio: 1.8,
           controller: ScrollController(keepScrollOffset: false),
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
@@ -173,9 +163,9 @@ class _BannersState extends State<Banners> {
                     borderRadius: BorderRadius.circular(10.0),
                     child: Image(
                       image: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F$value?alt=media'),
+                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media'),
                       fit: BoxFit.fitWidth,
-                      width: itemWidth,
+                      width: imageSize,
                     ),
                   ),
                   Align(
@@ -188,15 +178,15 @@ class _BannersState extends State<Banners> {
                         child: FloatingActionButton(
                           mini: true,
                           elevation: 2,
-                          tooltip: 'Remover imagem',
+                          tooltip: 'Remover música',
                           child: const Icon(Icons.close),
                           backgroundColor: Colors.red,
                           onPressed: () => showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Remover imagem'),
+                              title: const Text('Remover música'),
                               content: Text(
-                                  'Tem certeza que deseja remover a imagem\n$value?'),
+                                  'Tem certeza que deseja remover a música\n$value?'),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),

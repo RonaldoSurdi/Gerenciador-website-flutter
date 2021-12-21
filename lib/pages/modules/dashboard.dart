@@ -128,7 +128,7 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.movie_creation),
+              leading: const Icon(Icons.adjust_rounded),
               title: const Text('Discografia'),
               onTap: () {
                 Navigator.push(
@@ -140,7 +140,7 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.image),
+              leading: const Icon(Icons.schedule),
               title: const Text('Agenda de Shows'),
               onTap: () {
                 Navigator.push(
@@ -211,6 +211,196 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        padding: const EdgeInsets.fromLTRB(10, 50, 10, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1.8,
+              controller: ScrollController(keepScrollOffset: false),
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.picture_in_picture),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Banners(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Banners',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.info),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Biography(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Biografia',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.adjust_rounded),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Discography(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Discografia',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.schedule),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Schedule(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Agenda de Shows',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.image),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Photos(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Fotos Shows',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.movie),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Videos(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Vídeos Youtube',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 50),
+              child: Image(
+                image: AssetImage('assets/img/dash.png'),
+                width: 250,
+                height: 250,
               ),
             ),
           ],

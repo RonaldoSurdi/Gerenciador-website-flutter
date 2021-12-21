@@ -1,17 +1,20 @@
 class DiscographyModel {
   String? id;
+  int? number;
   String? title;
-  String? description;
   DateTime? date;
+  String? description;
 
-  DiscographyModel({this.id, this.title, this.description, this.date});
+  DiscographyModel(
+      {this.id, this.number, this.title, this.date, this.description});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
       "id": id,
+      "number": number,
       "title": title,
-      "description": description,
-      "date": date
+      "date": date,
+      "description": description
     };
 
     return map;
