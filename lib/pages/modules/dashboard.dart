@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hwscontrol/core/components/storage.dart';
+import 'package:hwscontrol/pages/modules/artists.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/modules/discography.dart';
@@ -66,6 +67,19 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    var gritCol = 2;
+    int sizeCol = MediaQuery.of(context).size.width.toInt();
+    double widthCol = MediaQuery.of(context).size.width;
+    double heightCol = 120;
+    if (sizeCol >= 700) {
+      gritCol = 3;
+      widthCol = widthCol / gritCol;
+    } else if (sizeCol >= 900) {
+      gritCol = 4;
+      widthCol = widthCol / gritCol;
+    } else {
+      widthCol = widthCol / gritCol;
+    }
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
@@ -135,6 +149,18 @@ class _DashboardState extends State<Dashboard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const Discography(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person_outline_outlined),
+              title: const Text('Artistas'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Artists(),
                   ),
                 );
               },
@@ -216,17 +242,18 @@ class _DashboardState extends State<Dashboard> {
           ],
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(10, 50, 10, 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GridView.count(
-              crossAxisCount: 2,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: GridView.count(
+              crossAxisCount: gritCol,
+              childAspectRatio: (widthCol / heightCol),
+              //childAspectRatio: 200,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              childAspectRatio: 1.8,
               controller: ScrollController(keepScrollOffset: false),
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
@@ -277,6 +304,33 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     const Text(
                       'Biografia',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.person_outline_outlined),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Artists(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Artistas',
                       style: TextStyle(
                         color: Colors.white54,
                         fontSize: 16.0,
@@ -395,16 +449,16 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 50),
-              child: Image(
-                image: AssetImage('assets/img/dash.png'),
-                width: 250,
-                height: 250,
-              ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 50),
+            child: Image(
+              image: AssetImage('assets/img/dash.png'),
+              width: 200,
+              height: 200,
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

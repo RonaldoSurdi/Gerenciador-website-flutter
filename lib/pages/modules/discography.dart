@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hwscontrol/pages/modules/disco_detail.dart';
-import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +14,10 @@ class Discography extends StatefulWidget {
 
 class _DiscographyState extends State<Discography> {
   final TextEditingController _watchController = TextEditingController();
-  late String _watchValue;
+  int? _numberValue;
+  String? _titleValue;
+  DateTime? _dataValue;
+  String? _descriptionValue;
 
   final List<DiscographyModel> _widgetList = [];
 
@@ -29,7 +31,7 @@ class _DiscographyState extends State<Discography> {
             content: TextField(
               onChanged: (value) {
                 setState(() {
-                  _watchValue = value;
+                  _titleValue = value;
                 });
               },
               controller: _watchController,
@@ -49,7 +51,8 @@ class _DiscographyState extends State<Discography> {
               ),
               TextButton(
                 onPressed: () {
-                  _saveData(_watchValue);
+                  _saveData(
+                      _numberValue, _titleValue, _dataValue, _descriptionValue);
                   Navigator.pop(context);
                 },
                 child: const Text(
@@ -69,9 +72,10 @@ class _DiscographyState extends State<Discography> {
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(_watchText) async {
-    if (_watchText.trim().isNotEmpty && _watchText.trim().length >= 3) {
-      _onSaveData(_watchText);
+  Future _saveData(
+      _numberValue, _titleValue, _dataValue, _descriptionValue) async {
+    if (_titleValue.trim().isNotEmpty && _titleValue.trim().length >= 3) {
+      _onSaveData(_numberValue, _titleValue, _dataValue, _descriptionValue);
     } else {
       CustomSnackBar(
           context, const Text('Preencha todos dados e tente novamente!'),
@@ -80,19 +84,21 @@ class _DiscographyState extends State<Discography> {
     return Future.value(true);
   }
 
-  Future _onSaveData(_titleText) async {
-    DateTime now = DateTime.now();
-    String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
+  Future _onSaveData(
+      _numberValue, _titleValue, _dataValue, _descriptionValue) async {
+    Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataValue);
 
     DiscographyModel discographyModel = DiscographyModel(
-        id: dateNow,
-        number: 0,
-        title: _titleText,
-        date: now,
-        description: _titleText);
+        number: _numberValue,
+        title: _titleValue,
+        date: _dataIniTimestamp,
+        description: _descriptionValue);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("discography").doc(dateNow).set(discographyModel.toMap());
+    db
+        .collection("discography")
+        .doc(_numberValue)
+        .set(discographyModel.toMap());
 
     setState(() {
       CustomSnackBar(context, const Text("Disco adicionado com sucesso."));
@@ -137,7 +143,6 @@ class _DiscographyState extends State<Discography> {
     for (int i = 0; i < response.length; i++) {
       setState(() {
         DiscographyModel discographyModel = DiscographyModel(
-            id: response[i]["id"],
             number: response[i]["number"],
             title: response[i]["title"],
             date: response[i]["date"],
@@ -201,7 +206,7 @@ class _DiscographyState extends State<Discography> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image(
-                      image: NetworkImage('${value.id}'),
+                      image: NetworkImage('${value.number}'),
                       fit: BoxFit.cover,
                       width: 100,
                       height: 70,
@@ -230,7 +235,7 @@ class _DiscographyState extends State<Discography> {
                       tooltip: 'Adicionar músicas',
                       child: const Icon(Icons.add_a_photo),
                       backgroundColor: Colors.green,
-                      onPressed: () => _redirectDisco(value.id),
+                      onPressed: () => _redirectDisco(value.number),
                     ),
                   ),
                 ),
@@ -249,7 +254,7 @@ class _DiscographyState extends State<Discography> {
                         builder: (BuildContext context) => AlertDialog(
                           title: const Text('Remover disco'),
                           content: Text(
-                              'Tem certeza que deseja remover o disco\n${value.description}?'),
+                              'Tem certeza que deseja remover o disco\n${value.title}?'),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () => Navigator.pop(context),
@@ -264,7 +269,7 @@ class _DiscographyState extends State<Discography> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeDiscography(value.id);
+                                _removeDiscography(value.number);
                                 Navigator.pop(context);
                               },
                               child: const Text(
@@ -309,7 +314,7 @@ class _DiscographyState extends State<Discography> {
                           ),
                           TextButton(
                             onPressed: () {
-                              _removeDiscography(value.id);
+                              _removeDiscography(value.number);
                               Navigator.pop(context);
                             },
                             child: const Text(
