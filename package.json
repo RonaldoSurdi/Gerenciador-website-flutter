@@ -1,0 +1,8 @@
+{
+    "name": "functions",
+    "description": "Fuctions HWScontrol",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "nodemailer": "^4.7.0"
+    }
+}

@@ -4,12 +4,15 @@ import 'package:hwscontrol/pages/modules/artists.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/modules/discography.dart';
+import 'package:hwscontrol/pages/modules/downloads.dart';
 import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hwscontrol/pages/modules/message_boards.dart';
 import 'package:hwscontrol/pages/modules/photos.dart';
 import 'package:hwscontrol/pages/modules/schedule.dart';
+import 'package:hwscontrol/pages/modules/settings.dart';
 import 'package:hwscontrol/pages/modules/videos.dart';
 
 class Dashboard extends StatefulWidget {
@@ -20,11 +23,55 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  // desconectar do app
-  _logOut() {
-    // Disconnect firebase
-    _logoutFirebase();
+  // settings do app
+  _settingsApp() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Settings(),
+      ),
+    );
+  }
 
+  // desconectar do app
+  _logoutApp() async {
+    return await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Desconectar'),
+        content: const Text('Desconectar do sistema?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _logoutFirebase();
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'Desconectar',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _logoutFirebase() {
     // Deletar token de acesso
     DeleteAll().deleteAllTokens();
 
@@ -34,9 +81,8 @@ class _DashboardState extends State<Dashboard> {
           builder: (context) => const LoginPage(),
         ),
         (route) => false);
-  }
 
-  _logoutFirebase() {
+    // Disconnect firebase
     FirebaseAuth auth = FirebaseAuth.instance;
 
     auth.signOut().then((value) {
@@ -87,11 +133,14 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.people),
-            tooltip: 'Users',
-            onPressed: () {
-              //
-            },
+            icon: const Icon(Icons.settings_suggest),
+            tooltip: 'Configurações',
+            onPressed: _settingsApp,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Desconectar',
+            onPressed: _logoutApp,
           ),
         ],
       ),
@@ -142,18 +191,6 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.adjust_rounded),
-              title: const Text('Discografia'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Discography(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.person_outline_outlined),
               title: const Text('Artistas'),
               onTap: () {
@@ -161,6 +198,18 @@ class _DashboardState extends State<Dashboard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const Artists(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.adjust_rounded),
+              title: const Text('Discografia'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Discography(),
                   ),
                 );
               },
@@ -202,42 +251,52 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.cloud_download_rounded),
+              title: const Text('Downloads'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Downloads(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.list_alt_outlined),
+              title: const Text('Mural de Recados'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MessageBoards(),
+                  ),
+                );
+              },
+            ),
+            const Divider(
+              indent: 15,
+              endIndent: 15,
+              height: 15,
+              color: Colors.black26,
+              thickness: .5,
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_suggest),
+              title: const Text('Configurações'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Settings(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Desconectar'),
-              onTap: () => showDialog<String>(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Desconectar'),
-                  content: const Text('Desconectar do sistema?'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Cancelar',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansMedium',
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _logOut();
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Desconectar',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansMedium',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              onTap: _logoutApp,
             ),
           ],
         ),
@@ -439,6 +498,60 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     const Text(
                       'Vídeos Youtube',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.cloud_download_rounded),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Downloads(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Downloads',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    IconButton(
+                      icon: const Icon(Icons.list_alt_outlined),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MessageBoards(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Mural de Recados',
                       style: TextStyle(
                         color: Colors.white54,
                         fontSize: 16.0,

@@ -1,14 +1,17 @@
 # HWSCONTROL
+##### Sistema de gerenciamento de conteúdo web
 
-run for debugging
+## :star: Run Debugging Web
+
+```sh
 flutter run -d chrome --web-renderer html
+```
 
-production release
+### :star: Build Release Web
+
+```sh
 flutter build web --web-renderer html --release
-
-Sistema de gerenciamento de conteúdo web
-
-
+```
 
 ### :star: Gerar APK release da loja android
 

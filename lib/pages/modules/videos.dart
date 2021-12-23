@@ -187,7 +187,7 @@ class _VideosState extends State<Videos> {
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add_a_photo),
+            icon: const Icon(Icons.move_to_inbox_outlined),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,

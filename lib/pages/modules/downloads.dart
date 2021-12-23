@@ -5,14 +5,14 @@ import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 
-class Artists extends StatefulWidget {
-  const Artists({Key? key}) : super(key: key);
+class Downloads extends StatefulWidget {
+  const Downloads({Key? key}) : super(key: key);
 
   @override
-  _ArtistsState createState() => _ArtistsState();
+  _DownloadsState createState() => _DownloadsState();
 }
 
-class _ArtistsState extends State<Artists> {
+class _DownloadsState extends State<Downloads> {
   // variaveis da tela
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;
@@ -49,7 +49,7 @@ class _ArtistsState extends State<Artists> {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("artists")
+        .child("downloads")
         .child(fileName);
 
     final metadata = firebase_storage.SettableMetadata(
@@ -61,7 +61,8 @@ class _ArtistsState extends State<Artists> {
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
     setState(() {
-      CustomSnackBar(context, Text("Foto importada com sucesso.\n$fileName"));
+      CustomSnackBar(
+          context, Text("arquivo importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -74,13 +75,13 @@ class _ArtistsState extends State<Artists> {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("artists")
+        .child("downloads")
         .child(fileName);
 
     arquive.delete();
 
     setState(() {
-      CustomSnackBar(context, Text("Foto excluida com sucesso.\n$fileName"));
+      CustomSnackBar(context, Text("Arquivo excluida com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
@@ -91,7 +92,7 @@ class _ArtistsState extends State<Artists> {
     _widgetList.clear();
 
     firebase_storage.Reference arquive =
-        firebase_storage.FirebaseStorage.instance.ref().child("artists");
+        firebase_storage.FirebaseStorage.instance.ref().child("downloads");
 
     arquive.listAll().then((firebase_storage.ListResult listResult) {
       for (int i = 0; i < listResult.items.length; i++) {
@@ -122,15 +123,15 @@ class _ArtistsState extends State<Artists> {
     return Scaffold(
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
-        title: const Text('Artistas'),
+        title: const Text('Downloads'),
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.person_add_alt),
+            icon: const Icon(Icons.cloud_upload_rounded),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar foto',
+            tooltip: 'Enviar arquivo',
             onPressed: () {
               _selectPicture();
             },
@@ -171,15 +172,15 @@ class _ArtistsState extends State<Artists> {
                         child: FloatingActionButton(
                           mini: true,
                           elevation: 2,
-                          tooltip: 'Remover artista',
+                          tooltip: 'Remover arquivo',
                           child: const Icon(Icons.close),
                           backgroundColor: Colors.red,
                           onPressed: () => showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Remover foto'),
+                              title: const Text('Remover arquivo'),
                               content: Text(
-                                  'Tem certeza que deseja remover a artista\n$value?'),
+                                  'Tem certeza que deseja remover o arquivo\n$value?'),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),

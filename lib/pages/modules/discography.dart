@@ -176,7 +176,7 @@ class _DiscographyState extends State<Discography> {
         backgroundColor: Colors.black38,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add_a_photo),
+            icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
