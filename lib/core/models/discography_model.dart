@@ -1,19 +1,28 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class DiscographyModel {
   int? number;
   String? title;
-  Timestamp? date;
+  String? date;
   String? description;
+  String? filename;
+  String? musics;
 
-  DiscographyModel({this.number, this.title, this.date, this.description});
+  DiscographyModel({
+    this.number,
+    this.title,
+    this.date,
+    this.description,
+    this.filename,
+    this.musics,
+  });
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
       "number": number,
       "title": title,
       "date": date,
-      "description": description
+      "description": description,
+      "filename": filename,
+      "musics": musics,
     };
 
     return map;

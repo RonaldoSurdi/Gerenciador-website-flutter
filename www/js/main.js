@@ -343,7 +343,7 @@ $(document).ready(function () {
                 firstName = name.split(' ').slice(0, -1).join(' ');
             }
             $.ajax({
-                url: "/view/send.php",
+                url: "https://us-central1-joao-luiz-correa.cloudfunctions.net/enviarEmail",
                 type: "POST",
                 data: {
                     name: name,
