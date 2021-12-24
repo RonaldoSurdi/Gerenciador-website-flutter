@@ -1,5 +1,5 @@
 class SoundModel {
-  int? track;
+  num? track;
   String? title;
   String? info;
   String? movie;

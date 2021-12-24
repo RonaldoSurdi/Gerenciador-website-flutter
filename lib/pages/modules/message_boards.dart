@@ -236,25 +236,28 @@ class _MessageBoardsState extends State<MessageBoards> {
     setState(() {
       CustomSnackBar(context, const Text("Recado adicionado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(true);
   }
 
-  Future _removeMessageBoards(idMessageBoards) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("messageboards").doc(idMessageBoards).delete();
+  Future _removeData(itemId) async {
+    await FirebaseFirestore.instance
+        .collection("messageboards")
+        .doc(itemId)
+        .delete();
+
     setState(() {
       CustomSnackBar(context, const Text("Recado excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db
@@ -284,7 +287,7 @@ class _MessageBoardsState extends State<MessageBoards> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -389,7 +392,7 @@ class _MessageBoardsState extends State<MessageBoards> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeMessageBoards(value.id);
+                                _removeData(value.id);
                                 Navigator.pop(context);
                               },
                               child: const Text(

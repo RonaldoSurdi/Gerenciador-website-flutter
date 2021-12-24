@@ -25,7 +25,7 @@ class _PhotoListState extends State<PhotoList> {
   }
 
   // seleciona a imagem do computador
-  Future _selectPicture() async {
+  Future _selectFile() async {
     try {
       final image = await _picker.pickImage(source: ImageSource.gallery);
 
@@ -33,7 +33,7 @@ class _PhotoListState extends State<PhotoList> {
         setState(() {
           _imageFile = image;
         });
-        _uploadImage();
+        _uploadFile();
       }
     } catch (e) {
       //
@@ -41,7 +41,7 @@ class _PhotoListState extends State<PhotoList> {
   }
 
   // faz o envio da imagem para o storage
-  Future _uploadImage() async {
+  Future _uploadFile() async {
     String fileName = _imageFileList![0].name;
     String filePath = _imageFileList![0].path;
 
@@ -65,14 +65,14 @@ class _PhotoListState extends State<PhotoList> {
     setState(() {
       CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(uploadTask);
   }
 
-  Future _removePicture(fileName) async {
+  Future _removeFile(fileName) async {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
@@ -80,17 +80,17 @@ class _PhotoListState extends State<PhotoList> {
         .child(widget.idAlbum)
         .child(fileName);
 
-    arquive.delete();
+    await arquive.delete();
 
     setState(() {
       CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
 
     firebase_storage.Reference arquive = firebase_storage
@@ -118,7 +118,7 @@ class _PhotoListState extends State<PhotoList> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -138,7 +138,7 @@ class _PhotoListState extends State<PhotoList> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar imagem',
             onPressed: () {
-              _selectPicture();
+              _selectFile();
             },
           ),
         ],
@@ -200,7 +200,7 @@ class _PhotoListState extends State<PhotoList> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    _removePicture(value);
+                                    _removeFile(value);
                                     Navigator.pop(context);
                                   },
                                   child: const Text(

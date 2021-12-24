@@ -26,7 +26,7 @@ class _BannersState extends State<Banners> {
   }
 
   // seleciona a imagem do computador
-  Future _selectPicture() async {
+  Future _selectFile() async {
     try {
       final image = await _picker.pickImage(source: ImageSource.gallery);
 
@@ -34,7 +34,7 @@ class _BannersState extends State<Banners> {
         setState(() {
           _imageFile = image;
         });
-        _uploadImage();
+        _uploadFile();
       }
     } catch (e) {
       //
@@ -42,7 +42,7 @@ class _BannersState extends State<Banners> {
   }
 
   // faz o envio da imagem para o storage
-  Future _uploadImage() async {
+  Future _uploadFile() async {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
@@ -74,21 +74,21 @@ class _BannersState extends State<Banners> {
     setState(() {
       CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(uploadTask);
   }
 
-  Future _removePicture(fileName) async {
+  Future _removeFile(fileName) async {
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
         .child("banners")
         .child(fileName);
 
-    arquive.delete();
+    await arquive.delete();
 
     var dbDoc = fileName.toString().split('-');
 
@@ -97,12 +97,12 @@ class _BannersState extends State<Banners> {
     setState(() {
       CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db
@@ -125,7 +125,7 @@ class _BannersState extends State<Banners> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -149,7 +149,7 @@ class _BannersState extends State<Banners> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar imagem',
             onPressed: () {
-              _selectPicture();
+              _selectFile();
             },
           ),
         ],
@@ -211,7 +211,7 @@ class _BannersState extends State<Banners> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    _removePicture(value);
+                                    _removeFile(value);
                                     Navigator.pop(context);
                                   },
                                   child: const Text(

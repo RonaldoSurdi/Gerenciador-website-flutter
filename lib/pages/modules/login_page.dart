@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/pages/login/forgot_password.dart';
 import 'package:hwscontrol/pages/login/sign_in.dart';
 import 'package:hwscontrol/pages/login/sign_up.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  final String title;
+  const LoginPage({Key? key, required this.title}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -14,6 +17,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late PageController _pageController;
+
+  Timer? _timer;
 
   Color left = Colors.yellow;
   Color center = Colors.white;
@@ -29,6 +34,11 @@ class _LoginPageState extends State<LoginPage>
   void initState() {
     super.initState();
     _pageController = PageController();
+    EasyLoading.addStatusCallback((status) {
+      if (status == EasyLoadingStatus.dismiss) {
+        _timer?.cancel();
+      }
+    });
   }
 
   @override

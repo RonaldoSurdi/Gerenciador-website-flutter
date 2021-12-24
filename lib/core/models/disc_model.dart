@@ -1,7 +1,7 @@
 class DiscModel {
-  int? id;
+  num? id;
   String? title;
-  String? year;
+  num? year;
   String? info;
   String? image;
 

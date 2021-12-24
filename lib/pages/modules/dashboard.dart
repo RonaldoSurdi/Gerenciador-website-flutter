@@ -78,7 +78,7 @@ class _DashboardState extends State<Dashboard> {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const LoginPage(),
+          builder: (context) => const LoginPage(title: 'Loading...'),
         ),
         (route) => false);
 
@@ -92,7 +92,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const LoginPage(),
+          builder: (builder) => const LoginPage(title: 'Loading...'),
         ),
       );
     }).catchError((error) {

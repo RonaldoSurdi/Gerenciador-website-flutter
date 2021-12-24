@@ -285,25 +285,25 @@ class _ScheduleState extends State<Schedule> {
     setState(() {
       CustomSnackBar(context, const Text("Data adicionada com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(true);
   }
 
-  Future _removeSchedule(idSchedule) async {
+  Future _removeData(idSchedule) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("schedule").doc(idSchedule).delete();
     setState(() {
       CustomSnackBar(context, const Text("Data excluida com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
@@ -332,7 +332,7 @@ class _ScheduleState extends State<Schedule> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -427,7 +427,7 @@ class _ScheduleState extends State<Schedule> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeSchedule(value.id);
+                                _removeData(value.id);
                                 Navigator.pop(context);
                               },
                               child: const Text(

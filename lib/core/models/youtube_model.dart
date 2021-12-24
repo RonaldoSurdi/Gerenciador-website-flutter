@@ -21,13 +21,13 @@ class YoutubeModel {
   final String? authorName;
   final String? authorUrl;
   final String? type;
-  final int? height;
-  final int? width;
+  final num? height;
+  final num? width;
   final String? version;
   final String? providerName;
   final String? providerUrl;
-  final int? thumbnailHeight;
-  final int? thumbnailWidth;
+  final num? thumbnailHeight;
+  final num? thumbnailWidth;
   final String? thumbnailUrl;
   final String? html;
   final String? url;

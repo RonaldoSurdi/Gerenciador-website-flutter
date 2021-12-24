@@ -50,7 +50,7 @@ class _SettingsState extends State<Settings> {
     });
   }
 
-  _onGetData() {
+  _getData() {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("settings")
@@ -71,7 +71,7 @@ class _SettingsState extends State<Settings> {
 
   @override
   void initState() {
-    _onGetData();
+    _getData();
     super.initState();
   }
 

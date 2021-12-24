@@ -118,25 +118,25 @@ class _VideosState extends State<Videos> {
     setState(() {
       CustomSnackBar(context, const Text("Vídeo criado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(true);
   }
 
-  Future _removeVideo(idVideo) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("videos").doc(idVideo).delete();
+  Future _removeData(itemId) async {
+    await FirebaseFirestore.instance.collection("videos").doc(itemId).delete();
+
     setState(() {
       CustomSnackBar(context, const Text("Vídeo excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _openVideo(idVideo) async {
+  Future _openMovie(idVideo) async {
     String url = 'https://www.youtube.com/watch?v=$idVideo';
     if (await canLaunch(url)) {
       await launch(url);
@@ -145,7 +145,7 @@ class _VideosState extends State<Videos> {
     }
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
@@ -171,7 +171,7 @@ class _VideosState extends State<Videos> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -247,7 +247,7 @@ class _VideosState extends State<Videos> {
                       tooltip: 'Abrir vídeo Youtube',
                       child: const Icon(Icons.movie_creation),
                       backgroundColor: Colors.green,
-                      onPressed: () => _openVideo(value.watch),
+                      onPressed: () => _openMovie(value.watch),
                     ),
                   ),
                 ),
@@ -286,7 +286,7 @@ class _VideosState extends State<Videos> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeVideo(value.date);
+                                _removeData(value.date);
                                 Navigator.pop(context);
                               },
                               child: Container(

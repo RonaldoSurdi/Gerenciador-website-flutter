@@ -1,8 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/modules/photo_list.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:hwscontrol/pages/modules/photo_list.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +19,8 @@ class Photos extends StatefulWidget {
 class _PhotosState extends State<Photos> {
   final TextEditingController _textFieldController = TextEditingController();
   late String valueText;
+
+  Timer? _timer;
 
   final List<AlbumModel> _widgetList = [];
 
@@ -83,33 +85,29 @@ class _PhotosState extends State<Photos> {
     setState(() {
       CustomSnackBar(context, const Text("Álbum criado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(true);
   }
 
-  Future _removeAlbum(idAlbum) async {
-    firebase_storage.Reference arquive = firebase_storage
-        .FirebaseStorage.instance
-        .ref()
-        .child("photos")
-        .child(idAlbum);
+  Future _removeData(itemId) async {
+    await FirebaseFirestore.instance.collection("photos").doc(itemId).delete();
 
-    arquive.delete();
+    await firebase_storage.FirebaseStorage.instance
+        .ref("photos/$itemId")
+        .delete();
 
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(idAlbum).delete();
     setState(() {
       CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _redirectAlbum(idAlbum) async {
+  Future _redirectTo(idAlbum) async {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -120,7 +118,7 @@ class _PhotosState extends State<Photos> {
     );
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
@@ -162,7 +160,7 @@ class _PhotosState extends State<Photos> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -239,7 +237,7 @@ class _PhotosState extends State<Photos> {
                       tooltip: 'Adicionar fotos',
                       child: const Icon(Icons.add_a_photo),
                       backgroundColor: Colors.green,
-                      onPressed: () => _redirectAlbum(value.id),
+                      onPressed: () => _redirectTo(value.id),
                     ),
                   ),
                 ),
@@ -273,7 +271,7 @@ class _PhotosState extends State<Photos> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeAlbum(value.id);
+                                _removeData(value.id);
                                 Navigator.pop(context);
                               },
                               child: const Text(

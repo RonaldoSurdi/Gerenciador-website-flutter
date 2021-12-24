@@ -10,12 +10,12 @@ import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/sound_model.dart';
 
 class DiscList extends StatefulWidget {
-  final String idDisc;
-  final String titleDisc;
+  final String itemId;
+  final String itemTitle;
   const DiscList({
     Key? key,
-    required this.idDisc,
-    required this.titleDisc,
+    required this.itemId,
+    required this.itemTitle,
   }) : super(key: key);
 
   @override
@@ -25,14 +25,14 @@ class DiscList extends StatefulWidget {
 class _DiscListState extends State<DiscList> {
   final TextEditingController _trackController = MaskedTextController(
     mask: '00',
-    text: '00',
+    text: '',
   );
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _infoController = TextEditingController();
   final TextEditingController _movieController = TextEditingController();
   final TextEditingController _lyricController = TextEditingController();
   final TextEditingController _cipherController = TextEditingController();
-  int? _trackValue;
+  String? _trackValue;
   String? _titleValue;
   String? _infoValue;
   String? _movieValue;
@@ -56,7 +56,7 @@ class _DiscListState extends State<DiscList> {
 
       // Upload file
       await firebase_storage.FirebaseStorage.instance
-          .ref('discs/${widget.idDisc.toString().padLeft(5, '0')}/$filePut')
+          .ref('discs/${widget.itemId}/$filePut')
           .putData(fileBytes!);
 
       setState(() {
@@ -65,7 +65,7 @@ class _DiscListState extends State<DiscList> {
           Text("Música importada com sucesso.\n$fileName"),
         );
         Timer(const Duration(milliseconds: 1500), () {
-          _onGetData();
+          _getData();
         });
       });
     }
@@ -85,7 +85,7 @@ class _DiscListState extends State<DiscList> {
                 TextField(
                   onChanged: (value) {
                     setState(() {
-                      _trackValue = value as int?;
+                      _trackValue = value;
                     });
                   },
                   controller: _trackController,
@@ -247,7 +247,7 @@ class _DiscListState extends State<DiscList> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("discs")
-        .doc(widget.idDisc.toString().padLeft(5, '0'))
+        .doc(widget.itemId)
         .collection("sounds")
         .doc(_trackValue.toString().padLeft(2, '0'))
         .set(soundModel.toMap());
@@ -255,35 +255,35 @@ class _DiscListState extends State<DiscList> {
     setState(() {
       CustomSnackBar(context, const Text("Música adicionada com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
-        _onGetData();
+        _getData();
       });
     });
 
     return Future.value(true);
   }
 
-  Future _removeSound(idSound) async {
+  Future _removeData(itemId) async {
     await FirebaseFirestore.instance
         .collection("discs")
-        .doc(widget.idDisc.toString().padLeft(5, '0'))
+        .doc(widget.itemId)
         .collection("sounds")
-        .doc(idSound.toString().padLeft(2, '0'))
+        .doc(itemId.toString().padLeft(2, '0'))
         .delete();
 
     await firebase_storage.FirebaseStorage.instance
-        .ref('discs/${widget.idDisc.toString().padLeft(5, '0')}')
-        .child('${idSound.toString().padLeft(2, '0')}.mp3')
+        .ref("discs/${widget.itemId}")
+        .child("${itemId.toString().padLeft(2, '0')}.mp3")
         .delete();
 
     setState(() {
       CustomSnackBar(context, const Text("Música excluida com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
-        _onGetData();
+        _getData();
       });
     });
   }
 
-  Future _onGetData() async {
+  Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db.collection("discs").orderBy('id').get();
@@ -312,7 +312,7 @@ class _DiscListState extends State<DiscList> {
   @override
   void initState() {
     super.initState();
-    _onGetData();
+    _getData();
   }
 
   @override
@@ -325,7 +325,7 @@ class _DiscListState extends State<DiscList> {
       backgroundColor: const Color(0XFF666666),
       appBar: AppBar(
         title: Text(
-          '${widget.idDisc.padLeft(5, '0')} - ${widget.titleDisc.toUpperCase()}',
+          '${widget.itemId} - ${widget.itemTitle}',
         ),
         backgroundColor: Colors.black38,
         actions: <Widget>[
@@ -422,7 +422,7 @@ class _DiscListState extends State<DiscList> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeSound(value.track);
+                                _removeData(value.track);
                                 Navigator.pop(context);
                               },
                               child: const Text(

@@ -21,10 +21,6 @@ class _BiographyState extends State<Biography> {
     String description = _descriptionController.text;
 
     if (description.trim().isNotEmpty && description.trim().length >= 3) {
-      setState(() {
-        CustomSnackBar(context, const Text('Verificando'));
-      });
-
       BiographyModel biographyModel = BiographyModel(description: description);
 
       _onSaveData(biographyModel);
@@ -45,7 +41,7 @@ class _BiographyState extends State<Biography> {
     });
   }
 
-  _onGetData() {
+  _getData() {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
         .collection("biography")
@@ -66,7 +62,7 @@ class _BiographyState extends State<Biography> {
 
   @override
   void initState() {
-    _onGetData();
+    _getData();
     super.initState();
   }
 
@@ -87,7 +83,7 @@ class _BiographyState extends State<Biography> {
             textInputAction: TextInputAction.next,
             maxLines: 500,
             cursorColor: Colors.white,
-            textAlign: TextAlign.left,
+            textAlign: TextAlign.start,
             style: const TextStyle(
               fontFamily: 'WorkSansThin',
               fontSize: 14,

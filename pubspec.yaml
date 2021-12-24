@@ -25,6 +25,7 @@ dependencies:
   url_launcher: ^6.0.17
   image_picker: ^0.8.4+4
   file_picker: ^4.3.0
+  flutter_easyloading: ^3.0.3
   flutter_masked_text2: ^0.9.1
   date_range_form_field: ^1.0.2
   flutter_material_pickers: ^3.1.2

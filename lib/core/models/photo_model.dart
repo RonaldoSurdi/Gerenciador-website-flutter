@@ -1,7 +1,7 @@
 class PhotoModel {
   String? description;
   String? date;
-  int? count;
+  num? count;
 
   PhotoModel({this.description, this.date, this.count});
 
