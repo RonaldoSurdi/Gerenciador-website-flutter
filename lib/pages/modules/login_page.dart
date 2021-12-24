@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/pages/login/forgot_password.dart';
 import 'package:hwscontrol/pages/login/sign_in.dart';
 import 'package:hwscontrol/pages/login/sign_up.dart';
@@ -18,8 +16,6 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late PageController _pageController;
 
-  Timer? _timer;
-
   Color left = Colors.yellow;
   Color center = Colors.white;
   Color right = Colors.white;
@@ -34,11 +30,6 @@ class _LoginPageState extends State<LoginPage>
   void initState() {
     super.initState();
     _pageController = PageController();
-    EasyLoading.addStatusCallback((status) {
-      if (status == EasyLoadingStatus.dismiss) {
-        _timer?.cancel();
-      }
-    });
   }
 
   @override
@@ -188,7 +179,7 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 onPressed: _onForgotPasswordButtonPress,
                 child: Text(
-                  'Ajuda',
+                  'Redefinir',
                   style: TextStyle(
                     color: right,
                     fontSize: 14.0,

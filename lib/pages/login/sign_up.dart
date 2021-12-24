@@ -95,7 +95,7 @@ class _SignUpState extends State<SignUp> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const Dashboard(),
+          builder: (builder) => const Dashboard(title: 'Loading...'),
         ),
       );
     }).catchError((error) {

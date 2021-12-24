@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hwscontrol/core/theme/colors_theme.dart';
-import 'package:hwscontrol/pages/modules/login_page.dart';
+import 'package:hwscontrol/pages/modules/initialize.dart';
 import 'package:hwscontrol/core/theme/custom_animation.dart';
 
 final ThemeData defaultTheme = ThemeData(
@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       //supportedLocales: const [Locale('pt', 'BR')],
-      home: const LoginPage(title: 'Loading...'),
+      home: const Initialize(title: 'Loading...'),
       builder: EasyLoading.init(),
     );
   }

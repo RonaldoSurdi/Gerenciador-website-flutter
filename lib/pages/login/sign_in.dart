@@ -18,10 +18,10 @@ class _SignInState extends State<SignIn> {
   final TextEditingController _loginEmailController = TextEditingController();
   final TextEditingController _loginPasswordController =
       TextEditingController();
-
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
 
+  final _storage = const FlutterSecureStorage();
   bool _obscureTextPassword = true;
 
   _validateFields() {
@@ -76,7 +76,7 @@ class _SignInState extends State<SignIn> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const Dashboard(),
+          builder: (builder) => const Dashboard(title: 'Loading...'),
         ),
       );
     }).catchError((error) {
@@ -104,24 +104,9 @@ class _SignInState extends State<SignIn> {
     await _storage.write(key: keyPasswd, value: passwd);
   }
 
-  // salvamento seguro de informações
-  final _storage = const FlutterSecureStorage();
-
-  _verifyConnect() async {
-    _loginEmailController.text = (await _storage.read(key: "keyMail")) ?? "";
-    _loginPasswordController.text =
-        (await _storage.read(key: "keyPasswd")) ?? "";
-
-    if (_loginEmailController.text.trim().isNotEmpty ||
-        _loginPasswordController.text.trim().isNotEmpty) {
-      _logarUsuario();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _verifyConnect();
   }
 
   @override

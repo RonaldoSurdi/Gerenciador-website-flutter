@@ -16,7 +16,8 @@ import 'package:hwscontrol/pages/modules/settings.dart';
 import 'package:hwscontrol/pages/modules/videos.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  final String title;
+  const Dashboard({Key? key, required this.title}) : super(key: key);
 
   @override
   _DashboardState createState() => _DashboardState();
