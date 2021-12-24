@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/modules/photo_detail.dart';
+import 'package:hwscontrol/pages/modules/photo_list.dart';
 import 'package:intl/intl.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -113,7 +113,7 @@ class _PhotosState extends State<Photos> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (builder) => PhotoDetail(
+        builder: (builder) => PhotoList(
           idAlbum: idAlbum,
         ),
       ),
@@ -218,15 +218,16 @@ class _PhotosState extends State<Photos> {
                 ),
                 Expanded(
                   child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                      child: Text(
-                        '${value.description}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansLigth',
-                        ),
-                      )),
+                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                    child: Text(
+                      '${value.description}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),

@@ -5,15 +5,15 @@ import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 
-class PhotoDetail extends StatefulWidget {
+class PhotoList extends StatefulWidget {
   final String idAlbum;
-  const PhotoDetail({Key? key, required this.idAlbum}) : super(key: key);
+  const PhotoList({Key? key, required this.idAlbum}) : super(key: key);
 
   @override
-  _PhotoDetailState createState() => _PhotoDetailState();
+  _PhotoListState createState() => _PhotoListState();
 }
 
-class _PhotoDetailState extends State<PhotoDetail> {
+class _PhotoListState extends State<PhotoList> {
   // variaveis da tela
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;

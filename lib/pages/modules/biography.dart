@@ -102,9 +102,10 @@ class _BiographyState extends State<Biography> {
                 color: Colors.white38,
               ),
               enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                color: Colors.white38,
-              )),
+                borderSide: BorderSide(
+                  color: Colors.white38,
+                ),
+              ),
               focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: Colors.white38,

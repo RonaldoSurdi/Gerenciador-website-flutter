@@ -117,9 +117,10 @@ class _SettingsState extends State<Settings> {
                     color: Colors.white38,
                   ),
                   enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                    color: Colors.white38,
-                  )),
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
                       color: Colors.white38,
@@ -158,9 +159,10 @@ class _SettingsState extends State<Settings> {
                     color: Colors.white38,
                   ),
                   enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                    color: Colors.white38,
-                  )),
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
                       color: Colors.white38,

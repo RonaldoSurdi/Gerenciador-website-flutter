@@ -3,7 +3,7 @@ import 'package:hwscontrol/core/components/storage.dart';
 import 'package:hwscontrol/pages/modules/artists.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
-import 'package:hwscontrol/pages/modules/discography.dart';
+import 'package:hwscontrol/pages/modules/discs.dart';
 import 'package:hwscontrol/pages/modules/downloads.dart';
 import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
@@ -209,7 +209,7 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Discography(),
+                    builder: (context) => const Discs(),
                   ),
                 );
               },
@@ -410,7 +410,7 @@ class _DashboardState extends State<Dashboard> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Discography(),
+                            builder: (context) => const Discs(),
                           ),
                         );
                       },

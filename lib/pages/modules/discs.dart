@@ -3,38 +3,44 @@ import 'dart:async';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:hwscontrol/pages/modules/disc_list.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:hwscontrol/core/models/discography_model.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
+import 'package:hwscontrol/core/models/disc_model.dart';
 
-class Discography extends StatefulWidget {
-  const Discography({Key? key}) : super(key: key);
+class Discs extends StatefulWidget {
+  const Discs({Key? key}) : super(key: key);
 
   @override
-  _DiscographyState createState() => _DiscographyState();
+  _DiscsState createState() => _DiscsState();
 }
 
-class _DiscographyState extends State<Discography> {
+class _DiscsState extends State<Discs> {
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;
-
-  final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _idController = MaskedTextController(
+    mask: '000',
+    text: '000',
+  );
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _musicsController = TextEditingController();
-  int? _numberValue;
+  final TextEditingController _yearController = MaskedTextController(
+    mask: '0000',
+    text: '2022',
+  );
+  final TextEditingController _infoController = TextEditingController();
+  int? _idValue;
   String? _titleValue;
-  String? _dataValue;
-  String? _descriptionValue;
-  String? _musicsValue;
+  int? _yearValue;
+  String? _infoValue;
 
-  final List<DiscographyModel> _widgetList = [];
+  final List<DiscModel> _widgetList = [];
+
   set _imageFile(XFile? value) {
     _imageFileList = value == null ? null : [value];
   }
 
   // seleciona a música do computador
-  Future _selectPicture(idDisco) async {
+  Future _selectPicture(idDisc) async {
     try {
       final image = await _picker.pickImage(source: ImageSource.gallery);
 
@@ -42,7 +48,7 @@ class _DiscographyState extends State<Discography> {
         setState(() {
           _imageFile = image;
         });
-        _uploadImage(idDisco);
+        _uploadImage(idDisc);
       }
     } catch (e) {
       //
@@ -50,18 +56,33 @@ class _DiscographyState extends State<Discography> {
   }
 
   // faz o envio da música para o storage
-  Future _uploadImage(idDisco) async {
+  Future _uploadImage(idDisc) async {
     String fileName = _imageFileList![0].name;
+    String? filePut;
     String filePath = _imageFileList![0].path;
+
+    if (fileName.contains('.jpg') || fileName.contains('.jpeg')) {
+      filePut = 'image.jpg';
+    } else if (fileName.contains('.png')) {
+      filePut = 'image.png';
+    } else if (fileName.contains('.gif')) {
+      filePut = 'image.gif';
+    } else {
+      setState(() {
+        CustomSnackBar(context, const Text('Formato da imagem inválido!'),
+            backgroundColor: Colors.red);
+      });
+      return false;
+    }
 
     firebase_storage.UploadTask uploadTask;
 
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("discos")
-        .child(idDisco)
-        .child(fileName);
+        .child("discs")
+        .child(idDisc.toString().padLeft(5, '0'))
+        .child(filePut);
 
     final metadata = firebase_storage.SettableMetadata(
       contentType: '${_imageFileList![0].mimeType}',
@@ -70,6 +91,12 @@ class _DiscographyState extends State<Discography> {
 
     uploadTask =
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    await db.collection("discs").doc(idDisc.toString().padLeft(5, '0')).update({
+      "image": filePut,
+    });
 
     setState(() {
       CustomSnackBar(context, Text("Capa importada com sucesso.\n$fileName"));
@@ -81,13 +108,13 @@ class _DiscographyState extends State<Discography> {
     return Future.value(uploadTask);
   }
 
-  Future<void> _addNewDiscography(BuildContext context) async {
+  Future<void> _addNewDisc(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (builder, setState) => AlertDialog(
-            title: const Text('Adicionar novo disco'),
+            title: const Text('Adicionar álbum'),
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -95,60 +122,52 @@ class _DiscographyState extends State<Discography> {
                 TextField(
                   onChanged: (value) {
                     setState(() {
-                      _numberValue = value as int?;
+                      _idValue = value as int?;
                     });
                   },
-                  controller: _numberController,
-                  maxLength: 4,
-                  decoration:
-                      const InputDecoration(hintText: "Número do álbum"),
+                  controller: _idController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 3,
+                  decoration: const InputDecoration(
+                    hintText: "Número",
+                  ),
                 ),
                 TextField(
-                  keyboardType: TextInputType.number,
                   onChanged: (value) {
                     setState(() {
-                      _numberValue = value as int?;
+                      _titleValue = value;
                     });
                   },
                   controller: _titleController,
                   maxLength: 100,
-                  decoration:
-                      const InputDecoration(hintText: "Título do álbum"),
+                  decoration: const InputDecoration(
+                    hintText: "Título",
+                  ),
                 ),
                 TextField(
                   onChanged: (value) {
                     setState(() {
-                      _dataValue = value;
+                      _yearValue = value as int?;
                     });
                   },
-                  controller: _dateController,
-                  maxLength: 100,
-                  decoration:
-                      const InputDecoration(hintText: "Ano do lançamento"),
+                  controller: _yearController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 4,
+                  decoration: const InputDecoration(
+                    hintText: "Lançamento",
+                  ),
                 ),
                 TextField(
                   onChanged: (value) {
                     setState(() {
-                      _descriptionValue = value;
+                      _infoValue = value;
                     });
                   },
-                  controller: _descriptionController,
+                  controller: _infoController,
                   maxLength: 16,
                   maxLines: 5,
                   decoration:
                       const InputDecoration(hintText: "Informações (opcional)"),
-                ),
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _musicsValue = value;
-                    });
-                  },
-                  controller: _musicsController,
-                  maxLength: 16,
-                  maxLines: 5,
-                  decoration:
-                      const InputDecoration(hintText: "Lista de músicas"),
                 ),
               ],
             ),
@@ -166,8 +185,7 @@ class _DiscographyState extends State<Discography> {
               ),
               TextButton(
                 onPressed: () {
-                  _saveData(_numberValue, _titleValue, _dataValue,
-                      _descriptionValue, _musicsValue);
+                  _saveData(_idValue, _titleValue, _yearValue, _infoValue);
                   Navigator.pop(context);
                 },
                 child: const Text(
@@ -187,11 +205,14 @@ class _DiscographyState extends State<Discography> {
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(_numberValue, _titleValue, _dataValue, _descriptionValue,
-      _musicsValue) async {
-    if (_titleValue.trim().isNotEmpty && _titleValue.trim().length >= 3) {
-      _onSaveData(_numberValue, _titleValue, _dataValue, _descriptionValue,
-          _musicsValue);
+  Future _saveData(_idValue, _titleValue, _yearValue, _infoValue) async {
+    if (_idValue.trim().isNotEmpty &&
+        _idValue.trim().length >= 1 &&
+        _titleValue.trim().isNotEmpty &&
+        _titleValue.trim().length >= 3 &&
+        _yearValue.trim().isNotEmpty &&
+        _yearValue.trim().length == 4) {
+      _onSaveData(_idValue, _titleValue, _yearValue, _infoValue);
     } else {
       CustomSnackBar(
           context, const Text('Preencha todos dados e tente novamente!'),
@@ -200,25 +221,23 @@ class _DiscographyState extends State<Discography> {
     return Future.value(true);
   }
 
-  Future _onSaveData(_numberValue, _titleValue, _dataValue, _descriptionValue,
-      _musicsValue) async {
-    DiscographyModel discographyModel = DiscographyModel(
-      number: _numberValue,
+  Future _onSaveData(_idValue, _titleValue, _yearValue, _infoValue) async {
+    DiscModel discModel = DiscModel(
+      id: _idValue,
       title: _titleValue,
-      date: _dataValue,
-      description: _descriptionValue,
-      filename: null,
-      musics: _musicsValue,
+      year: _yearValue,
+      info: _infoValue,
+      image: null,
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     db
-        .collection("discography")
-        .doc(_numberValue)
-        .set(discographyModel.toMap());
+        .collection("discs")
+        .doc(_idValue.toString().padLeft(5, '0'))
+        .set(discModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Disco adicionado com sucesso."));
+      CustomSnackBar(context, const Text("Álbum adicionado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _onGetData();
       });
@@ -227,46 +246,60 @@ class _DiscographyState extends State<Discography> {
     return Future.value(true);
   }
 
-  Future _removeDiscography(idDisco, _filenameValue) async {
+  Future _removeDisc(idDisc) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("discography").doc(idDisco).delete();
+    db.collection("discs").doc(idDisc.toString().padLeft(5, '0')).delete();
 
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
-        .child("discos")
-        .child(idDisco)
-        .child(_filenameValue);
+        .child("discs")
+        .child(idDisc.toString().padLeft(5, '0'));
 
     arquive.delete();
 
     setState(() {
-      CustomSnackBar(context, const Text("Disco excluido com sucesso."));
+      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _onGetData();
       });
     });
   }
 
+  Future _redirectDisc(idDisc, titleDisc) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (builder) => DiscList(
+          idDisc: idDisc,
+          titleDisc: titleDisc,
+        ),
+      ),
+    );
+  }
+
   Future _onGetData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db
-        .collection("discography")
-        .orderBy('id', descending: true)
-        .get();
+    var data = await db.collection("discs").orderBy('id').get();
     var response = data.docs;
     for (int i = 0; i < response.length; i++) {
       setState(() {
-        DiscographyModel discographyModel = DiscographyModel(
-          number: response[i]["number"],
+        String imageGet = response[i]["image"];
+        String imageParse = 'images%2Fdefault.jpg';
+        if (imageGet.isNotEmpty) {
+          imageParse = 'discs%2F${imageGet.toString().padLeft(5, '0')}';
+        }
+        String infoParse =
+            response[i]["info"].toString().replaceAll('null', '');
+        DiscModel discModel = DiscModel(
+          id: response[i]["id"],
           title: response[i]["title"],
-          date: response[i]["date"],
-          description: response[i]["description"],
-          filename: response[i]["filename"],
-          musics: response[i]["musics"],
+          year: response[i]["year"],
+          info: infoParse,
+          image: imageParse,
         );
-        _widgetList.add(discographyModel);
+        _widgetList.add(discModel);
       });
     }
   }
@@ -299,9 +332,9 @@ class _DiscographyState extends State<Discography> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar disco',
+            tooltip: 'Adicionar álbum',
             onPressed: () {
-              _addNewDiscography(context);
+              _addNewDisc(context);
             },
           ),
         ],
@@ -312,7 +345,7 @@ class _DiscographyState extends State<Discography> {
         controller: ScrollController(keepScrollOffset: false),
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
-        children: _widgetList.map((DiscographyModel value) {
+        children: _widgetList.map((DiscModel value) {
           return Container(
             color: Colors.black26,
             margin: const EdgeInsets.all(1.0),
@@ -323,26 +356,27 @@ class _DiscographyState extends State<Discography> {
                   height: 70,
                   padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(10.0),
                     child: Image(
-                      image: NetworkImage('${value.number}'),
-                      fit: BoxFit.cover,
-                      width: 100,
-                      height: 70,
+                      image: NetworkImage(
+                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${value.image}?alt=media'),
+                      fit: BoxFit.fitWidth,
+                      width: 70,
                     ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                      child: Text(
-                        '${value.title}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansLigth',
-                        ),
-                      )),
+                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                    child: Text(
+                      '${value.title}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
@@ -354,7 +388,21 @@ class _DiscographyState extends State<Discography> {
                       tooltip: 'Adicionar capa',
                       child: const Icon(Icons.add_a_photo),
                       backgroundColor: Colors.green,
-                      onPressed: () => _selectPicture(value.number),
+                      onPressed: () => _selectPicture(value.id),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  child: SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: FloatingActionButton(
+                      mini: false,
+                      tooltip: 'Adicionar músicas',
+                      child: const Icon(Icons.audiotrack_outlined),
+                      backgroundColor: Colors.blue,
+                      onPressed: () => _redirectDisc(value.id, value.title),
                     ),
                   ),
                 ),
@@ -365,15 +413,15 @@ class _DiscographyState extends State<Discography> {
                     width: 25.0,
                     child: FloatingActionButton(
                       mini: true,
-                      tooltip: 'Remover disco',
+                      tooltip: 'Remover álbum',
                       child: const Icon(Icons.close),
                       backgroundColor: Colors.red,
                       onPressed: () => showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Remover disco'),
+                          title: const Text('Remover álbum'),
                           content: Text(
-                              'Tem certeza que deseja remover o disco\n${value.number} - ${value.title}?'),
+                              'Tem certeza que deseja remover o álbum\n${value.id.toString().padLeft(2, '0')} - ${value.title}?'),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () => Navigator.pop(context),
@@ -388,10 +436,7 @@ class _DiscographyState extends State<Discography> {
                             ),
                             TextButton(
                               onPressed: () {
-                                _removeDiscography(
-                                  value.number,
-                                  value.filename,
-                                );
+                                _removeDisc(value.id);
                                 Navigator.pop(context);
                               },
                               child: const Text(
@@ -416,6 +461,4 @@ class _DiscographyState extends State<Discography> {
       ),
     );
   }
-
-  now() {}
 }

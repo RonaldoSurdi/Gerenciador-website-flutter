@@ -226,15 +226,16 @@ class _VideosState extends State<Videos> {
                 ),
                 Expanded(
                   child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                      child: Text(
-                        '${value.title}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansLigth',
-                        ),
-                      )),
+                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                    child: Text(
+                      '${value.title}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
