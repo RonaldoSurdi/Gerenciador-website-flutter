@@ -126,11 +126,11 @@ class _PhotoListState extends State<PhotoList> {
     var size = MediaQuery.of(context).size;
     final double imageSize = size.width / 3;
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Galeria de fotos'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.add_a_photo),
             iconSize: 40,
@@ -186,7 +186,7 @@ class _PhotoListState extends State<PhotoList> {
                               title: const Text('Remover imagem'),
                               content: Text(
                                   'Tem certeza que deseja remover a imagem\n$value?'),
-                              actions: <Widget>[
+                              actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: const Text(

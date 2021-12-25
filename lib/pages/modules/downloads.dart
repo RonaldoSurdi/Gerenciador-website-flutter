@@ -121,11 +121,11 @@ class _DownloadsState extends State<Downloads> {
     var size = MediaQuery.of(context).size;
     final double imageSize = size.width / 3;
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Downloads'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.cloud_upload_rounded),
             iconSize: 40,
@@ -181,7 +181,7 @@ class _DownloadsState extends State<Downloads> {
                               title: const Text('Remover arquivo'),
                               content: Text(
                                   'Tem certeza que deseja remover o arquivo\n$value?'),
-                              actions: <Widget>[
+                              actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: const Text(

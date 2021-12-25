@@ -3,17 +3,18 @@ import 'package:hwscontrol/core/components/storage.dart';
 import 'package:hwscontrol/pages/modules/artists.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
-import 'package:hwscontrol/pages/modules/discs.dart';
+import 'package:hwscontrol/pages/modules/disc_albums.dart';
 import 'package:hwscontrol/pages/modules/downloads.dart';
 import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/modules/message_boards.dart';
-import 'package:hwscontrol/pages/modules/photos.dart';
+import 'package:hwscontrol/pages/modules/photo_albums.dart';
 import 'package:hwscontrol/pages/modules/schedule.dart';
 import 'package:hwscontrol/pages/modules/settings.dart';
 import 'package:hwscontrol/pages/modules/videos.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Dashboard extends StatefulWidget {
   final String title;
@@ -34,6 +35,15 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
+  _openSite() async {
+    String url = 'https://www.joaoluizcorrea.com.br';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Site não disponível $url';
+    }
+  }
+
   // desconectar do app
   _logoutApp() async {
     return await showDialog<String>(
@@ -41,7 +51,7 @@ class _DashboardState extends State<Dashboard> {
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Desconectar'),
         content: const Text('Desconectar do sistema?'),
-        actions: <Widget>[
+        actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text(
@@ -114,31 +124,46 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    var gritCol = 2;
+    var gritCol = 4;
     int sizeCol = MediaQuery.of(context).size.width.toInt();
     double widthCol = MediaQuery.of(context).size.width;
     double heightCol = 120;
-    if (sizeCol >= 700) {
-      gritCol = 3;
+    if (sizeCol >= 1500) {
+      gritCol = 8;
       widthCol = widthCol / gritCol;
     } else if (sizeCol >= 900) {
+      gritCol = 6;
+      widthCol = widthCol / gritCol;
+    } else if (sizeCol >= 600) {
       gritCol = 4;
       widthCol = widthCol / gritCol;
+    } else if (sizeCol >= 200) {
+      gritCol = 2;
+      widthCol = widthCol / gritCol;
     } else {
+      gritCol = 1;
       widthCol = widthCol / gritCol;
     }
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Painel de controle'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
+            padding: const EdgeInsets.only(right: 10),
+            icon: const Icon(Icons.add_to_home_screen_outlined),
+            tooltip: 'Abrir Site',
+            onPressed: _openSite,
+          ),
+          IconButton(
+            padding: const EdgeInsets.only(right: 10),
             icon: const Icon(Icons.settings_suggest),
             tooltip: 'Configurações',
             onPressed: _settingsApp,
           ),
           IconButton(
+            padding: const EdgeInsets.only(right: 10),
             icon: const Icon(Icons.logout),
             tooltip: 'Desconectar',
             onPressed: _logoutApp,
@@ -210,7 +235,7 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Discs(),
+                    builder: (context) => const DiscAlbums(),
                   ),
                 );
               },
@@ -234,7 +259,7 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Photos(),
+                    builder: (context) => const PhotoAlbums(),
                   ),
                 );
               },
@@ -283,6 +308,18 @@ class _DashboardState extends State<Dashboard> {
               thickness: .5,
             ),
             ListTile(
+              leading: const Icon(Icons.add_to_home_screen_outlined),
+              title: const Text('Abrir Site'),
+              onTap: _openSite,
+            ),
+            const Divider(
+              indent: 15,
+              endIndent: 15,
+              height: 15,
+              color: Colors.black26,
+              thickness: .5,
+            ),
+            ListTile(
               leading: const Icon(Icons.settings_suggest),
               title: const Text('Configurações'),
               onTap: () {
@@ -303,8 +340,9 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 40),
@@ -319,8 +357,7 @@ class _DashboardState extends State<Dashboard> {
               scrollDirection: Axis.vertical,
               children: [
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.picture_in_picture),
                       color: Colors.amber,
@@ -346,8 +383,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.info),
                       color: Colors.amber,
@@ -373,8 +409,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.person_outline_outlined),
                       color: Colors.amber,
@@ -400,8 +435,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.adjust_rounded),
                       color: Colors.amber,
@@ -411,7 +445,7 @@ class _DashboardState extends State<Dashboard> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Discs(),
+                            builder: (context) => const DiscAlbums(),
                           ),
                         );
                       },
@@ -427,8 +461,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.schedule),
                       color: Colors.amber,
@@ -454,8 +487,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.image),
                       color: Colors.amber,
@@ -465,7 +497,7 @@ class _DashboardState extends State<Dashboard> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Photos(),
+                            builder: (context) => const PhotoAlbums(),
                           ),
                         );
                       },
@@ -481,8 +513,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.movie),
                       color: Colors.amber,
@@ -508,8 +539,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.cloud_download_rounded),
                       color: Colors.amber,
@@ -535,8 +565,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                 Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: [
                     IconButton(
                       icon: const Icon(Icons.list_alt_outlined),
                       color: Colors.amber,
@@ -561,9 +590,73 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ],
                 ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.add_to_home_screen_outlined),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: _openSite,
+                    ),
+                    const Text(
+                      'Abrir Site',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.settings_suggest),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Settings(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Text(
+                      'Configurações',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.logout),
+                      color: Colors.amber,
+                      iconSize: 48,
+                      //tooltip: '',
+                      onPressed: _logoutApp,
+                    ),
+                    const Text(
+                      'Desconectar',
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ),
+          ), /*
           const Padding(
             padding: EdgeInsets.only(top: 50),
             child: Image(
@@ -571,7 +664,7 @@ class _DashboardState extends State<Dashboard> {
               width: 200,
               height: 200,
             ),
-          )
+          )*/
         ],
       ),
     );

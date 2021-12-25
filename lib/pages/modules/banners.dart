@@ -137,11 +137,11 @@ class _BannersState extends State<Banners> {
     // final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Banners'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.add_a_photo),
             iconSize: 40,
@@ -197,7 +197,7 @@ class _BannersState extends State<Banners> {
                               title: const Text('Remover imagem'),
                               content: Text(
                                   'Tem certeza que deseja remover a imagem\n$value?'),
-                              actions: <Widget>[
+                              actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: const Text(

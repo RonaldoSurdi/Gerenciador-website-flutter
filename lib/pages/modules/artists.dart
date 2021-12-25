@@ -120,11 +120,11 @@ class _ArtistsState extends State<Artists> {
     var size = MediaQuery.of(context).size;
     final double imageSize = size.width / 3;
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Artistas'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.person_add_alt),
             iconSize: 40,
@@ -180,7 +180,7 @@ class _ArtistsState extends State<Artists> {
                               title: const Text('Remover foto'),
                               content: Text(
                                   'Tem certeza que deseja remover a artista\n$value?'),
-                              actions: <Widget>[
+                              actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
                                   child: const Text(

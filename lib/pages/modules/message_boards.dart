@@ -57,7 +57,7 @@ class _MessageBoardsState extends State<MessageBoards> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     Radio(
                       value: false,
                       groupValue: _viewValue,
@@ -161,7 +161,7 @@ class _MessageBoardsState extends State<MessageBoards> {
                 ),
               ],
             ),
-            actions: <Widget>[
+            actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
@@ -297,11 +297,11 @@ class _MessageBoardsState extends State<MessageBoards> {
     const double itemHeight = 100;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Mural de Recados'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.add_comment),
             iconSize: 40,
@@ -378,7 +378,7 @@ class _MessageBoardsState extends State<MessageBoards> {
                           title: const Text('Remover recado'),
                           content: Text(
                               'Tem certeza que deseja remover o recado\n${value.name}?'),
-                          actions: <Widget>[
+                          actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: const Text(

@@ -59,7 +59,7 @@ class _ScheduleState extends State<Schedule> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     Radio(
                       value: false,
                       groupValue: _viewValue,
@@ -206,7 +206,7 @@ class _ScheduleState extends State<Schedule> {
                 ),
               ],
             ),
-            actions: <Widget>[
+            actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
@@ -342,11 +342,11 @@ class _ScheduleState extends State<Schedule> {
     const double itemHeight = 100;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Agenda de Shows'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.add_alarm_rounded),
             iconSize: 40,
@@ -413,7 +413,7 @@ class _ScheduleState extends State<Schedule> {
                           title: const Text('Remover data'),
                           content: Text(
                               'Tem certeza que deseja remover a data\n${value.title}?'),
-                          actions: <Widget>[
+                          actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: const Text(

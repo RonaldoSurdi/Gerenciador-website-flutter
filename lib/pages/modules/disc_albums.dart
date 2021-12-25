@@ -4,19 +4,19 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:hwscontrol/pages/modules/disc_list.dart';
+import 'package:hwscontrol/pages/modules/disc_sounds.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/disc_model.dart';
 
-class Discs extends StatefulWidget {
-  const Discs({Key? key}) : super(key: key);
+class DiscAlbums extends StatefulWidget {
+  const DiscAlbums({Key? key}) : super(key: key);
 
   @override
-  _DiscsState createState() => _DiscsState();
+  _DiscAlbumsState createState() => _DiscAlbumsState();
 }
 
-class _DiscsState extends State<Discs> {
+class _DiscAlbumsState extends State<DiscAlbums> {
   final _picker = ImagePicker();
   List<XFile>? _imageFileList;
   final TextEditingController _idController = MaskedTextController(
@@ -146,7 +146,7 @@ class _DiscsState extends State<Discs> {
                 ),
               ],
             ),
-            actions: <Widget>[
+            actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
@@ -277,7 +277,7 @@ class _DiscsState extends State<Discs> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (builder) => DiscList(
+        builder: (builder) => DiscSounds(
           itemId: itemId.toString().toString().padLeft(5, '0'),
           itemTitle: itemTitle.toUpperCase(),
         ),
@@ -346,11 +346,11 @@ class _DiscsState extends State<Discs> {
     const double itemHeight = 100;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Discografia'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
@@ -448,7 +448,7 @@ class _DiscsState extends State<Discs> {
                                 title: const Text('Remover álbum'),
                                 content: Text(
                                     'Tem certeza que deseja remover o álbum\n${value.id.toString().padLeft(2, '0')} - ${value.title}?'),
-                                actions: <Widget>[
+                                actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
                                     child: const Text(

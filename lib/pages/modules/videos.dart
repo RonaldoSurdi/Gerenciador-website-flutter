@@ -39,7 +39,7 @@ class _VideosState extends State<Videos> {
               decoration: const InputDecoration(
                   hintText: "Cole o link do vídeo aqui..."),
             ),
-            actions: <Widget>[
+            actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
@@ -181,11 +181,11 @@ class _VideosState extends State<Videos> {
     const double itemHeight = 100;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Vídeos Youtube'),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.move_to_inbox_outlined),
             iconSize: 40,
@@ -267,7 +267,7 @@ class _VideosState extends State<Videos> {
                           title: const Text('Remover vídeo'),
                           content: Text(
                               'Tem certeza que deseja remover o vídeo\n${value.title}?'),
-                          actions: <Widget>[
+                          actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: Container(

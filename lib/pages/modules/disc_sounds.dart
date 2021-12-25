@@ -9,20 +9,20 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/sound_model.dart';
 
-class DiscList extends StatefulWidget {
+class DiscSounds extends StatefulWidget {
   final String itemId;
   final String itemTitle;
-  const DiscList({
+  const DiscSounds({
     Key? key,
     required this.itemId,
     required this.itemTitle,
   }) : super(key: key);
 
   @override
-  _DiscListState createState() => _DiscListState();
+  _DiscSoundsState createState() => _DiscSoundsState();
 }
 
-class _DiscListState extends State<DiscList> {
+class _DiscSoundsState extends State<DiscSounds> {
   final TextEditingController _trackController = MaskedTextController(
     mask: '00',
     text: '',
@@ -157,7 +157,7 @@ class _DiscListState extends State<DiscList> {
                 ),
               ],
             ),
-            actions: <Widget>[
+            actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
@@ -322,13 +322,13 @@ class _DiscListState extends State<DiscList> {
     const double itemHeight = 100;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: Text(
           '${widget.itemId} - ${widget.itemTitle}',
         ),
         backgroundColor: Colors.black38,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
@@ -408,7 +408,7 @@ class _DiscListState extends State<DiscList> {
                           title: const Text('Remover música'),
                           content: Text(
                               'Tem certeza que deseja remover a música\n${value.track.toString().padLeft(2, '0')} - ${value.title}?'),
-                          actions: <Widget>[
+                          actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
                               child: const Text(

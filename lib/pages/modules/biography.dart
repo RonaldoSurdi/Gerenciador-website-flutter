@@ -69,7 +69,7 @@ class _BiographyState extends State<Biography> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFF666666),
+      backgroundColor: Colors.black87,
       appBar: AppBar(
         title: const Text('Biografia'),
         backgroundColor: Colors.black38,

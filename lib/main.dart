@@ -1,42 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hwscontrol/core/theme/colors_theme.dart';
+import 'package:hwscontrol/core/theme/default_theme.dart';
 import 'package:hwscontrol/pages/modules/initialize.dart';
 import 'package:hwscontrol/core/theme/custom_animation.dart';
-
-final ThemeData defaultTheme = ThemeData(
-  primaryColor: ColorsTheme.gainsboro,
-  iconTheme: const IconThemeData(
-    color: ColorsTheme.gainsboro,
-    opacity: 1,
-    size: 33,
-  ),
-  bottomAppBarTheme: const BottomAppBarTheme(
-    color: ColorsTheme.gainsboro,
-  ),
-  secondaryHeaderColor: ColorsTheme.greenDefault,
-  appBarTheme: AppBarTheme(
-    systemOverlayStyle: const SystemUiOverlayStyle(
-      statusBarBrightness: Brightness.light,
-    ),
-    color: ColorsTheme.gainsboro,
-    centerTitle: true,
-    titleTextStyle: const TextStyle(
-      color: Colors.white70,
-      fontSize: 33.0,
-      fontFamily: 'WorkSansMedium',
-    ),
-    backgroundColor: ColorsTheme.greyDefault,
-  ),
-  textSelectionTheme: const TextSelectionThemeData(
-    cursorColor: Colors.white,
-    selectionColor: Colors.white,
-    selectionHandleColor: Colors.white,
-  ),
-  scaffoldBackgroundColor: ColorsTheme.greyBackground,
-);
 
 void configLoading() {
   EasyLoading.instance
@@ -70,9 +37,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Painel de controle',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      themeMode: ThemeMode.system,
+      theme: DefaultClass.lightTheme,
+      darkTheme: DefaultClass.darkTheme,
+      //theme: defaultTheme,
       //supportedLocales: const [Locale('pt', 'BR')],
       home: const Initialize(title: 'Loading...'),
       builder: EasyLoading.init(),
