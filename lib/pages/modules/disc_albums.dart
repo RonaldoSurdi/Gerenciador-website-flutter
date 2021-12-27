@@ -424,7 +424,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                           width: 40.0,
                           child: FloatingActionButton(
                             mini: false,
-                            tooltip: 'Adicionar músicas',
+                            tooltip: 'Lista de músicas',
                             child: const Icon(Icons.audiotrack_outlined),
                             backgroundColor: Colors.blue,
                             onPressed: () =>

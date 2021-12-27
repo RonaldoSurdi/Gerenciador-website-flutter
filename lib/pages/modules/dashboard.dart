@@ -229,7 +229,7 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.adjust_rounded),
+              leading: const Icon(Icons.audiotrack_outlined),
               title: const Text('Discografia'),
               onTap: () {
                 Navigator.push(
@@ -437,7 +437,7 @@ class _DashboardState extends State<Dashboard> {
                 Column(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.adjust_rounded),
+                      icon: const Icon(Icons.audiotrack_outlined),
                       color: Colors.amber,
                       iconSize: 48,
                       //tooltip: '',

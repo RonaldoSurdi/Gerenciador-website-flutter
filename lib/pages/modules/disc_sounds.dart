@@ -286,22 +286,31 @@ class _DiscSoundsState extends State<DiscSounds> {
   Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db.collection("discs").orderBy('id').get();
+    var data = await db
+        .collection("discs")
+        .doc(widget.itemId)
+        .collection("sounds")
+        .orderBy('track')
+        .get();
     var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
-        SoundModel soundModel = SoundModel(
-          track: response[i]["track"],
-          title: response[i]["title"],
-          info: response[i]["info"].toString().replaceAll('null', ''),
-          movie: response[i]["movie"].toString().replaceAll('null', ''),
-          lyric: response[i]["lyric"].toString().replaceAll('null', ''),
-          cipher: response[i]["cipher"].toString().replaceAll('null', ''),
-          audio: response[i]["audio"].toString().replaceAll('null', ''),
-        );
-        _widgetList.add(soundModel);
-      });
-    }
+    setState(() {
+      if (response.isNotEmpty) {
+        for (int i = 0; i < response.length; i++) {
+          setState(() {
+            SoundModel soundModel = SoundModel(
+              track: response[i]["track"],
+              title: response[i]["title"],
+              info: response[i]["info"].toString().replaceAll('null', ''),
+              movie: response[i]["movie"].toString().replaceAll('null', ''),
+              lyric: response[i]["lyric"].toString().replaceAll('null', ''),
+              cipher: response[i]["cipher"].toString().replaceAll('null', ''),
+              audio: response[i]["audio"].toString().replaceAll('null', ''),
+            );
+            _widgetList.add(soundModel);
+          });
+        }
+      }
+    });
   }
 
   @override
