@@ -1,7 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -32,12 +32,6 @@ class _DiscSoundsState extends State<DiscSounds> {
   final TextEditingController _movieController = TextEditingController();
   final TextEditingController _lyricController = TextEditingController();
   final TextEditingController _cipherController = TextEditingController();
-  String? _trackValue;
-  String? _titleValue;
-  String? _infoValue;
-  String? _movieValue;
-  String? _lyricValue;
-  String? _cipherValue;
 
   final List<SoundModel> _widgetList = [];
 
@@ -49,6 +43,11 @@ class _DiscSoundsState extends State<DiscSounds> {
     );
 
     if (result != null) {
+      EasyLoading.showInfo(
+        'enviando arquivo...',
+        maskType: EasyLoadingMaskType.custom,
+      );
+
       Uint8List? fileBytes = result.files.first.bytes;
       String? fileName = result.files.first.name;
       String? fileExt = result.files.first.extension;
@@ -60,10 +59,6 @@ class _DiscSoundsState extends State<DiscSounds> {
           .putData(fileBytes!);
 
       setState(() {
-        CustomSnackBar(
-          context,
-          Text("Música importada com sucesso.\n$fileName"),
-        );
         Timer(const Duration(milliseconds: 1500), () {
           _getData();
         });
@@ -83,11 +78,6 @@ class _DiscSoundsState extends State<DiscSounds> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _trackValue = value;
-                    });
-                  },
                   controller: _trackController,
                   keyboardType: TextInputType.number,
                   maxLength: 2,
@@ -96,11 +86,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _titleValue = value;
-                    });
-                  },
                   controller: _titleController,
                   maxLength: 100,
                   decoration: const InputDecoration(
@@ -108,11 +93,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _movieValue = value;
-                    });
-                  },
                   controller: _movieController,
                   maxLength: 100,
                   decoration: const InputDecoration(
@@ -120,11 +100,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _lyricValue = value;
-                    });
-                  },
                   controller: _lyricController,
                   maxLength: 100,
                   decoration: const InputDecoration(
@@ -132,11 +107,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _cipherValue = value;
-                    });
-                  },
                   controller: _cipherController,
                   maxLength: 100,
                   decoration: const InputDecoration(
@@ -144,11 +114,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _infoValue = value;
-                    });
-                  },
                   controller: _infoController,
                   maxLength: 16,
                   maxLines: 5,
@@ -171,15 +136,24 @@ class _DiscSoundsState extends State<DiscSounds> {
               ),
               TextButton(
                 onPressed: () {
-                  _saveData(
-                    _trackValue,
-                    _titleValue,
-                    _infoValue,
-                    _movieValue,
-                    _lyricValue,
-                    _cipherValue,
-                  );
-                  Navigator.pop(context);
+                  if (_trackController.text.isEmpty) {
+                    CustomSnackBar(
+                        context, const Text('Digite o número do álbum.'),
+                        backgroundColor: Colors.red);
+                  } else if (_titleController.text.isEmpty) {
+                    CustomSnackBar(
+                        context, const Text('Digite o título do álbum.'),
+                        backgroundColor: Colors.red);
+                  } else {
+                    _saveData(
+                        num.parse(_trackController.text),
+                        _titleController.text,
+                        _movieController.text,
+                        _lyricController.text,
+                        _cipherController.text,
+                        _infoController.text);
+                    Navigator.pop(context);
+                  }
                 },
                 child: const Text(
                   'Salvar',
@@ -199,41 +173,18 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   // faz o envio da imagem para o storage
   Future _saveData(
-    _trackValue,
-    _titleValue,
-    _infoValue,
-    _movieValue,
-    _lyricValue,
-    _cipherValue,
+    num _trackValue,
+    String _titleValue,
+    String _movieValue,
+    String _lyricValue,
+    String _cipherValue,
+    String _infoValue,
   ) async {
-    if (_trackValue.trim().isNotEmpty &&
-        _trackValue.trim().length >= 1 &&
-        _titleValue.trim().isNotEmpty &&
-        _titleValue.trim().length >= 3) {
-      _onSaveData(
-        _trackValue,
-        _titleValue,
-        _infoValue,
-        _movieValue,
-        _lyricValue,
-        _cipherValue,
-      );
-    } else {
-      CustomSnackBar(
-          context, const Text('Preencha todos dados e tente novamente!'),
-          backgroundColor: Colors.red);
-    }
-    return Future.value(true);
-  }
+    EasyLoading.showInfo(
+      'processando...',
+      maskType: EasyLoadingMaskType.custom,
+    );
 
-  Future _onSaveData(
-    _trackValue,
-    _titleValue,
-    _infoValue,
-    _movieValue,
-    _lyricValue,
-    _cipherValue,
-  ) async {
     SoundModel soundModel = SoundModel(
       track: _trackValue,
       title: _titleValue,
@@ -241,7 +192,6 @@ class _DiscSoundsState extends State<DiscSounds> {
       movie: _movieValue,
       lyric: _lyricValue,
       cipher: _cipherValue,
-      audio: null,
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -253,7 +203,6 @@ class _DiscSoundsState extends State<DiscSounds> {
         .set(soundModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Música adicionada com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -263,6 +212,11 @@ class _DiscSoundsState extends State<DiscSounds> {
   }
 
   Future _removeData(itemId) async {
+    EasyLoading.showSuccess(
+      'processando...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     await FirebaseFirestore.instance
         .collection("discs")
         .doc(widget.itemId)
@@ -276,7 +230,6 @@ class _DiscSoundsState extends State<DiscSounds> {
         .delete();
 
     setState(() {
-      CustomSnackBar(context, const Text("Música excluida com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
@@ -285,7 +238,7 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   Future _getData() async {
     _widgetList.clear();
-    FirebaseFirestore db = FirebaseFirestore.instance;
+    /*FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db
         .collection("discs")
         .doc(widget.itemId)
@@ -295,22 +248,33 @@ class _DiscSoundsState extends State<DiscSounds> {
     var response = data.docs;
     setState(() {
       if (response.isNotEmpty) {
+        _trackController.text = (response.length + 1).toString();
         for (int i = 0; i < response.length; i++) {
-          setState(() {
-            SoundModel soundModel = SoundModel(
-              track: response[i]["track"],
-              title: response[i]["title"],
-              info: response[i]["info"].toString().replaceAll('null', ''),
-              movie: response[i]["movie"].toString().replaceAll('null', ''),
-              lyric: response[i]["lyric"].toString().replaceAll('null', ''),
-              cipher: response[i]["cipher"].toString().replaceAll('null', ''),
-              audio: response[i]["audio"].toString().replaceAll('null', ''),
-            );
-            _widgetList.add(soundModel);
-          });
+          SoundModel soundModel = SoundModel(
+            track: response[i]["track"],
+            title: response[i]["title"],
+            info: response[i]["info"].toString().replaceAll('null', ''),
+            movie: response[i]["movie"].toString().replaceAll('null', ''),
+            lyric: response[i]["lyric"].toString().replaceAll('null', ''),
+            cipher: response[i]["cipher"].toString().replaceAll('null', ''),
+            audio: response[i]["audio"].toString().replaceAll('null', ''),
+          );
+          _widgetList.add(soundModel);
         }
+      } else {
+        _trackController.text = '1';
       }
-    });
+      _titleController.text = '';
+      _movieController.text = '';
+      _lyricController.text = '';
+      _cipherController.text = '';
+      _infoController.text = '';
+      if (EasyLoading.isShow) {
+        Timer(const Duration(milliseconds: 2000), () {
+          EasyLoading.dismiss(animation: true);
+        });
+      }
+    });*/
   }
 
   @override
@@ -350,109 +314,129 @@ class _DiscSoundsState extends State<DiscSounds> {
           ),
         ],
       ),
-      body: GridView.count(
-        crossAxisCount: 1,
-        childAspectRatio: (itemWidth / itemHeight),
-        controller: ScrollController(keepScrollOffset: false),
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        children: _widgetList.map((SoundModel value) {
-          return Container(
-            color: Colors.black26,
-            margin: const EdgeInsets.all(1.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                  child: Text(
-                    value.track.toString().padLeft(2, '0'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                      fontFamily: 'WorkSansLigth',
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                    child: Text(
-                      '${value.title}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.0,
-                        fontFamily: 'WorkSansLigth',
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: SizedBox(
-                    height: 40.0,
-                    width: 40.0,
-                    child: FloatingActionButton(
-                      mini: false,
-                      tooltip: 'Adicionar música',
-                      child: const Icon(Icons.add_a_photo),
-                      backgroundColor: Colors.green,
-                      onPressed: () => _selectSound(value.track),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                  child: SizedBox(
-                    height: 25.0,
-                    width: 25.0,
-                    child: FloatingActionButton(
-                      mini: true,
-                      tooltip: 'Remover música',
-                      child: const Icon(Icons.close),
-                      backgroundColor: Colors.red,
-                      onPressed: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Remover música'),
-                          content: Text(
-                              'Tem certeza que deseja remover a música\n${value.track.toString().padLeft(2, '0')} - ${value.title}?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                'Cancelar',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16.0,
-                                  fontFamily: 'WorkSansMedium',
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                _removeData(value.track);
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                'Excluir',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 16.0,
-                                  fontFamily: 'WorkSansMedium',
-                                ),
-                              ),
-                            ),
-                          ],
+      body: /*_widgetList.isNotEmpty
+          ? GridView.count(
+              crossAxisCount: 1,
+              childAspectRatio: (itemWidth / itemHeight),
+              controller: ScrollController(keepScrollOffset: false),
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              children: _widgetList.map((SoundModel value) {
+                return Container(
+                  color: Colors.black26,
+                  margin: const EdgeInsets.all(1.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                        child: Text(
+                          value.track.toString().padLeft(2, '0'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                            fontFamily: 'WorkSansLigth',
+                          ),
                         ),
                       ),
-                    ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                          child: Text(
+                            '${value.title}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.0,
+                              fontFamily: 'WorkSansLigth',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: SizedBox(
+                          height: 40.0,
+                          width: 40.0,
+                          child: FloatingActionButton(
+                            mini: false,
+                            tooltip: 'Adicionar música',
+                            child: const Icon(Icons.add_a_photo),
+                            backgroundColor: Colors.green,
+                            onPressed: () => _selectSound(value.track),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
+                        child: SizedBox(
+                          height: 25.0,
+                          width: 25.0,
+                          child: FloatingActionButton(
+                            mini: true,
+                            tooltip: 'Remover música',
+                            child: const Icon(Icons.close),
+                            backgroundColor: Colors.red,
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Remover música'),
+                                content: Text(
+                                    'Tem certeza que deseja remover a música\n${value.track.toString().padLeft(2, '0')} - ${value.title}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text(
+                                      'Cancelar',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16.0,
+                                        fontFamily: 'WorkSansMedium',
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      _removeData(value.track);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      'Excluir',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 16.0,
+                                        fontFamily: 'WorkSansMedium',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              }).toList())
+          : */
+          Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
+            alignment: Alignment.center,
+            child: Text(
+              EasyLoading.isShow
+                  ? 'sincronizando...'
+                  : 'Nenhum registro cadastrado.',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansLigth',
+              ),
             ),
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
   }

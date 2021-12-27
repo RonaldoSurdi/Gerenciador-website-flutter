@@ -52,6 +52,11 @@ class _DiscAlbumsState extends State<DiscAlbums> {
   }
 
   Future _uploadFile(num idDisc) async {
+    EasyLoading.showInfo(
+      'enviando imagem...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     String fileName = _imageFileList![0].name;
     String? filePut;
     String filePath = _imageFileList![0].path;
@@ -64,6 +69,11 @@ class _DiscAlbumsState extends State<DiscAlbums> {
       filePut = 'image.gif';
     } else {
       setState(() {
+        if (EasyLoading.isShow) {
+          Timer(const Duration(milliseconds: 2000), () {
+            EasyLoading.dismiss(animation: true);
+          });
+        }
         CustomSnackBar(context, const Text('Formato da imagem inválido!'),
             backgroundColor: Colors.red);
       });
@@ -94,7 +104,6 @@ class _DiscAlbumsState extends State<DiscAlbums> {
     });
 
     setState(() {
-      CustomSnackBar(context, Text("Capa importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -231,7 +240,6 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         .set(discModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum adicionado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -240,7 +248,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
     return Future.value(true);
   }
 
-  Future _removeData(num itemId) async {
+  Future _removeData([num itemId = 0, String itemImage = '']) async {
     EasyLoading.showSuccess(
       'processando...',
       maskType: EasyLoadingMaskType.custom,
@@ -251,38 +259,67 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         .doc(itemId.toString().padLeft(5, '0'))
         .delete();
 
-    firebase_storage.Reference arquive = firebase_storage
-        .FirebaseStorage.instance
-        .ref()
-        .child("discs")
-        .child(itemId.toString().padLeft(5, '0'));
+    if (itemImage.isNotEmpty && itemImage != 'images%2Fdefault.jpg') {
+      firebase_storage.Reference arquive = firebase_storage
+          .FirebaseStorage.instance
+          .ref()
+          .child("discs")
+          .child(itemId.toString().padLeft(5, '0'));
 
-    await arquive
-        .listAll()
-        .then((firebase_storage.ListResult listResult) async {
-      if (listResult.items.isNotEmpty) {
-        await arquive.delete();
-      }
-    });
+      await arquive
+          .listAll()
+          .then((firebase_storage.ListResult listResult) async {
+        if (listResult.items.isNotEmpty) {
+          await arquive.delete();
+        }
+      });
+    }
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
-      Timer(const Duration(milliseconds: 500), () {
+      Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
     });
   }
 
-  Future _redirectTo(num itemId, String itemTitle) async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (builder) => DiscSounds(
-          itemId: itemId.toString().toString().padLeft(5, '0'),
-          itemTitle: itemTitle.toUpperCase(),
+  Future _redirectTo([
+    num itemId = 0,
+    String itemTitle = '',
+    String itemImage = '',
+  ]) async {
+    if (itemImage.isEmpty || itemImage == 'images%2Fdefault.jpg') {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Remover álbum'),
+          content: Text(
+              'É necessário importar a capa para o álbum \n${itemId.toString().padLeft(2, '0')} - $itemTitle!'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Fechar',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontFamily: 'WorkSansMedium',
+                ),
+              ),
+            ),
+          ],
         ),
-      ),
-    );
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (builder) => DiscSounds(
+            itemId: itemId.toString().padLeft(5, '0'),
+            itemTitle: itemTitle.toUpperCase(),
+          ),
+        ),
+      );
+    }
   }
 
   Future _getData() async {
@@ -293,10 +330,8 @@ class _DiscAlbumsState extends State<DiscAlbums> {
     setState(() {
       if (response.isNotEmpty) {
         _idController.text = (response.length + 1).toString();
-        _titleController.text = '';
         _yearController.text =
             (response[response.length - 1]["year"] + 1).toString();
-        _infoController.text = '';
         for (int i = 0; i < response.length; i++) {
           String? idParse = response[i]["id"].toString().padLeft(5, '0');
           String? imageGet = response[i]["image"];
@@ -316,10 +351,10 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         }
       } else {
         _idController.text = '1';
-        _titleController.text = '';
         _yearController.text = '';
-        _infoController.text = '';
       }
+      _titleController.text = '';
+      _infoController.text = '';
       if (EasyLoading.isShow) {
         Timer(const Duration(milliseconds: 2000), () {
           EasyLoading.dismiss(animation: true);
@@ -427,8 +462,8 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                             tooltip: 'Lista de músicas',
                             child: const Icon(Icons.audiotrack_outlined),
                             backgroundColor: Colors.blue,
-                            onPressed: () =>
-                                _redirectTo(value.id!, value.title!),
+                            onPressed: () => _redirectTo(
+                                value.id!, value.title!, value.image!),
                           ),
                         ),
                       ),
@@ -462,7 +497,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      _removeData(value.id!);
+                                      _removeData(value.id!, value.image!);
                                       Navigator.pop(context);
                                     },
                                     child: const Text(
@@ -490,9 +525,11 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
                   alignment: Alignment.center,
-                  child: const Text(
-                    'Nenhum registro cadastrado',
-                    style: TextStyle(
+                  child: Text(
+                    EasyLoading.isShow
+                        ? 'sincronizando...'
+                        : 'Nenhum registro cadastrado.',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16.0,
                       fontFamily: 'WorkSansLigth',
