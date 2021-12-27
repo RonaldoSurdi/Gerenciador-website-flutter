@@ -49,7 +49,7 @@ class _DiscSoundsState extends State<DiscSounds> {
       );
 
       Uint8List? fileBytes = result.files.first.bytes;
-      String? fileName = result.files.first.name;
+      //String? fileName = result.files.first.name;
       String? fileExt = result.files.first.extension;
       String? filePut = '${idSound.toString().padLeft(2, '0')}$fileExt';
 
@@ -115,7 +115,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                 ),
                 TextField(
                   controller: _infoController,
-                  maxLength: 16,
                   maxLines: 5,
                   decoration:
                       const InputDecoration(hintText: "Informações (opcional)"),
@@ -192,6 +191,7 @@ class _DiscSoundsState extends State<DiscSounds> {
       movie: _movieValue,
       lyric: _lyricValue,
       cipher: _cipherValue,
+      audio: '',
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -238,7 +238,7 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   Future _getData() async {
     _widgetList.clear();
-    /*FirebaseFirestore db = FirebaseFirestore.instance;
+    FirebaseFirestore db = FirebaseFirestore.instance;
     var data = await db
         .collection("discs")
         .doc(widget.itemId)
@@ -274,7 +274,7 @@ class _DiscSoundsState extends State<DiscSounds> {
           EasyLoading.dismiss(animation: true);
         });
       }
-    });*/
+    });
   }
 
   @override
@@ -314,7 +314,7 @@ class _DiscSoundsState extends State<DiscSounds> {
           ),
         ],
       ),
-      body: /*_widgetList.isNotEmpty
+      body: _widgetList.isNotEmpty
           ? GridView.count(
               crossAxisCount: 1,
               childAspectRatio: (itemWidth / itemHeight),
@@ -329,24 +329,24 @@ class _DiscSoundsState extends State<DiscSounds> {
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Container(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                        padding: const EdgeInsets.fromLTRB(25, 5, 5, 5),
                         child: Text(
                           value.track.toString().padLeft(2, '0'),
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 14.0,
+                            fontSize: 20.0,
                             fontFamily: 'WorkSansLigth',
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                          padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
                           child: Text(
                             '${value.title}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 14.0,
+                              fontSize: 16.0,
                               fontFamily: 'WorkSansLigth',
                             ),
                           ),
@@ -359,8 +359,8 @@ class _DiscSoundsState extends State<DiscSounds> {
                           width: 40.0,
                           child: FloatingActionButton(
                             mini: false,
-                            tooltip: 'Adicionar música',
-                            child: const Icon(Icons.add_a_photo),
+                            tooltip: 'Enviar mp3',
+                            child: const Icon(Icons.upload),
                             backgroundColor: Colors.green,
                             onPressed: () => _selectSound(value.track),
                           ),
@@ -418,26 +418,25 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 );
               }).toList())
-          : */
-          Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
-            alignment: Alignment.center,
-            child: Text(
-              EasyLoading.isShow
-                  ? 'sincronizando...'
-                  : 'Nenhum registro cadastrado.',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16.0,
-                fontFamily: 'WorkSansLigth',
-              ),
+          : Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
+                  alignment: Alignment.center,
+                  child: Text(
+                    EasyLoading.isShow
+                        ? 'sincronizando...'
+                        : 'Nenhum registro cadastrado.',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontFamily: 'WorkSansLigth',
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

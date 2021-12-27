@@ -199,7 +199,6 @@ class _ScheduleState extends State<Schedule> {
                     });
                   },
                   controller: _descriptionController,
-                  maxLength: 16,
                   maxLines: 5,
                   decoration:
                       const InputDecoration(hintText: "Observações (opcional)"),
@@ -373,7 +372,7 @@ class _ScheduleState extends State<Schedule> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Container(
-                  padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
+                  padding: const EdgeInsets.fromLTRB(25, 5, 5, 5),
                   child: Text(
                     DateFormat('dd/MM/yy kk:mm')
                         .format(value.dateini!.toDate()),

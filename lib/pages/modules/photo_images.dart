@@ -6,8 +6,13 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 
 class PhotoImages extends StatefulWidget {
-  final String idAlbum;
-  const PhotoImages({Key? key, required this.idAlbum}) : super(key: key);
+  final String itemId;
+  final String itemTitle;
+  const PhotoImages({
+    Key? key,
+    required this.itemId,
+    required this.itemTitle,
+  }) : super(key: key);
 
   @override
   _PhotoImagesState createState() => _PhotoImagesState();
@@ -51,7 +56,7 @@ class _PhotoImagesState extends State<PhotoImages> {
         .FirebaseStorage.instance
         .ref()
         .child("photos")
-        .child(widget.idAlbum)
+        .child(widget.itemId)
         .child(fileName);
 
     final metadata = firebase_storage.SettableMetadata(
@@ -77,7 +82,7 @@ class _PhotoImagesState extends State<PhotoImages> {
         .FirebaseStorage.instance
         .ref()
         .child("photos")
-        .child(widget.idAlbum)
+        .child(widget.itemId)
         .child(fileName);
 
     await arquive.delete();
@@ -97,7 +102,7 @@ class _PhotoImagesState extends State<PhotoImages> {
         .FirebaseStorage.instance
         .ref()
         .child("photos")
-        .child(widget.idAlbum);
+        .child(widget.itemId);
 
     arquive.listAll().then((firebase_storage.ListResult listResult) {
       for (int i = 0; i < listResult.items.length; i++) {
@@ -128,7 +133,7 @@ class _PhotoImagesState extends State<PhotoImages> {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: const Text('Galeria de fotos'),
+        title: Text('Fotos ${widget.itemTitle}'),
         backgroundColor: Colors.black38,
         actions: [
           IconButton(

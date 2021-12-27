@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:hwscontrol/core/components/storage.dart';
 import 'package:hwscontrol/pages/modules/artists.dart';
 import 'package:hwscontrol/pages/modules/banners.dart';
@@ -8,13 +10,11 @@ import 'package:hwscontrol/pages/modules/downloads.dart';
 import 'package:hwscontrol/pages/modules/login_page.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/modules/message_boards.dart';
 import 'package:hwscontrol/pages/modules/photo_albums.dart';
 import 'package:hwscontrol/pages/modules/schedule.dart';
 import 'package:hwscontrol/pages/modules/settings.dart';
 import 'package:hwscontrol/pages/modules/videos.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Dashboard extends StatefulWidget {
   final String title;
@@ -124,26 +124,22 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    var gritCol = 4;
+    int gritCol = 4;
     int sizeCol = MediaQuery.of(context).size.width.toInt();
     double widthCol = MediaQuery.of(context).size.width;
     double heightCol = 120;
     if (sizeCol >= 1500) {
       gritCol = 8;
-      widthCol = widthCol / gritCol;
     } else if (sizeCol >= 900) {
       gritCol = 6;
-      widthCol = widthCol / gritCol;
     } else if (sizeCol >= 600) {
       gritCol = 4;
-      widthCol = widthCol / gritCol;
     } else if (sizeCol >= 200) {
       gritCol = 2;
-      widthCol = widthCol / gritCol;
     } else {
       gritCol = 1;
-      widthCol = widthCol / gritCol;
     }
+    widthCol = widthCol / gritCol;
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(

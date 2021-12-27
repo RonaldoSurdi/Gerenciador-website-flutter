@@ -130,9 +130,21 @@ class _BannersState extends State<Banners> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    final double itemWidth = size.width;
-    final double itemHeight = itemWidth / 1.78;
+    int gritCol = 4;
+    int sizeCol = MediaQuery.of(context).size.width.toInt();
+    double widthCol = MediaQuery.of(context).size.width;
+    double heightCol = widthCol / 4;
+    if (sizeCol >= 1500) {
+      gritCol = 4;
+    } else if (sizeCol >= 600) {
+      gritCol = 3;
+    } else if (sizeCol >= 200) {
+      gritCol = 2;
+    } else {
+      gritCol = 1;
+    }
+    widthCol = widthCol / gritCol;
+    heightCol = widthCol / 2;
     /*24 is for notification bar on Android*/
     // final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
 
@@ -157,12 +169,13 @@ class _BannersState extends State<Banners> {
       body: Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: GridView.count(
-          crossAxisCount: 1,
-          childAspectRatio: (itemWidth / itemHeight),
+          crossAxisCount: gritCol,
+          childAspectRatio: (widthCol / heightCol),
+          //childAspectRatio: 200,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           controller: ScrollController(keepScrollOffset: false),
-          //shrinkWrap: true,
+          shrinkWrap: true,
           scrollDirection: Axis.vertical,
           children: _widgetList.map((String value) {
             return Container(
@@ -175,7 +188,7 @@ class _BannersState extends State<Banners> {
                       image: NetworkImage(
                           'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F$value?alt=media'),
                       fit: BoxFit.fitWidth,
-                      width: itemWidth,
+                      width: widthCol,
                     ),
                   ),
                   Align(

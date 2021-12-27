@@ -155,7 +155,6 @@ class _MessageBoardsState extends State<MessageBoards> {
                     });
                   },
                   controller: _messageController,
-                  maxLength: 16,
                   maxLines: 5,
                   decoration: const InputDecoration(hintText: "Mensagem"),
                 ),

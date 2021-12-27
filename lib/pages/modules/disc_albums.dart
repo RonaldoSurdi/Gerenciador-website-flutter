@@ -148,7 +148,6 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                 ),
                 TextField(
                   controller: _infoController,
-                  maxLength: 16,
                   maxLines: 5,
                   decoration:
                       const InputDecoration(hintText: "Informações (opcional)"),

@@ -104,12 +104,13 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     });
   }
 
-  Future _redirectTo(idAlbum) async {
+  Future _redirectTo(itemId, itemTitle) async {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (builder) => PhotoImages(
-          idAlbum: idAlbum,
+          itemId: itemId,
+          itemTitle: itemTitle,
         ),
       ),
     );
@@ -165,132 +166,130 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     var size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
     const double itemHeight = 100;
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.black87,
-        appBar: AppBar(
-          title: const Text('Galeria de fotos'),
-          backgroundColor: Colors.black38,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add_photo_alternate),
-              iconSize: 40,
-              color: Colors.amber,
-              splashColor: Colors.yellow,
-              tooltip: 'Adicionar álbum',
-              onPressed: () {
-                _addNew(context);
-              },
+    return Scaffold(
+      backgroundColor: Colors.black87,
+      appBar: AppBar(
+        title: const Text('Galeria de fotos'),
+        backgroundColor: Colors.black38,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_photo_alternate),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
+            tooltip: 'Adicionar álbum',
+            onPressed: () {
+              _addNew(context);
+            },
+          ),
+        ],
+      ),
+      body: GridView.count(
+        crossAxisCount: 1,
+        childAspectRatio: (itemWidth / itemHeight),
+        controller: ScrollController(keepScrollOffset: false),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        children: _widgetList.map((AlbumModel value) {
+          return Container(
+            color: Colors.black26,
+            margin: const EdgeInsets.all(1.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  height: 70,
+                  padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image(
+                      image: NetworkImage(
+                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${value.image}?alt=media'),
+                      fit: BoxFit.cover,
+                      width: 90,
+                      height: 70,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                    child: Text(
+                      '${value.description}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                  child: SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: FloatingActionButton(
+                      mini: false,
+                      tooltip: 'Adicionar fotos',
+                      child: const Icon(Icons.add_a_photo),
+                      backgroundColor: Colors.green,
+                      onPressed: () => _redirectTo(value.id, value.description),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
+                  child: SizedBox(
+                    height: 25.0,
+                    width: 25.0,
+                    child: FloatingActionButton(
+                      mini: true,
+                      tooltip: 'Remover álbum',
+                      child: const Icon(Icons.close),
+                      backgroundColor: Colors.red,
+                      onPressed: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Remover álbum'),
+                          content: Text(
+                              'Tem certeza que deseja remover o álbum\n${value.description}?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _removeData(value.id);
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                'Excluir',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16.0,
+                                  fontFamily: 'WorkSansMedium',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        body: GridView.count(
-          crossAxisCount: 1,
-          childAspectRatio: (itemWidth / itemHeight),
-          controller: ScrollController(keepScrollOffset: false),
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          children: _widgetList.map((AlbumModel value) {
-            return Container(
-              color: Colors.black26,
-              margin: const EdgeInsets.all(1.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    height: 70,
-                    padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: Image(
-                        image: NetworkImage(
-                            'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${value.image}?alt=media'),
-                        fit: BoxFit.cover,
-                        width: 90,
-                        height: 70,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                      child: Text(
-                        '${value.description}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                          fontFamily: 'WorkSansLigth',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                    child: SizedBox(
-                      height: 40.0,
-                      width: 40.0,
-                      child: FloatingActionButton(
-                        mini: false,
-                        tooltip: 'Adicionar fotos',
-                        child: const Icon(Icons.add_a_photo),
-                        backgroundColor: Colors.green,
-                        onPressed: () => _redirectTo(value.id),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                    child: SizedBox(
-                      height: 25.0,
-                      width: 25.0,
-                      child: FloatingActionButton(
-                        mini: true,
-                        tooltip: 'Remover álbum',
-                        child: const Icon(Icons.close),
-                        backgroundColor: Colors.red,
-                        onPressed: () => showDialog<String>(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Remover álbum'),
-                            content: Text(
-                                'Tem certeza que deseja remover o álbum\n${value.description}?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text(
-                                  'Cancelar',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontFamily: 'WorkSansMedium',
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  _removeData(value.id);
-                                  Navigator.pop(context);
-                                },
-                                child: const Text(
-                                  'Excluir',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 16.0,
-                                    fontFamily: 'WorkSansMedium',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
+          );
+        }).toList(),
       ),
     );
   }
