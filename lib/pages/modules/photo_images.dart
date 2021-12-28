@@ -168,85 +168,105 @@ class _PhotoImagesState extends State<PhotoImages> {
       ),
       body: Container(
         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: GridView.count(
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 1.8,
-          controller: ScrollController(keepScrollOffset: false),
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          children: _widgetList.map((String value) {
-            return Container(
-              color: Colors.transparent,
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: Image(
-                      image: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media'),
-                      fit: BoxFit.fitWidth,
-                      width: imageSize,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                      child: SizedBox(
-                        height: 25.0,
-                        width: 25.0,
-                        child: FloatingActionButton(
-                          mini: true,
-                          elevation: 2,
-                          tooltip: 'Remover imagem',
-                          child: const Icon(Icons.close),
-                          backgroundColor: Colors.red,
-                          onPressed: () => showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Remover imagem'),
-                              content: Text(
-                                  'Tem certeza que deseja remover a imagem\n$value?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text(
-                                    'Cancelar',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontFamily: 'WorkSansMedium',
-                                    ),
+        child: _widgetList.isNotEmpty
+            ? GridView.count(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 1.8,
+                controller: ScrollController(keepScrollOffset: false),
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                children: _widgetList.map((String value) {
+                  return Container(
+                    color: Colors.transparent,
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Image(
+                            image: NetworkImage(
+                                'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media'),
+                            fit: BoxFit.fitWidth,
+                            width: imageSize,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                            child: SizedBox(
+                              height: 25.0,
+                              width: 25.0,
+                              child: FloatingActionButton(
+                                mini: true,
+                                elevation: 2,
+                                tooltip: 'Remover imagem',
+                                child: const Icon(Icons.close),
+                                backgroundColor: Colors.red,
+                                onPressed: () => showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                    title: const Text('Remover imagem'),
+                                    content: Text(
+                                        'Tem certeza que deseja remover a imagem\n$value?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text(
+                                          'Cancelar',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16.0,
+                                            fontFamily: 'WorkSansMedium',
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          _removeFile(value);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          'Excluir',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 16.0,
+                                            fontFamily: 'WorkSansMedium',
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    _removeFile(value);
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text(
-                                    'Excluir',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 16.0,
-                                      fontFamily: 'WorkSansMedium',
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                  );
+                }).toList())
+            : Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
+                    alignment: Alignment.center,
+                    child: Text(
+                      EasyLoading.isShow
+                          ? 'sincronizando...'
+                          : 'Nenhum registro cadastrado.',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontFamily: 'WorkSansLigth',
                       ),
                     ),
                   ),
                 ],
               ),
-            );
-          }).toList(),
-        ),
       ),
     );
   }

@@ -221,148 +221,168 @@ class _VideosState extends State<Videos> {
           ),
         ],
       ),
-      body: GridView.count(
-        crossAxisCount: 1,
-        childAspectRatio: (itemWidth / itemHeight),
-        controller: ScrollController(keepScrollOffset: false),
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        children: _widgetList.map((VideoModel value) {
-          return Container(
-            color: Colors.black26,
-            margin: const EdgeInsets.all(1.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  height: 70,
-                  padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
-                    child: Image(
-                      image: NetworkImage('${value.image}'),
-                      fit: BoxFit.cover,
-                      width: 100,
-                      height: 70,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
-                    child: Text(
-                      '${value.title}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: SizedBox(
-                    height: 40.0,
-                    width: 40.0,
-                    child: FloatingActionButton(
-                      mini: false,
-                      tooltip: 'Abrir vídeo Youtube',
-                      child: const Icon(Icons.movie_creation),
-                      backgroundColor: Colors.green,
-                      onPressed: () => _openMovie(value.watch),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                  child: SizedBox(
-                    height: 25.0,
-                    width: 25.0,
-                    child: FloatingActionButton(
-                      mini: true,
-                      tooltip: 'Remover vídeo',
-                      child: const Icon(Icons.close),
-                      backgroundColor: Colors.red,
-                      onPressed: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Remover vídeo'),
-                          content: Text(
-                              'Tem certeza que deseja remover o vídeo\n${value.title}?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                                color: Colors.red,
-                                child: const Text(
-                                  'Cancelar',
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 16.0,
-                                    fontFamily: 'WorkSansMedium',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                _removeData(value.date);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      color: CustomTheme.loginGradientStart,
-                                      offset: Offset(1.0, 6.0),
-                                      blurRadius: 20.0,
-                                    ),
-                                    BoxShadow(
-                                      color: CustomTheme.loginGradientEnd,
-                                      offset: Offset(1.0, 6.0),
-                                      blurRadius: 20.0,
-                                    ),
-                                  ],
-                                  gradient: LinearGradient(
-                                    colors: <Color>[
-                                      CustomTheme.loginGradientEnd,
-                                      CustomTheme.loginGradientStart
-                                    ],
-                                    begin: FractionalOffset(0.2, 0.2),
-                                    end: FractionalOffset(1.0, 1.0),
-                                    stops: <double>[0.0, 1.0],
-                                    tileMode: TileMode.clamp,
-                                  ),
-                                ),
-                                padding:
-                                    const EdgeInsets.fromLTRB(30, 10, 30, 10),
-                                color: Colors.amber,
-                                child: const Text(
-                                  'Excluir',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 16.0,
-                                    fontFamily: 'WorkSansMedium',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+      body: _widgetList.isNotEmpty
+          ? GridView.count(
+              crossAxisCount: 1,
+              childAspectRatio: (itemWidth / itemHeight),
+              controller: ScrollController(keepScrollOffset: false),
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              children: _widgetList.map((VideoModel value) {
+                return Container(
+                  color: Colors.black26,
+                  margin: const EdgeInsets.all(1.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        height: 70,
+                        padding: const EdgeInsets.fromLTRB(15, 5, 5, 5),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16.0),
+                          child: Image(
+                            image: NetworkImage('${value.image}'),
+                            fit: BoxFit.cover,
+                            width: 100,
+                            height: 70,
+                          ),
                         ),
                       ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                          child: Text(
+                            '${value.title}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontFamily: 'WorkSansLigth',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: SizedBox(
+                          height: 40.0,
+                          width: 40.0,
+                          child: FloatingActionButton(
+                            mini: false,
+                            tooltip: 'Abrir vídeo Youtube',
+                            child: const Icon(Icons.movie_creation),
+                            backgroundColor: Colors.green,
+                            onPressed: () => _openMovie(value.watch),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
+                        child: SizedBox(
+                          height: 25.0,
+                          width: 25.0,
+                          child: FloatingActionButton(
+                            mini: true,
+                            tooltip: 'Remover vídeo',
+                            child: const Icon(Icons.close),
+                            backgroundColor: Colors.red,
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Remover vídeo'),
+                                content: Text(
+                                    'Tem certeza que deseja remover o vídeo\n${value.title}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          30, 10, 30, 10),
+                                      color: Colors.red,
+                                      child: const Text(
+                                        'Cancelar',
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 16.0,
+                                          fontFamily: 'WorkSansMedium',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      _removeData(value.date);
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15.0)),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color:
+                                                CustomTheme.loginGradientStart,
+                                            offset: Offset(1.0, 6.0),
+                                            blurRadius: 20.0,
+                                          ),
+                                          BoxShadow(
+                                            color: CustomTheme.loginGradientEnd,
+                                            offset: Offset(1.0, 6.0),
+                                            blurRadius: 20.0,
+                                          ),
+                                        ],
+                                        gradient: LinearGradient(
+                                          colors: <Color>[
+                                            CustomTheme.loginGradientEnd,
+                                            CustomTheme.loginGradientStart
+                                          ],
+                                          begin: FractionalOffset(0.2, 0.2),
+                                          end: FractionalOffset(1.0, 1.0),
+                                          stops: <double>[0.0, 1.0],
+                                          tileMode: TileMode.clamp,
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          30, 10, 30, 10),
+                                      color: Colors.amber,
+                                      child: const Text(
+                                        'Excluir',
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 16.0,
+                                          fontFamily: 'WorkSansMedium',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList())
+          : Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
+                  alignment: Alignment.center,
+                  child: Text(
+                    EasyLoading.isShow
+                        ? 'sincronizando...'
+                        : 'Nenhum registro cadastrado.',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontFamily: 'WorkSansLigth',
                     ),
                   ),
                 ),
               ],
             ),
-          );
-        }).toList(),
-      ),
     );
   }
 }

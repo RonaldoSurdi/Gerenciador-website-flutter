@@ -381,97 +381,116 @@ class _ScheduleState extends State<Schedule> {
           ),
         ],
       ),
-      body: GridView.count(
-        crossAxisCount: 1,
-        childAspectRatio: (itemWidth / itemHeight),
-        controller: ScrollController(keepScrollOffset: false),
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        children: _widgetList.map((ScheduleModel value) {
-          return Container(
-            color: Colors.black26,
-            margin: const EdgeInsets.all(1.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(25, 5, 5, 5),
-                  child: Text(
-                    DateFormat('dd/MM/yy kk:mm')
-                        .format(value.dateini!.toDate()),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                      fontFamily: 'WorkSansLigth',
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
-                    child: Text(
-                      '${value.title}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                  child: SizedBox(
-                    height: 25.0,
-                    width: 25.0,
-                    child: FloatingActionButton(
-                      mini: true,
-                      tooltip: 'Remover data',
-                      child: const Icon(Icons.close),
-                      backgroundColor: Colors.red,
-                      onPressed: () => showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Remover data'),
-                          content: Text(
-                              'Tem certeza que deseja remover a data\n${value.title}?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text(
-                                'Cancelar',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16.0,
-                                  fontFamily: 'WorkSansMedium',
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                _removeData(value.id);
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                'Excluir',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 16.0,
-                                  fontFamily: 'WorkSansMedium',
-                                ),
-                              ),
-                            ),
-                          ],
+      body: _widgetList.isNotEmpty
+          ? GridView.count(
+              crossAxisCount: 1,
+              childAspectRatio: (itemWidth / itemHeight),
+              controller: ScrollController(keepScrollOffset: false),
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              children: _widgetList.map((ScheduleModel value) {
+                return Container(
+                  color: Colors.black26,
+                  margin: const EdgeInsets.all(1.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(25, 5, 5, 5),
+                        child: Text(
+                          DateFormat('dd/MM/yy kk:mm')
+                              .format(value.dateini!.toDate()),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                            fontFamily: 'WorkSansLigth',
+                          ),
                         ),
                       ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
+                          child: Text(
+                            '${value.title}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontFamily: 'WorkSansLigth',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
+                        child: SizedBox(
+                          height: 25.0,
+                          width: 25.0,
+                          child: FloatingActionButton(
+                            mini: true,
+                            tooltip: 'Remover data',
+                            child: const Icon(Icons.close),
+                            backgroundColor: Colors.red,
+                            onPressed: () => showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Remover data'),
+                                content: Text(
+                                    'Tem certeza que deseja remover a data\n${value.title}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text(
+                                      'Cancelar',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16.0,
+                                        fontFamily: 'WorkSansMedium',
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      _removeData(value.id);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      'Excluir',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 16.0,
+                                        fontFamily: 'WorkSansMedium',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList())
+          : Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(5, 20, 20, 5),
+                  alignment: Alignment.center,
+                  child: Text(
+                    EasyLoading.isShow
+                        ? 'sincronizando...'
+                        : 'Nenhum registro cadastrado.',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontFamily: 'WorkSansLigth',
                     ),
                   ),
                 ),
               ],
             ),
-          );
-        }).toList(),
-      ),
     );
   }
 }

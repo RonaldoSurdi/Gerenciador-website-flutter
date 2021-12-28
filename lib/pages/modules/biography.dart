@@ -110,7 +110,8 @@ class _BiographyState extends State<Biography> {
             style: const TextStyle(
               fontFamily: 'WorkSansThin',
               fontSize: 14,
-              color: Colors.white,
+              height: 2,
+              color: Colors.white70,
             ),
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
