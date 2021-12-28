@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,7 +29,7 @@ class _VideosState extends State<Videos> {
       builder: (context) {
         return StatefulBuilder(
           builder: (builder, setState) => AlertDialog(
-            title: const Text('Adicionar novo vídeo Youtube'),
+            title: const Text('Adicionar vídeo Youtube'),
             content: TextField(
               onChanged: (value) {
                 setState(() {
@@ -36,6 +37,7 @@ class _VideosState extends State<Videos> {
                 });
               },
               controller: _watchController,
+              maxLength: 200,
               decoration: const InputDecoration(
                   hintText: "Cole o link do vídeo aqui..."),
             ),
@@ -106,6 +108,11 @@ class _VideosState extends State<Videos> {
   }
 
   Future _onSaveData(_titleText, _imageText, _watchText) async {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
@@ -116,7 +123,6 @@ class _VideosState extends State<Videos> {
     db.collection("videos").doc(dateNow).set(videoModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Vídeo criado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -126,10 +132,14 @@ class _VideosState extends State<Videos> {
   }
 
   Future _removeData(itemId) async {
+    EasyLoading.showInfo(
+      'removendo video...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     await FirebaseFirestore.instance.collection("videos").doc(itemId).delete();
 
     setState(() {
-      CustomSnackBar(context, const Text("Vídeo excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
@@ -147,18 +157,31 @@ class _VideosState extends State<Videos> {
 
   Future _getData() async {
     _widgetList.clear();
+
     FirebaseFirestore db = FirebaseFirestore.instance;
+
     var data =
         await db.collection("videos").orderBy('date', descending: true).get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
+
+    setState(() {
+      var response = data.docs;
+      for (int i = 0; i < response.length; i++) {
         VideoModel videoModel = VideoModel(
-            date: response[i]["date"],
-            title: response[i]["title"],
-            image: response[i]["image"],
-            watch: response[i]["watch"]);
+          date: response[i]["date"],
+          title: response[i]["title"],
+          image: response[i]["image"],
+          watch: response[i]["watch"],
+        );
         _widgetList.add(videoModel);
+      }
+      closeLoading();
+    });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
       });
     }
   }

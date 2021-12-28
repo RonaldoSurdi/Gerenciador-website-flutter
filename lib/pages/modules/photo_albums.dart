@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/pages/modules/photo_images.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -26,7 +27,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Adicionar novo álbum de fotos'),
+          title: const Text('Adicionar álbum de fotos'),
           content: TextField(
             onChanged: (value) {
               setState(() {
@@ -34,6 +35,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
               });
             },
             controller: _textFieldController,
+            maxLength: 100,
             decoration: const InputDecoration(hintText: "Digite a descrição"),
           ),
           actions: [
@@ -70,6 +72,11 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
   // faz o envio da imagem para o storage
   Future _saveData(descriptionText) async {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
@@ -90,6 +97,11 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
   }
 
   Future _removeData(itemId) async {
+    EasyLoading.showInfo(
+      'removendo álbum...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     await FirebaseFirestore.instance.collection("photos").doc(itemId).delete();
 
     await firebase_storage.FirebaseStorage.instance
@@ -97,7 +109,6 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
         .delete();
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
@@ -118,34 +129,47 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
   Future _getData() async {
     _widgetList.clear();
+
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
         await db.collection("photos").orderBy('date', descending: true).get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      String idAlbum = response[i]["date"];
-      String description = response[i]["description"];
-      firebase_storage.Reference arquive = firebase_storage
-          .FirebaseStorage.instance
-          .ref()
-          .child("photos")
-          .child(idAlbum);
 
-      arquive.listAll().then((firebase_storage.ListResult listResult) {
-        String imageParse = 'images%2Fdefault.jpg';
-        if (listResult.items.isNotEmpty) {
-          String imageItem = listResult.items[0].fullPath;
-          imageItem = imageItem.replaceAll('/', '%2F');
-          imageParse = imageItem;
+    setState(() {
+      var response = data.docs;
+      if (response.isNotEmpty) {
+        for (int i = 0; i < response.length; i++) {
+          String idAlbum = response[i]["date"];
+          String description = response[i]["description"];
+          firebase_storage.Reference arquive = firebase_storage
+              .FirebaseStorage.instance
+              .ref()
+              .child("photos")
+              .child(idAlbum);
+
+          arquive.listAll().then((firebase_storage.ListResult listResult) {
+            String imageParse = 'images%2Fdefault.jpg';
+            if (listResult.items.isNotEmpty) {
+              String imageItem = listResult.items[0].fullPath;
+              imageItem = imageItem.replaceAll('/', '%2F');
+              imageParse = imageItem;
+            }
+            description = description.toUpperCase();
+
+            AlbumModel albumModel = AlbumModel(
+                id: idAlbum, description: description, image: imageParse);
+
+            _widgetList.add(albumModel);
+          }).catchError((error) {});
         }
-        description = description.toUpperCase();
+      }
+      closeLoading();
+    });
+  }
 
-        AlbumModel albumModel = AlbumModel(
-            id: idAlbum, description: description, image: imageParse);
-
-        setState(() {
-          _widgetList.add(albumModel);
-        });
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
       });
     }
   }

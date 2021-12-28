@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -43,6 +44,10 @@ class _BannersState extends State<Banners> {
 
   // faz o envio da imagem para o storage
   Future _uploadFile() async {
+    EasyLoading.showInfo(
+      'enviando imagem...',
+      maskType: EasyLoadingMaskType.custom,
+    );
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
@@ -72,7 +77,6 @@ class _BannersState extends State<Banners> {
     db.collection("banners").doc(dateNow).set(bannerModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -82,6 +86,10 @@ class _BannersState extends State<Banners> {
   }
 
   Future _removeFile(fileName) async {
+    EasyLoading.showInfo(
+      'removendo imagem...',
+      maskType: EasyLoadingMaskType.custom,
+    );
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
@@ -95,7 +103,6 @@ class _BannersState extends State<Banners> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("banners").doc(dbDoc[0]).delete();
     setState(() {
-      CustomSnackBar(context, Text("Imagem excluida com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
@@ -105,14 +112,25 @@ class _BannersState extends State<Banners> {
   Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
+
     var data = await db
         .collection("banners")
         .orderBy('filename', descending: true)
         .get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
+
+    setState(() {
+      var response = data.docs;
+      for (int i = 0; i < response.length; i++) {
         _widgetList.add(response[i]["filename"]);
+      }
+      closeLoading();
+    });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
       });
     }
   }

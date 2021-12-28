@@ -69,11 +69,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
       filePut = 'image.gif';
     } else {
       setState(() {
-        if (EasyLoading.isShow) {
-          Timer(const Duration(milliseconds: 2000), () {
-            EasyLoading.dismiss(animation: true);
-          });
-        }
+        closeLoading();
         CustomSnackBar(context, const Text('Formato da imagem inválido!'),
             backgroundColor: Colors.red);
       });
@@ -220,7 +216,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
     String _infoValue,
   ) async {
     EasyLoading.showInfo(
-      'processando...',
+      'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -249,7 +245,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
 
   Future _removeData([num itemId = 0, String itemImage = '']) async {
     EasyLoading.showSuccess(
-      'processando...',
+      'removendo álbum...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -290,7 +286,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
       showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Remover álbum'),
+          title: const Text('Capa do álbum'),
           content: Text(
               'É necessário importar a capa para o álbum \n${itemId.toString().padLeft(2, '0')} - $itemTitle!'),
           actions: [
@@ -354,12 +350,16 @@ class _DiscAlbumsState extends State<DiscAlbums> {
       }
       _titleController.text = '';
       _infoController.text = '';
-      if (EasyLoading.isShow) {
-        Timer(const Duration(milliseconds: 2000), () {
-          EasyLoading.dismiss(animation: true);
-        });
-      }
+      closeLoading();
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/schedule_model.dart';
@@ -264,6 +265,11 @@ class _ScheduleState extends State<Schedule> {
 
   Future _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
       _dataEndValue) async {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataIniValue);
 
     Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataIniValue);
@@ -282,7 +288,6 @@ class _ScheduleState extends State<Schedule> {
     db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Data adicionada com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -292,8 +297,15 @@ class _ScheduleState extends State<Schedule> {
   }
 
   Future _removeData(idSchedule) async {
+    EasyLoading.showInfo(
+      'removendo data...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     FirebaseFirestore db = FirebaseFirestore.instance;
+
     db.collection("schedule").doc(idSchedule).delete();
+
     setState(() {
       CustomSnackBar(context, const Text("Data excluida com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
@@ -307,18 +319,29 @@ class _ScheduleState extends State<Schedule> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
         await db.collection("schedule").orderBy('id', descending: true).get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
-        ScheduleModel scheduleModel = ScheduleModel(
-            id: response[i]["id"],
-            title: response[i]["title"],
-            place: response[i]["place"],
-            description: response[i]["description"],
-            dateini: response[i]["dateini"],
-            dateend: response[i]["dateend"],
-            view: response[i]["view"]);
-        _widgetList.add(scheduleModel);
+    setState(() {
+      var response = data.docs;
+      if (response.isNotEmpty) {
+        for (int i = 0; i < response.length; i++) {
+          ScheduleModel scheduleModel = ScheduleModel(
+              id: response[i]["id"],
+              title: response[i]["title"],
+              place: response[i]["place"],
+              description: response[i]["description"],
+              dateini: response[i]["dateini"],
+              dateend: response[i]["dateend"],
+              view: response[i]["view"]);
+          _widgetList.add(scheduleModel);
+        }
+      }
+      closeLoading();
+    });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
       });
     }
   }

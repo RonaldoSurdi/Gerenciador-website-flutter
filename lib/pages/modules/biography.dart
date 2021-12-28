@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/biography_model.dart';
@@ -33,26 +36,46 @@ class _BiographyState extends State<Biography> {
   }
 
   _onSaveData(BiographyModel biographyModel) {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("biography").doc("data").set(biographyModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text('Dados gravados com sucesso.'));
+      Timer(const Duration(milliseconds: 1500), () {
+        _getData();
+      });
     });
   }
 
-  _getData() {
+  _getData() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db
+
+    await db
         .collection("biography")
         .doc("data")
         .get()
         .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        _descriptionController.text =
-            documentSnapshot['description'].toString();
-      }
+      setState(() {
+        if (documentSnapshot.exists) {
+          _descriptionController.text =
+              documentSnapshot['description'].toString();
+        }
+        closeLoading();
+      });
+    }).catchError((error) {
+      closeLoading();
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

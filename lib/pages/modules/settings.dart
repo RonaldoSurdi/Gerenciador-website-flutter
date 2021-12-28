@@ -1,10 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/settings_model.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:hwscontrol/core/theme/custom_theme.dart';
-// import 'dart:convert' as convert;
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -26,10 +26,6 @@ class _SettingsState extends State<Settings> {
         name.trim().length >= 3 &&
         email.trim().isNotEmpty &&
         email.trim().length >= 3) {
-      setState(() {
-        CustomSnackBar(context, const Text('Verificando'));
-      });
-
       SettingsModel settingsModel = SettingsModel(name: name, email: email);
 
       _onSaveData(settingsModel);
@@ -42,26 +38,47 @@ class _SettingsState extends State<Settings> {
   }
 
   _onSaveData(SettingsModel settingsModel) {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("settings").doc("data").set(settingsModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text('Dados gravados com sucesso.'));
+      Timer(const Duration(milliseconds: 1500), () {
+        _getData();
+      });
     });
   }
 
-  _getData() {
+  _getData() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db
+
+    await db
         .collection("settings")
         .doc("data")
         .get()
         .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        _nameController.text = documentSnapshot['name'].toString();
-        _emailController.text = documentSnapshot['email'].toString();
-      }
+      setState(() {
+        if (documentSnapshot.exists) {
+          _nameController.text = documentSnapshot['name'].toString();
+          _emailController.text = documentSnapshot['email'].toString();
+        }
+        closeLoading();
+      });
+    }).catchError((error) {
+      closeLoading();
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

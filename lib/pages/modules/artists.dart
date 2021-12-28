@@ -61,11 +61,7 @@ class _ArtistsState extends State<Artists> {
       filePut = 'image.gif';
     } else {
       setState(() {
-        if (EasyLoading.isShow) {
-          Timer(const Duration(milliseconds: 2000), () {
-            EasyLoading.dismiss(animation: true);
-          });
-        }
+        closeLoading();
         CustomSnackBar(context, const Text('Formato da imagem inválido!'),
             backgroundColor: Colors.red);
       });
@@ -186,7 +182,7 @@ class _ArtistsState extends State<Artists> {
     String _infoValue,
   ) async {
     EasyLoading.showInfo(
-      'processando...',
+      'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -218,7 +214,7 @@ class _ArtistsState extends State<Artists> {
     String _infoValue,
   ) async {
     EasyLoading.showInfo(
-      'processando...',
+      'atualizando dados...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -239,7 +235,7 @@ class _ArtistsState extends State<Artists> {
 
   Future _removeData([String itemId = '', String itemImage = '']) async {
     EasyLoading.showSuccess(
-      'processando...',
+      'removendo artista...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -293,12 +289,16 @@ class _ArtistsState extends State<Artists> {
       }
       _nameController.text = '';
       _infoController.text = '';
-      if (EasyLoading.isShow) {
-        Timer(const Duration(milliseconds: 2000), () {
-          EasyLoading.dismiss(animation: true);
-        });
-      }
+      closeLoading();
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

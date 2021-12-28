@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/login/forgot_password.dart';
-import 'package:hwscontrol/pages/login/sign_in.dart';
-import 'package:hwscontrol/pages/login/sign_up.dart';
+import 'package:hwscontrol/pages/modules/forgot_password.dart';
+import 'package:hwscontrol/pages/modules/sign_in.dart';
+import 'package:hwscontrol/pages/modules/sign_up.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 
 class LoginPage extends StatefulWidget {

@@ -1,6 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
@@ -47,6 +47,11 @@ class _PhotoImagesState extends State<PhotoImages> {
 
   // faz o envio da imagem para o storage
   Future _uploadFile() async {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     String fileName = _imageFileList![0].name;
     String filePath = _imageFileList![0].path;
 
@@ -68,7 +73,6 @@ class _PhotoImagesState extends State<PhotoImages> {
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
     setState(() {
-      CustomSnackBar(context, Text("Imagem importada com sucesso.\n$fileName"));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -78,6 +82,11 @@ class _PhotoImagesState extends State<PhotoImages> {
   }
 
   Future _removeFile(fileName) async {
+    EasyLoading.showInfo(
+      'removendo imagem...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
         .ref()
@@ -104,15 +113,24 @@ class _PhotoImagesState extends State<PhotoImages> {
         .child("photos")
         .child(widget.itemId);
 
-    arquive.listAll().then((firebase_storage.ListResult listResult) {
-      for (int i = 0; i < listResult.items.length; i++) {
-        setState(() {
+    setState(() {
+      arquive.listAll().then((firebase_storage.ListResult listResult) {
+        for (int i = 0; i < listResult.items.length; i++) {
           String imageItem = listResult.items[i].fullPath;
           imageItem = imageItem.replaceAll('/', '%2F');
           _widgetList.add(imageItem);
-        });
-      }
+        }
+      }).catchError((error) {});
+      closeLoading();
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

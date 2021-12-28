@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/message_boards_model.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-// import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class MessageBoards extends StatefulWidget {
   const MessageBoards({Key? key}) : super(key: key);
@@ -217,6 +217,11 @@ class _MessageBoardsState extends State<MessageBoards> {
   }
 
   Future _onSaveData(_nameValue, _placeValue, _messageValue, _dataValue) async {
+    EasyLoading.showInfo(
+      'gravando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataValue);
 
     Timestamp _dataTimestamp = Timestamp.fromDate(_dataValue);
@@ -233,7 +238,6 @@ class _MessageBoardsState extends State<MessageBoards> {
     db.collection("messageboards").doc(dateNow).set(messageBoardsModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Recado adicionado com sucesso."));
       Timer(const Duration(milliseconds: 1500), () {
         _getData();
       });
@@ -243,13 +247,17 @@ class _MessageBoardsState extends State<MessageBoards> {
   }
 
   Future _removeData(itemId) async {
+    EasyLoading.showInfo(
+      'removendo imagem...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
     await FirebaseFirestore.instance
         .collection("messageboards")
         .doc(itemId)
         .delete();
 
     setState(() {
-      CustomSnackBar(context, const Text("Recado excluido com sucesso."));
       Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
@@ -263,17 +271,28 @@ class _MessageBoardsState extends State<MessageBoards> {
         .collection("messageboards")
         .orderBy('id', descending: true)
         .get();
-    var response = data.docs;
-    for (int i = 0; i < response.length; i++) {
-      setState(() {
-        MessageBoardsModel messageBoardsModel = MessageBoardsModel(
-            id: response[i]["id"],
-            name: response[i]["name"],
-            place: response[i]["place"],
-            message: response[i]["message"],
-            date: response[i]["date"],
-            view: response[i]["view"]);
-        _widgetList.add(messageBoardsModel);
+    setState(() {
+      var response = data.docs;
+      if (response.isNotEmpty) {
+        for (int i = 0; i < response.length; i++) {
+          MessageBoardsModel messageBoardsModel = MessageBoardsModel(
+              id: response[i]["id"],
+              name: response[i]["name"],
+              place: response[i]["place"],
+              message: response[i]["message"],
+              date: response[i]["date"],
+              view: response[i]["view"]);
+          _widgetList.add(messageBoardsModel);
+        }
+      }
+      closeLoading();
+    });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
       });
     }
   }

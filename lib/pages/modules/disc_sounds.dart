@@ -94,23 +94,23 @@ class _DiscSoundsState extends State<DiscSounds> {
                 ),
                 TextField(
                   controller: _movieController,
-                  maxLength: 100,
+                  maxLength: 200,
                   decoration: const InputDecoration(
-                    hintText: "Url Youtube (opcional)",
+                    hintText: "Url Youtube (opcional https://...)",
                   ),
                 ),
                 TextField(
                   controller: _lyricController,
-                  maxLength: 100,
+                  maxLength: 200,
                   decoration: const InputDecoration(
-                    hintText: "Url Letra (opcional)",
+                    hintText: "Url Letra (opcional https://...)",
                   ),
                 ),
                 TextField(
                   controller: _cipherController,
-                  maxLength: 100,
+                  maxLength: 200,
                   decoration: const InputDecoration(
-                    hintText: "Url Cifra (opcional)",
+                    hintText: "Url Cifra (opcional https://...)",
                   ),
                 ),
                 TextField(
@@ -180,7 +180,7 @@ class _DiscSoundsState extends State<DiscSounds> {
     String _infoValue,
   ) async {
     EasyLoading.showInfo(
-      'processando...',
+      'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -213,7 +213,7 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   Future _removeData(itemId) async {
     EasyLoading.showSuccess(
-      'processando...',
+      'removendo música...',
       maskType: EasyLoadingMaskType.custom,
     );
 
@@ -269,12 +269,16 @@ class _DiscSoundsState extends State<DiscSounds> {
       _lyricController.text = '';
       _cipherController.text = '';
       _infoController.text = '';
-      if (EasyLoading.isShow) {
-        Timer(const Duration(milliseconds: 2000), () {
-          EasyLoading.dismiss(animation: true);
-        });
-      }
+      closeLoading();
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 2000), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override
