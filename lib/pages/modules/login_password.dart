@@ -6,14 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
 import 'package:hwscontrol/pages/modules/dashboard.dart';
 
-class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({Key? key}) : super(key: key);
+class LoginPassword extends StatefulWidget {
+  const LoginPassword({Key? key}) : super(key: key);
 
   @override
-  _ForgotPasswordState createState() => _ForgotPasswordState();
+  _LoginPasswordState createState() => _LoginPasswordState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword> {
+class _LoginPasswordState extends State<LoginPassword> {
   final FocusNode _focusNodeEmail = FocusNode();
 
   final TextEditingController forgotpasswordEmailController =
@@ -117,7 +117,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                           ),
                           onSubmitted: (_) {
-                            _toggleForgotPasswordButton();
+                            _toggleLoginPasswordButton();
                           },
                         ),
                       ),
@@ -130,7 +130,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         padding: const EdgeInsets.only(
                             top: 10.0, left: 15.0, right: 15.0),
                         child: TextButton(
-                          onPressed: () => _toggleForgotPasswordButton(),
+                          onPressed: () => _toggleLoginPasswordButton(),
                           child: const Text(
                             'Será enviado o link para redefinir sua senha.',
                             style: TextStyle(
@@ -186,7 +186,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       ),
                     ),
                   ),
-                  onPressed: () => _toggleForgotPasswordButton(),
+                  onPressed: () => _toggleLoginPasswordButton(),
                 ),
               )
             ],
@@ -196,7 +196,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-  void _toggleForgotPasswordButton() {
+  void _toggleLoginPasswordButton() {
     CustomSnackBar(context, const Text('Verificando'));
     _validateFields();
   }

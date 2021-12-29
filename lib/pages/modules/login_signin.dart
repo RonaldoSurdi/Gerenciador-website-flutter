@@ -7,14 +7,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/pages/modules/dashboard.dart';
 import 'package:loading_overlay_pro/animations/bouncing_line.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({Key? key}) : super(key: key);
+class LoginSignin extends StatefulWidget {
+  const LoginSignin({Key? key}) : super(key: key);
 
   @override
-  _SignInState createState() => _SignInState();
+  _LoginSigninState createState() => _LoginSigninState();
 }
 
-class _SignInState extends State<SignIn> {
+class _LoginSigninState extends State<LoginSignin> {
   final TextEditingController _loginEmailController = TextEditingController();
   final TextEditingController _loginPasswordController =
       TextEditingController();
@@ -26,6 +26,8 @@ class _SignInState extends State<SignIn> {
 
   _validateFields() {
     //Recupera dados dos campos
+    //String email = 'ronaldohws@gmail.com';
+    //String senha = '111111';
     String email = _loginEmailController.text;
     String senha = _loginPasswordController.text;
 
@@ -65,14 +67,19 @@ class _SignInState extends State<SignIn> {
   _logarUsuario() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
+    //String email = 'ronaldohws@gmail.com';
+    //String senha = '111111';
+    String email = _loginEmailController.text;
+    String senha = _loginPasswordController.text;
+
     auth
         .signInWithEmailAndPassword(
-      email: _loginEmailController.text,
-      password: _loginPasswordController.text,
+      email: email,
+      password: senha,
     )
         .then((firebaseUser) {
-      _saveMail(_loginEmailController.text);
-      _savePassword(_loginPasswordController.text);
+      _saveMail(email);
+      _savePassword(senha);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -208,7 +215,7 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                           onSubmitted: (_) {
-                            _toggleSignInButton();
+                            _toggleLoginSigninButton();
                           },
                           textInputAction: TextInputAction.go,
                         ),
@@ -261,7 +268,7 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                   ),
-                  onPressed: () => _toggleSignInButton(),
+                  onPressed: () => _toggleLoginSigninButton(),
                 ),
               ),
             ],
@@ -271,7 +278,7 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  void _toggleSignInButton() {
+  void _toggleLoginSigninButton() {
     _validateFields();
   }
 

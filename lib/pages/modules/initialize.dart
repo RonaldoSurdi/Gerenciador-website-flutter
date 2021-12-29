@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hwscontrol/pages/modules/dashboard.dart';
-import 'package:hwscontrol/pages/modules/login_page.dart';
+import 'package:hwscontrol/pages/modules/login_auth.dart';
 
 class Initialize extends StatefulWidget {
   final String title;
@@ -52,7 +52,7 @@ class _InitializeState extends State<Initialize> {
       MaterialPageRoute(
         builder: (builder) => _processInit
             ? const Dashboard(title: 'Loading...')
-            : const LoginPage(title: 'Loading...'),
+            : const LoginAuth(title: 'Loading...'),
       ),
     );
   }

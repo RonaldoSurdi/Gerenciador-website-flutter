@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/sound_model.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class DiscSounds extends StatefulWidget {
   final String itemId;
@@ -34,6 +35,15 @@ class _DiscSoundsState extends State<DiscSounds> {
   final TextEditingController _cipherController = TextEditingController();
 
   final List<SoundModel> _widgetList = [];
+
+  AudioPlayer advancedPlayer = AudioPlayer();
+
+  Future _playSound(uriSound) async {
+    await advancedPlayer.play(
+      uriSound,
+      isLocal: false,
+    );
+  }
 
   // seleciona a música do computador
   Future _selectSound(idSound) async {
@@ -363,10 +373,16 @@ class _DiscSoundsState extends State<DiscSounds> {
                           width: 40.0,
                           child: FloatingActionButton(
                             mini: false,
-                            tooltip: 'Enviar mp3',
-                            child: const Icon(Icons.upload),
+                            tooltip: value.audio!.isEmpty
+                                ? 'Enviar áudio'
+                                : 'Reproduzir áudio',
+                            child: Icon(value.audio!.isEmpty
+                                ? Icons.upload
+                                : Icons.play_arrow),
                             backgroundColor: Colors.green,
-                            onPressed: () => _selectSound(value.track),
+                            onPressed: () => value.audio!.isEmpty
+                                ? _selectSound(value.track)
+                                : _playSound(value.audio),
                           ),
                         ),
                       ),

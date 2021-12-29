@@ -6,10 +6,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:hwscontrol/pages/modules/disc_sounds.dart';
+import 'package:hwscontrol/core/models/sound_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/disc_model.dart';
+import 'package:hwscontrol/pages/modules/disc_sounds.dart';
 
 class DiscAlbums extends StatefulWidget {
   const DiscAlbums({Key? key}) : super(key: key);
@@ -34,31 +35,63 @@ class _DiscAlbumsState extends State<DiscAlbums> {
 
   final List<DiscModel> _widgetList = [];
 
-  Future _importData() async {
+  Future _importData(type) async {
     EasyLoading.showInfo(
       'importando dados...',
       maskType: EasyLoadingMaskType.custom,
     );
 
-    String response = await rootBundle.loadString('assets/json/disco.json');
-    final dataImport = await json.decode(response);
-    DiscModel discModel;
-    num idItem = 0;
+    if (type == 1) {
+      String response =
+          await rootBundle.loadString('assets/json/disc_albums.json');
 
-    for (int i = 0; i < dataImport.length; i++) {
-      idItem = dataImport[i]["id"];
-      discModel = DiscModel(
-        id: idItem,
-        title: dataImport[i]["title"],
-        year: dataImport[i]["year"],
-        info: dataImport[i]["info"],
-        image: dataImport[i]["image"],
-      );
-      FirebaseFirestore db = FirebaseFirestore.instance;
-      await db
-          .collection("discs")
-          .doc(idItem.toString().padLeft(5, '0'))
-          .set(discModel.toMap());
+      final dataImport = await json.decode(response);
+      DiscModel discModel;
+      num idItem = 0;
+
+      for (int i = 0; i < dataImport.length; i++) {
+        idItem = dataImport[i]["id"];
+        discModel = DiscModel(
+          id: idItem,
+          title: dataImport[i]["title"],
+          year: dataImport[i]["year"],
+          info: dataImport[i]["info"],
+          image: dataImport[i]["image"],
+        );
+        FirebaseFirestore db = FirebaseFirestore.instance;
+        await db
+            .collection("discs")
+            .doc(idItem.toString().padLeft(5, '0'))
+            .set(discModel.toMap());
+      }
+    } else if (type == 2) {
+      String response =
+          await rootBundle.loadString('assets/json/disc_sounds.json');
+
+      final dataImport = await json.decode(response);
+      SoundModel soundModel;
+      num idItem = 0;
+      String? albumId;
+      for (int i = 0; i < dataImport.length; i++) {
+        albumId = dataImport[i][0];
+        idItem = num.parse(dataImport[i][1]);
+        soundModel = SoundModel(
+          track: idItem,
+          title: dataImport[i][2],
+          info: dataImport[i][3],
+          movie: dataImport[i][4],
+          lyric: dataImport[i][5],
+          cipher: dataImport[i][6],
+          audio: dataImport[i][7],
+        );
+        FirebaseFirestore db = FirebaseFirestore.instance;
+        await db
+            .collection("discs")
+            .doc(albumId)
+            .collection("sounds")
+            .doc(idItem.toString().padLeft(5, '0'))
+            .set(soundModel.toMap());
+      }
     }
 
     setState(() {
@@ -428,7 +461,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar álbum',
             onPressed: () {
-              _importData();
+              _importData(2);
             },
           ),
           IconButton(

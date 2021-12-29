@@ -7,7 +7,7 @@ import 'package:hwscontrol/pages/modules/banners.dart';
 import 'package:hwscontrol/pages/modules/biography.dart';
 import 'package:hwscontrol/pages/modules/disc_albums.dart';
 import 'package:hwscontrol/pages/modules/downloads.dart';
-import 'package:hwscontrol/pages/modules/login_page.dart';
+import 'package:hwscontrol/pages/modules/login_auth.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:hwscontrol/pages/modules/message_boards.dart';
@@ -89,7 +89,7 @@ class _DashboardState extends State<Dashboard> {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const LoginPage(title: 'Loading...'),
+          builder: (context) => const LoginAuth(title: 'Loading...'),
         ),
         (route) => false);
 
@@ -103,7 +103,7 @@ class _DashboardState extends State<Dashboard> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const LoginPage(title: 'Loading...'),
+          builder: (builder) => const LoginAuth(title: 'Loading...'),
         ),
       );
     }).catchError((error) {

@@ -7,14 +7,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
 import 'package:hwscontrol/pages/modules/dashboard.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+class LoginSignup extends StatefulWidget {
+  const LoginSignup({Key? key}) : super(key: key);
 
   @override
-  _SignUpState createState() => _SignUpState();
+  _LoginSignupState createState() => _LoginSignupState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _LoginSignupState extends State<LoginSignup> {
   final FocusNode _focusNodePassword = FocusNode();
   final FocusNode focusNodeConfirmPassword = FocusNode();
   final FocusNode _focusNodeEmail = FocusNode();
@@ -285,7 +285,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                           onSubmitted: (_) {
-                            _toggleSignUpButton();
+                            _toggleLoginSignupButton();
                           },
                           textInputAction: TextInputAction.go,
                         ),
@@ -334,7 +334,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                   ),
-                  onPressed: () => _toggleSignUpButton(),
+                  onPressed: () => _toggleLoginSignupButton(),
                 ),
               )
             ],
@@ -344,7 +344,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  void _toggleSignUpButton() {
+  void _toggleLoginSignupButton() {
     CustomSnackBar(context, const Text('Verificando'));
     _validateFields();
   }

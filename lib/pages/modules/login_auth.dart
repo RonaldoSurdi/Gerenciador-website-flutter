@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/modules/forgot_password.dart';
-import 'package:hwscontrol/pages/modules/sign_in.dart';
-import 'package:hwscontrol/pages/modules/sign_up.dart';
+import 'package:hwscontrol/pages/modules/login_password.dart';
+import 'package:hwscontrol/pages/modules/login_signin.dart';
+import 'package:hwscontrol/pages/modules/login_signup.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginAuth extends StatefulWidget {
   final String title;
-  const LoginPage({Key? key, required this.title}) : super(key: key);
+  const LoginAuth({Key? key, required this.title}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginAuthState createState() => _LoginAuthState();
 }
 
-class _LoginPageState extends State<LoginPage>
+class _LoginAuthState extends State<LoginAuth>
     with SingleTickerProviderStateMixin {
   late PageController _pageController;
 
@@ -101,15 +101,15 @@ class _LoginPageState extends State<LoginPage>
                     children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints.expand(),
-                        child: const SignIn(),
+                        child: const LoginSignin(),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints.expand(),
-                        child: const SignUp(),
+                        child: const LoginSignup(),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints.expand(),
-                        child: const ForgotPassword(),
+                        child: const LoginPassword(),
                       ),
                     ],
                   ),
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage>
                 style: ButtonStyle(
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                 ),
-                onPressed: _onSignInButtonPress,
+                onPressed: _onLoginSigninButtonPress,
                 child: Text(
                   'Conectar',
                   style: TextStyle(
@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage>
                 style: ButtonStyle(
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                 ),
-                onPressed: _onSignUpButtonPress,
+                onPressed: _onLoginSignupButtonPress,
                 child: Text(
                   'Cadastrar',
                   style: TextStyle(
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage>
                 style: ButtonStyle(
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                 ),
-                onPressed: _onForgotPasswordButtonPress,
+                onPressed: _onLoginPasswordButtonPress,
                 child: Text(
                   'Redefinir',
                   style: TextStyle(
@@ -194,17 +194,17 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  void _onSignInButtonPress() {
+  void _onLoginSigninButtonPress() {
     _pageController.animateToPage(0,
         duration: const Duration(milliseconds: 500), curve: Curves.decelerate);
   }
 
-  void _onSignUpButtonPress() {
+  void _onLoginSignupButtonPress() {
     _pageController.animateToPage(1,
         duration: const Duration(milliseconds: 500), curve: Curves.decelerate);
   }
 
-  void _onForgotPasswordButtonPress() {
+  void _onLoginPasswordButtonPress() {
     _pageController.animateToPage(2,
         duration: const Duration(milliseconds: 500), curve: Curves.decelerate);
   }
