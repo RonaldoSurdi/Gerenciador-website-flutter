@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 //import 'dart:convert';
+//import 'package:hwscontrol/core/models/sound_model.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-//import 'package:hwscontrol/core/models/sound_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/disc_model.dart';
@@ -459,7 +459,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar álbum',
+            tooltip: 'Importar JSON álbums',
             onPressed: () {
               _importData(1);
             },
@@ -469,7 +469,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar músicas',
+            tooltip: 'Importar JSON músicas',
             onPressed: () {
               _importData(2);
             },

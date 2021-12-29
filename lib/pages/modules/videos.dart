@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter/services.dart';
+//import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -22,6 +24,38 @@ class _VideosState extends State<Videos> {
   late String _watchValue;
 
   final List<VideoModel> _widgetList = [];
+
+  /*Future _importData(type) async {
+    EasyLoading.showInfo(
+      'importando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
+    if (type == 1) {
+      String response = await rootBundle.loadString('assets/json/videos.json');
+
+      final dataImport = await json.decode(response);
+      VideoModel videoModel;
+      String? albumId;
+      for (int i = 0; i < dataImport.length; i++) {
+        albumId = dataImport[i][0];
+        videoModel = VideoModel(
+          date: albumId,
+          title: dataImport[i][1],
+          image: dataImport[i][2],
+          watch: dataImport[i][3],
+        );
+        FirebaseFirestore db = FirebaseFirestore.instance;
+        await db.collection("videos").doc(albumId).set(videoModel.toMap());
+      }
+    }
+
+    setState(() {
+      Timer(const Duration(milliseconds: 1500), () {
+        _getData();
+      });
+    });
+  }*/
 
   Future<void> _addNewVideos(BuildContext context) async {
     return showDialog(
@@ -209,6 +243,16 @@ class _VideosState extends State<Videos> {
         title: const Text('Vídeos Youtube'),
         backgroundColor: Colors.black38,
         actions: [
+          /*IconButton(
+            icon: const Icon(Icons.upload_file),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
+            tooltip: 'Importar JSON',
+            onPressed: () {
+              _importData(1);
+            },
+          ),*/
           IconButton(
             icon: const Icon(Icons.move_to_inbox_outlined),
             iconSize: 40,

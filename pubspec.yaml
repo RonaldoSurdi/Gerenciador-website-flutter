@@ -3,7 +3,7 @@ description: Sistema de gerenciamento de conteúdo.
 
 publish_to: 'none'
 
-version: 2.0.0+51
+version: 2.0.0+53
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -45,7 +45,7 @@ flutter:
 
   assets:
     - assets/img/
-    - assets/json/
+    #- assets/json/
 
   fonts:
     - family: WorkSansSemiBold

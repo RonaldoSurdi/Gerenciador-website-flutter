@@ -389,6 +389,10 @@ class _ScheduleState extends State<Schedule> {
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               children: _widgetList.map((ScheduleModel value) {
+                String dateParse =
+                    DateFormat('dd/MM/yy').format(value.dateini!.toDate());
+                String timeParse =
+                    DateFormat('kk:mm').format(value.dateini!.toDate());
                 return Container(
                   color: Colors.black26,
                   margin: const EdgeInsets.all(1.0),
@@ -397,31 +401,54 @@ class _ScheduleState extends State<Schedule> {
                     children: [
                       Container(
                         padding: const EdgeInsets.fromLTRB(25, 5, 5, 5),
-                        child: Text(
-                          DateFormat('dd/MM/yy kk:mm')
-                              .format(value.dateini!.toDate()),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.0,
-                            fontFamily: 'WorkSansLigth',
+                        child: Text.rich(
+                          TextSpan(
+                            text: dateParse,
+                            style: const TextStyle(
+                              color: Colors.white30,
+                              fontSize: 14.0,
+                              fontFamily: 'WorkSansLigth',
+                            ),
+                            children: [
+                              TextSpan(
+                                text: '\n$timeParse',
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 22.0,
+                                  fontFamily: 'WorkSansLigth',
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
-                          child: Text(
-                            '${value.title}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontFamily: 'WorkSansLigth',
+                          child: Text.rich(
+                            TextSpan(
+                              text: value.place,
+                              style: const TextStyle(
+                                color: Colors.amber,
+                                fontSize: 16.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: '\n${value.title}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15.0,
+                                    fontFamily: 'WorkSansLigth',
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
+                        padding: const EdgeInsets.fromLTRB(5, 15, 15, 5),
                         child: SizedBox(
                           height: 25.0,
                           width: 25.0,
