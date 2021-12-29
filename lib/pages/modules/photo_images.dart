@@ -214,6 +214,11 @@ class _PhotoImagesState extends State<PhotoImages> {
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              15, 15, 15, 15),
+                                          alignment: Alignment.center,
+                                        ),
                                         child: const Text(
                                           'Cancelar',
                                           style: TextStyle(
@@ -228,10 +233,16 @@ class _PhotoImagesState extends State<PhotoImages> {
                                           _removeFile(value);
                                           Navigator.pop(context);
                                         },
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              20, 15, 20, 15),
+                                          backgroundColor: Colors.red,
+                                          alignment: Alignment.center,
+                                        ),
                                         child: const Text(
                                           'Excluir',
                                           style: TextStyle(
-                                            color: Colors.red,
+                                            color: Colors.white,
                                             fontSize: 16.0,
                                             fontFamily: 'WorkSansMedium',
                                           ),

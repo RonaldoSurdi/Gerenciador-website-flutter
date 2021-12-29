@@ -1,6 +1,8 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
+//import 'package:flutter/services.dart';
 //import 'dart:convert';
 //import 'package:hwscontrol/core/models/sound_model.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -32,6 +34,8 @@ class _DiscAlbumsState extends State<DiscAlbums> {
     text: '',
   );
   final TextEditingController _infoController = TextEditingController();
+  final TextEditingController _confirmDeleteController =
+      TextEditingController();
 
   final List<DiscModel> _widgetList = [];
 
@@ -222,6 +226,10 @@ class _DiscAlbumsState extends State<DiscAlbums> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Cancelar',
                   style: TextStyle(
@@ -262,10 +270,15 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                     Navigator.pop(context);
                   }
                 },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  backgroundColor: Colors.green,
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Colors.green,
+                    color: Colors.white,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -494,6 +507,8 @@ class _DiscAlbumsState extends State<DiscAlbums> {
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               children: _widgetList.map((DiscModel value) {
+                String titleParse =
+                    '${value.id.toString().padLeft(2, '0')} - ${value.title}';
                 return Container(
                   color: Colors.black26,
                   margin: const EdgeInsets.all(1.0),
@@ -569,11 +584,59 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
                                 title: const Text('Remover álbum'),
-                                content: Text(
-                                    'Tem certeza que deseja remover o álbum\n${value.id.toString().padLeft(2, '0')} - ${value.title}?'),
+                                content: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'Tem certeza que deseja remover o álbum?',
+                                      style: TextStyle(
+                                        color: Colors.black54,
+                                        fontSize: 14.0,
+                                        fontFamily: 'WorkSansMedium',
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 20),
+                                      child: Row(
+                                        children: [
+                                          const Text(
+                                            'Para confirmar é necessário digitar: ',
+                                            style: TextStyle(
+                                              color: Colors.black45,
+                                              fontSize: 12.0,
+                                              fontFamily: 'WorkSansMedium',
+                                            ),
+                                          ),
+                                          Text(
+                                            titleParse,
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12.0,
+                                              fontFamily: 'WorkSansMedium',
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    TextField(
+                                      controller: _confirmDeleteController,
+                                      decoration: InputDecoration(
+                                        hintText: titleParse,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 15),
+                                      alignment: Alignment.center,
+                                    ),
                                     child: const Text(
                                       'Cancelar',
                                       style: TextStyle(
@@ -585,13 +648,23 @@ class _DiscAlbumsState extends State<DiscAlbums> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      _removeData(value.id!, value.image!);
-                                      Navigator.pop(context);
+                                      if (_confirmDeleteController.text ==
+                                          titleParse) {
+                                        _removeData(value.id!, value.image!);
+                                        Navigator.pop(context);
+                                      }
+                                      _confirmDeleteController.text = '';
                                     },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          20, 15, 20, 15),
+                                      backgroundColor: Colors.red,
+                                      alignment: Alignment.center,
+                                    ),
                                     child: const Text(
                                       'Excluir',
                                       style: TextStyle(
-                                        color: Colors.red,
+                                        color: Colors.white,
                                         fontSize: 16.0,
                                         fontFamily: 'WorkSansMedium',
                                       ),

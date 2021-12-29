@@ -78,6 +78,10 @@ class _VideosState extends State<Videos> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Cancelar',
                   style: TextStyle(
@@ -92,10 +96,15 @@ class _VideosState extends State<Videos> {
                   _saveData(_watchValue);
                   Navigator.pop(context);
                 },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  backgroundColor: Colors.green,
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Colors.green,
+                    color: Colors.white,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -338,17 +347,17 @@ class _VideosState extends State<Videos> {
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
-                                    child: Container(
+                                    style: TextButton.styleFrom(
                                       padding: const EdgeInsets.fromLTRB(
-                                          30, 10, 30, 10),
-                                      color: Colors.red,
-                                      child: const Text(
-                                        'Cancelar',
-                                        style: TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 16.0,
-                                          fontFamily: 'WorkSansMedium',
-                                        ),
+                                          15, 15, 15, 15),
+                                      alignment: Alignment.center,
+                                    ),
+                                    child: const Text(
+                                      'Cancelar',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16.0,
+                                        fontFamily: 'WorkSansMedium',
                                       ),
                                     ),
                                   ),
@@ -357,44 +366,18 @@ class _VideosState extends State<Videos> {
                                       _removeData(value.date);
                                       Navigator.pop(context);
                                     },
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15.0)),
-                                        boxShadow: <BoxShadow>[
-                                          BoxShadow(
-                                            color:
-                                                CustomTheme.loginGradientStart,
-                                            offset: Offset(1.0, 6.0),
-                                            blurRadius: 20.0,
-                                          ),
-                                          BoxShadow(
-                                            color: CustomTheme.loginGradientEnd,
-                                            offset: Offset(1.0, 6.0),
-                                            blurRadius: 20.0,
-                                          ),
-                                        ],
-                                        gradient: LinearGradient(
-                                          colors: <Color>[
-                                            CustomTheme.loginGradientEnd,
-                                            CustomTheme.loginGradientStart
-                                          ],
-                                          begin: FractionalOffset(0.2, 0.2),
-                                          end: FractionalOffset(1.0, 1.0),
-                                          stops: <double>[0.0, 1.0],
-                                          tileMode: TileMode.clamp,
-                                        ),
-                                      ),
+                                    style: TextButton.styleFrom(
                                       padding: const EdgeInsets.fromLTRB(
-                                          30, 10, 30, 10),
-                                      color: Colors.amber,
-                                      child: const Text(
-                                        'Excluir',
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                          fontSize: 16.0,
-                                          fontFamily: 'WorkSansMedium',
-                                        ),
+                                          20, 15, 20, 15),
+                                      backgroundColor: Colors.red,
+                                      alignment: Alignment.center,
+                                    ),
+                                    child: const Text(
+                                      'Excluir',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                        fontFamily: 'WorkSansMedium',
                                       ),
                                     ),
                                   ),

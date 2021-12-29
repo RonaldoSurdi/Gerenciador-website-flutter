@@ -136,6 +136,10 @@ class _ArtistsState extends State<Artists> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Cancelar',
                   style: TextStyle(
@@ -161,10 +165,15 @@ class _ArtistsState extends State<Artists> {
                     Navigator.pop(context);
                   }
                 },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  backgroundColor: Colors.green,
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Colors.green,
+                    color: Colors.white,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -428,6 +437,11 @@ class _ArtistsState extends State<Artists> {
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 15),
+                                      alignment: Alignment.center,
+                                    ),
                                     child: const Text(
                                       'Cancelar',
                                       style: TextStyle(
@@ -442,10 +456,16 @@ class _ArtistsState extends State<Artists> {
                                       _removeData(value.id!, value.image!);
                                       Navigator.pop(context);
                                     },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          20, 15, 20, 15),
+                                      backgroundColor: Colors.red,
+                                      alignment: Alignment.center,
+                                    ),
                                     child: const Text(
                                       'Excluir',
                                       style: TextStyle(
-                                        color: Colors.red,
+                                        color: Colors.white,
                                         fontSize: 16.0,
                                         fontFamily: 'WorkSansMedium',
                                       ),

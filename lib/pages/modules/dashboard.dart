@@ -54,6 +54,9 @@ class _DashboardState extends State<Dashboard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+            ),
             child: const Text(
               'Cancelar',
               style: TextStyle(
@@ -68,10 +71,15 @@ class _DashboardState extends State<Dashboard> {
               _logoutFirebase();
               Navigator.pop(context);
             },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
             child: const Text(
               'Desconectar',
               style: TextStyle(
-                color: Colors.red,
+                color: Colors.white,
                 fontSize: 16.0,
                 fontFamily: 'WorkSansMedium',
               ),

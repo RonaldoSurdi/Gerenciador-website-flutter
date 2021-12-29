@@ -156,6 +156,10 @@ class _DiscSoundsState extends State<DiscSounds> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Cancelar',
                   style: TextStyle(
@@ -186,10 +190,15 @@ class _DiscSoundsState extends State<DiscSounds> {
                     Navigator.pop(context);
                   }
                 },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  backgroundColor: Colors.green,
+                  alignment: Alignment.center,
+                ),
                 child: const Text(
                   'Salvar',
                   style: TextStyle(
-                    color: Colors.green,
+                    color: Colors.white,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
@@ -453,6 +462,11 @@ class _DiscSoundsState extends State<DiscSounds> {
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15, 15, 15, 15),
+                                      alignment: Alignment.center,
+                                    ),
                                     child: const Text(
                                       'Cancelar',
                                       style: TextStyle(
@@ -467,10 +481,16 @@ class _DiscSoundsState extends State<DiscSounds> {
                                       _removeData(value.track, value.audio);
                                       Navigator.pop(context);
                                     },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          20, 15, 20, 15),
+                                      backgroundColor: Colors.red,
+                                      alignment: Alignment.center,
+                                    ),
                                     child: const Text(
                                       'Excluir',
                                       style: TextStyle(
-                                        color: Colors.red,
+                                        color: Colors.white,
                                         fontSize: 16.0,
                                         fontFamily: 'WorkSansMedium',
                                       ),
