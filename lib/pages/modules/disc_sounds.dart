@@ -38,16 +38,22 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   AudioPlayer advancedPlayer = AudioPlayer();
 
+  String _soundPlaing = '';
+
   Future _playSound(uriSound) async {
-    String uri = uriSound;
-    if (uri.indexOf("https://") == 0 && uri.indexOf("http://") == 0) {
-      uri =
-          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${widget.itemId}%2F$uriSound?alt=media';
+    if (_soundPlaing.isNotEmpty) {
+      await advancedPlayer.stop();
     }
     await advancedPlayer.play(
-      uri,
+      uriSound,
       isLocal: false,
     );
+    _soundPlaing = uriSound;
+  }
+
+  Future _stopSound() async {
+    await advancedPlayer.stop();
+    _soundPlaing = '';
   }
 
   // seleciona a música do computador
@@ -66,7 +72,7 @@ class _DiscSoundsState extends State<DiscSounds> {
       Uint8List? fileBytes = result.files.first.bytes;
       //String? fileName = result.files.first.name;
       String? fileExt = result.files.first.extension;
-      String? filePut = 'track$idSound$fileExt';
+      String? filePut = '$idSound$fileExt';
 
       // Upload file
       await firebase_storage.FirebaseStorage.instance
@@ -79,7 +85,7 @@ class _DiscSoundsState extends State<DiscSounds> {
           .collection("discs")
           .doc(widget.itemId)
           .collection("sounds")
-          .doc(idSound.toString().padLeft(2, '0'))
+          .doc(idSound.toString().padLeft(5, '0'))
           .update({
         "audio": filePut,
       });
@@ -134,16 +140,16 @@ class _DiscSoundsState extends State<DiscSounds> {
                 ),
                 TextField(
                   controller: _cipherController,
-                  maxLength: 200,
+                  maxLines: 5,
                   decoration: const InputDecoration(
-                    hintText: "Url Cifra (opcional https://...)",
+                    hintText: "Cifra (opcional)",
                   ),
                 ),
                 TextField(
                   controller: _infoController,
-                  maxLines: 5,
+                  maxLines: 3,
                   decoration:
-                      const InputDecoration(hintText: "Informações (opcional)"),
+                      const InputDecoration(hintText: "Composição (opcional)"),
                 ),
               ],
             ),
@@ -225,7 +231,7 @@ class _DiscSoundsState extends State<DiscSounds> {
         .collection("discs")
         .doc(widget.itemId)
         .collection("sounds")
-        .doc(_trackValue.toString().padLeft(2, '0'))
+        .doc(_trackValue.toString().padLeft(5, '0'))
         .set(soundModel.toMap());
 
     setState(() {
@@ -248,7 +254,7 @@ class _DiscSoundsState extends State<DiscSounds> {
           .collection("discs")
           .doc(widget.itemId)
           .collection("sounds")
-          .doc(itemId.toString().padLeft(2, '0'))
+          .doc(itemId.toString().padLeft(5, '0'))
           .delete();
 
       await firebase_storage.FirebaseStorage.instance
@@ -278,6 +284,11 @@ class _DiscSoundsState extends State<DiscSounds> {
       if (response.isNotEmpty) {
         _trackController.text = (response.length + 1).toString();
         for (int i = 0; i < response.length; i++) {
+          String uri = response[i]["audio"].toString().replaceAll('null', '');
+          if (uri.indexOf("https://") == 0 && uri.indexOf("http://") == 0) {
+            uri =
+                'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${widget.itemId}%2F$uri?alt=media';
+          }
           SoundModel soundModel = SoundModel(
             track: response[i]["track"],
             title: response[i]["title"],
@@ -285,7 +296,7 @@ class _DiscSoundsState extends State<DiscSounds> {
             movie: response[i]["movie"].toString().replaceAll('null', ''),
             lyric: response[i]["lyric"].toString().replaceAll('null', ''),
             cipher: response[i]["cipher"].toString().replaceAll('null', ''),
-            audio: response[i]["audio"].toString().replaceAll('null', ''),
+            audio: uri,
           );
           _widgetList.add(soundModel);
         }
@@ -312,6 +323,9 @@ class _DiscSoundsState extends State<DiscSounds> {
   @override
   void dispose() {
     super.dispose();
+    if (_soundPlaing.isNotEmpty) {
+      _stopSound();
+    }
   }
 
   @override
@@ -393,14 +407,30 @@ class _DiscSoundsState extends State<DiscSounds> {
                             mini: false,
                             tooltip: value.audio!.isEmpty
                                 ? 'Enviar áudio'
-                                : 'Reproduzir áudio',
+                                : (_soundPlaing != value.audio)
+                                    ? 'Reproduzir áudio'
+                                    : 'Parar áudio',
                             child: Icon(value.audio!.isEmpty
                                 ? Icons.upload
-                                : Icons.play_arrow),
-                            backgroundColor: Colors.green,
+                                : (_soundPlaing != value.audio)
+                                    ? Icons.play_arrow
+                                    : Icons.pause),
+                            backgroundColor: value.audio!.isEmpty
+                                ? (_soundPlaing != value.audio)
+                                    ? Colors.grey
+                                    : Colors.green
+                                : Colors.blue,
                             onPressed: () => value.audio!.isEmpty
-                                ? _selectSound(value.track)
-                                : _playSound(value.audio),
+                                ? setState(() {
+                                    _selectSound(value.track);
+                                  })
+                                : (_soundPlaing != value.audio)
+                                    ? setState(() {
+                                        _playSound(value.audio);
+                                      })
+                                    : setState(() {
+                                        _stopSound();
+                                      }),
                           ),
                         ),
                       ),

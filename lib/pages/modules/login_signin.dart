@@ -27,12 +27,12 @@ class _LoginSigninState extends State<LoginSignin> {
   _validateFields() {
     //Recupera dados dos campos
     //String email = 'ronaldohws@gmail.com';
-    //String senha = '111111';
+    //String password = '111111';
     String email = _loginEmailController.text;
-    String senha = _loginPasswordController.text;
+    String password = _loginPasswordController.text;
 
     if (email.trim().isNotEmpty && email.trim().contains("@")) {
-      if (senha.isNotEmpty) {
+      if (password.isNotEmpty) {
         setState(() {
           const LoadingBouncingLine.circle(
             borderColor: Colors.cyan,
@@ -68,18 +68,18 @@ class _LoginSigninState extends State<LoginSignin> {
     FirebaseAuth auth = FirebaseAuth.instance;
 
     //String email = 'ronaldohws@gmail.com';
-    //String senha = '111111';
+    //String password = '111111';
     String email = _loginEmailController.text;
-    String senha = _loginPasswordController.text;
+    String password = _loginPasswordController.text;
 
     auth
         .signInWithEmailAndPassword(
       email: email,
-      password: senha,
+      password: password,
     )
         .then((firebaseUser) {
       _saveMail(email);
-      _savePassword(senha);
+      _savePassword(password);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

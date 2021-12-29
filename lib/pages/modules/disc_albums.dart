@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'dart:convert';
+//import 'dart:convert';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:hwscontrol/core/models/sound_model.dart';
+//import 'package:hwscontrol/core/models/sound_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/disc_model.dart';
@@ -35,7 +35,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
 
   final List<DiscModel> _widgetList = [];
 
-  Future _importData(type) async {
+  /*Future _importData(type) async {
     EasyLoading.showInfo(
       'importando dados...',
       maskType: EasyLoadingMaskType.custom,
@@ -99,7 +99,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         _getData();
       });
     });
-  }
+  }*/
 
   set _imageFile(XFile? value) {
     _imageFileList = value == null ? null : [value];
@@ -454,16 +454,26 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         title: const Text('Discografia'),
         backgroundColor: Colors.black38,
         actions: [
-          /* IconButton(
+          /*IconButton(
             icon: const Icon(Icons.upload_file),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
             tooltip: 'Adicionar álbum',
             onPressed: () {
+              _importData(1);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.upload_file),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
+            tooltip: 'Adicionar músicas',
+            onPressed: () {
               _importData(2);
             },
-          ), */
+          ),*/
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
