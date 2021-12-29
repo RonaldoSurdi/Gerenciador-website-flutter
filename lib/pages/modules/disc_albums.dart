@@ -454,7 +454,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         title: const Text('Discografia'),
         backgroundColor: Colors.black38,
         actions: [
-          IconButton(
+          /* IconButton(
             icon: const Icon(Icons.upload_file),
             iconSize: 40,
             color: Colors.amber,
@@ -463,7 +463,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
             onPressed: () {
               _importData(2);
             },
-          ),
+          ), */
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,

@@ -39,8 +39,13 @@ class _DiscSoundsState extends State<DiscSounds> {
   AudioPlayer advancedPlayer = AudioPlayer();
 
   Future _playSound(uriSound) async {
+    String uri = uriSound;
+    if (uri.indexOf("https://") == 0 && uri.indexOf("http://") == 0) {
+      uri =
+          'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${widget.itemId}%2F$uriSound?alt=media';
+    }
     await advancedPlayer.play(
-      uriSound,
+      uri,
       isLocal: false,
     );
   }
@@ -61,12 +66,23 @@ class _DiscSoundsState extends State<DiscSounds> {
       Uint8List? fileBytes = result.files.first.bytes;
       //String? fileName = result.files.first.name;
       String? fileExt = result.files.first.extension;
-      String? filePut = '${idSound.toString().padLeft(2, '0')}$fileExt';
+      String? filePut = 'track$idSound$fileExt';
 
       // Upload file
       await firebase_storage.FirebaseStorage.instance
           .ref('discs/${widget.itemId}/$filePut')
           .putData(fileBytes!);
+
+      FirebaseFirestore db = FirebaseFirestore.instance;
+
+      await db
+          .collection("discs")
+          .doc(widget.itemId)
+          .collection("sounds")
+          .doc(idSound.toString().padLeft(2, '0'))
+          .update({
+        "audio": filePut,
+      });
 
       setState(() {
         Timer(const Duration(milliseconds: 1500), () {
@@ -221,23 +237,25 @@ class _DiscSoundsState extends State<DiscSounds> {
     return Future.value(true);
   }
 
-  Future _removeData(itemId) async {
+  Future _removeData(itemId, itemFile) async {
     EasyLoading.showSuccess(
       'removendo música...',
       maskType: EasyLoadingMaskType.custom,
     );
 
-    await FirebaseFirestore.instance
-        .collection("discs")
-        .doc(widget.itemId)
-        .collection("sounds")
-        .doc(itemId.toString().padLeft(2, '0'))
-        .delete();
+    if (itemFile.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection("discs")
+          .doc(widget.itemId)
+          .collection("sounds")
+          .doc(itemId.toString().padLeft(2, '0'))
+          .delete();
 
-    await firebase_storage.FirebaseStorage.instance
-        .ref("discs/${widget.itemId}")
-        .child("${itemId.toString().padLeft(2, '0')}.mp3")
-        .delete();
+      await firebase_storage.FirebaseStorage.instance
+          .ref("discs/${widget.itemId}")
+          .child(itemFile)
+          .delete();
+    }
 
     setState(() {
       Timer(const Duration(milliseconds: 500), () {
@@ -416,7 +434,7 @@ class _DiscSoundsState extends State<DiscSounds> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      _removeData(value.track);
+                                      _removeData(value.track, value.audio);
                                       Navigator.pop(context);
                                     },
                                     child: const Text(
