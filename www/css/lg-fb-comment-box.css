@@ -13,7 +13,7 @@
   top: 0;
   width: 420px;
   z-index: 99999;
-  background: #fff url("/images/lgal/loading.gif") no-repeat scroll center center;
+  background: #fff url("../images/lgal/loading.gif") no-repeat scroll center center;
 }
 
 .lg-outer.fb-comments .fb-comments.fb_iframe_widget {
@@ -21,7 +21,7 @@
 }
 
 .lg-outer.fb-comments .fb-comments.fb_iframe_widget.fb_iframe_widget_loader {
-  background: #fff url("/images/lgal/loading.gif") no-repeat scroll center center;
+  background: #fff url("../images/lgal/loading.gif") no-repeat scroll center center;
 }
 
 .lg-outer.fb-comments .lg-toolbar {
@@ -42,7 +42,7 @@
 }
 
 .lg-outer.fb-comments .lg-img-wrap, .lg-outer.fb-comments .lg-video-cont {
-  background: url("/images/lgal/loading.gif") no-repeat scroll transparent;
+  background: url("../images/lgal/loading.gif") no-repeat scroll transparent;
   background-position: center center;
   background-position: calc((100% - 400px) / 2) center;
 }

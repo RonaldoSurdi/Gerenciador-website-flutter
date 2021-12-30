@@ -457,20 +457,26 @@ $(document).ready(function () {
 			uri,
 			filename;
 		if (getIdx == 1) {
+			//BANNERS
 			var db = firebase.firestore();
         	data = await db.collection("banners").orderBy("date", "desc").get();
 			response = data.docs;
-			for (var z = 0; z < data.size; z++) {
-				res = response[z].data();
-				uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F${res.filename}?alt=media`;
-				parseHtmlSlider += `<div class="pogoSlider-slide" data-transition="fade" data-duration="6000" style="background-image:url(${uri});"></div>`;
-				if ((z+1) >= data.size) {
-					$('#js-main-slider').html(parseHtmlSlider);
-					sliderInit();
-					getdata(2);
-				}
-			};
+			if (data.size > 0) {
+				for (var z = 0; z < data.size; z++) {
+					res = response[z].data();
+					uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F${res.filename}?alt=media`;
+					parseHtmlSlider += `<div class="pogoSlider-slide" data-transition="fade" data-duration="6000" style="background-image:url(${uri});"></div>`;
+					if ((z+1) >= data.size) {
+						$('#js-main-slider').html(parseHtmlSlider);
+						sliderInit();
+						getdata(2);
+					}
+				};
+			} else {
+				getdata(2);
+			}
 		} else if (getIdx == 2) {
+			//BIOGRAFIA
 			var db = firebase.firestore();
         	data = await db.collection("biography").get();
 			response = data.docs;
@@ -480,27 +486,33 @@ $(document).ready(function () {
 			$('#biography').html(parseHtmlSlider);
 			getdata(3);
 		} else if (getIdx == 3) {
+			//ARTISTAS
 			var storageRef = await firebase.storage().ref("artists");
 			storageRef.listAll().then(function(result) {
-				for (var z = 0; z < result.items.length; z++) {
-					filename = result.items[z].fullPath
-					filename = filename.replace("/", "%2F");
-					uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${filename}?alt=media`;
-					parseHtmlSlider += `<div class="col-lg-2 col-md-2 col-sm-4 wthree2" data-aos="zoom-in"><div class="w3-agileits">`;
-					parseHtmlSlider += `<div class="bgf">`;
-					//parseHtmlSlider += `<a title="mais" rel="artist${filename}">`;
-					parseHtmlSlider += `<img src="${uri}" alt="${filename}">`;//<br/>${filename}
-					//parseHtmlSlider += `</a>`;
-					parseHtmlSlider += `</div></div></div>`;
-					if ((z+1) >= result.items.length) {
-						$('#artists').html(parseHtmlSlider);
-						getdata(5);
-					}
-				};
+				if (result.items.length > 0) {
+					for (var z = 0; z < result.items.length; z++) {
+						filename = result.items[z].fullPath
+						filename = filename.replace("/", "%2F");
+						uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${filename}?alt=media`;
+						parseHtmlSlider += `<div class="col-lg-2 col-md-2 col-sm-4 wthree2" data-aos="zoom-in"><div class="w3-agileits">`;
+						parseHtmlSlider += `<div class="bgf">`;
+						//parseHtmlSlider += `<a title="mais" rel="artist${filename}">`;
+						parseHtmlSlider += `<img src="${uri}" alt="${filename}">`;//<br/>${filename}
+						//parseHtmlSlider += `</a>`;
+						parseHtmlSlider += `</div></div></div>`;
+						if ((z+1) >= result.items.length) {
+							$('#artists').html(parseHtmlSlider);
+							getdata(5);
+						}
+					};
+				} else {
+					getdata(5);
+				}
 			}).catch(function(error) {
 				console.log(error);
 			});
 		} else if (getIdx == 4) {
+			//DISCOGRAFIA
 			/*var db = firebase.firestore();
         	data = await db.collection("photos").orderBy("date", "desc").get();
 			response = data.docs;
@@ -541,33 +553,62 @@ $(document).ready(function () {
 				}
 			};*/
 		} else if (getIdx == 5) {
+			//AGENDA
 			var db = firebase.firestore();
         	data = await db.collection("schedule").orderBy("id", "desc").get();//.where("view", "=", "1")
 			response = data.docs;
 			scheduleData = [];
+			if (data.size > 0) {
+				for (var z = 0; z < data.size; z++) {
+					res = response[z].data();
+					scheduleData.push(res);
+					// var scheduleId = res.id;
+					var scheduleTitle = res.title;
+					// var scheduleDescription = res.description;
+					var schedulePlace = res.place;
+					var scheduleDateIni = new Date(res.dateini.toDate());
+					var scheduleDateEnd = new Date(res.dateend.toDate());
+					parseHtmlSlider += `<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">`;
+					parseHtmlSlider += `<div class="agdt"><span class="dia">${scheduleDateIni.getDay()}</span><span class="mes">/${scheduleDateIni.getMonth()}</span></div>`;
+					parseHtmlSlider += `<div class="agtm"><span class="hora">${scheduleDateIni.getHours()}:${scheduleDateIni.getMinutes()}hs às ${scheduleDateEnd.getHours()}:${scheduleDateEnd.getMinutes()}hs</span></div>`;
+					parseHtmlSlider += `<div class="aglc"><h3>${schedulePlace}</h3><h2>${scheduleTitle}</h2></div>`;
+					parseHtmlSlider += `<div class="rodape">`;
+					parseHtmlSlider += `<div class="infosh"><div class="agl"><a title="Informações sobre o Evento" rel="${z}"><img src="images/social/maisinfo.png"></a></div></div>`;
+					parseHtmlSlider += `<div class="socialsh">Compartilhar:<br/><a href="http://www.facebook.com/sharer.php?u=${webUri}&t=${titleUri}" title="Compartilhar no Facebook" target="_new"><img src="images/social/fb-ico.png"></a>`;
+					parseHtmlSlider += `<a href="http://twitter.com/share?text=${titleUtf8}&url=${webUtf8}" title="Compartilhar no Twitter" target="_new"><img src="images/social/tw-ico.png"></a>`;
+					parseHtmlSlider += `<a href="https://plus.google.com/share?url=${webUtf8}" title="Compartilhar no Google" target="_new"><img src="images/social/gg-ico.png"></a></div>`;
+					parseHtmlSlider += `</div></div></div>`;
+					if ((z+1) >= data.size) {
+						$('#owl-div').html(parseHtmlSlider);
+						owl.owlCarousel();
+						updAgl();
+						getdata(7);
+					}
+				};
+			} else {
+				getdata(7);
+			}
+		} else if (getIdx == 6) {
+			//FOTOS
+		} else if (getIdx == 7) {
+			//VIDEOS
+			console.log('videos');
+			var db = firebase.firestore();
+        	data = await db.collection("videos").orderBy("date", "desc").get();
+			response = data.docs;
+			parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
 			for (var z = 0; z < data.size; z++) {
-				res = response[z].data();
-				scheduleData.push(res);
-				// var scheduleId = res.id;
-				var scheduleTitle = res.title;
-				// var scheduleDescription = res.description;
-				var schedulePlace = res.place;
-				var scheduleDateIni = new Date(res.dateini.toDate());
-				var scheduleDateEnd = new Date(res.dateend.toDate());
-				parseHtmlSlider += `<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">`;
-				parseHtmlSlider += `<div class="agdt"><span class="dia">${scheduleDateIni.getDay()}</span><span class="mes">/${scheduleDateIni.getMonth()}</span></div>`;
-				parseHtmlSlider += `<div class="agtm"><span class="hora">${scheduleDateIni.getHours()}:${scheduleDateIni.getMinutes()}hs às ${scheduleDateEnd.getHours()}:${scheduleDateEnd.getMinutes()}hs</span></div>`;
-				parseHtmlSlider += `<div class="aglc"><h3>${schedulePlace}</h3><h2>${scheduleTitle}</h2></div>`;
-				parseHtmlSlider += `<div class="rodape">`;
-				parseHtmlSlider += `<div class="infosh"><div class="agl"><a title="Informações sobre o Evento" rel="${z}"><img src="images/social/maisinfo.png"></a></div></div>`;
-				parseHtmlSlider += `<div class="socialsh">Compartilhar:<br/><a href="http://www.facebook.com/sharer.php?u=${webUri}&t=${titleUri}" title="Compartilhar no Facebook" target="_new"><img src="images/social/fb-ico.png"></a>`;
-				parseHtmlSlider += `<a href="http://twitter.com/share?text=${titleUtf8}&url=${webUtf8}" title="Compartilhar no Twitter" target="_new"><img src="images/social/tw-ico.png"></a>`;
-				parseHtmlSlider += `<a href="https://plus.google.com/share?url=${webUtf8}" title="Compartilhar no Google" target="_new"><img src="images/social/gg-ico.png"></a></div>`;
-				parseHtmlSlider += `</div></div></div>`;
+				res = response[z].data();				
+				parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v='.utf8_encode(${res.watch}).'" data-sub-html="${res.title}"><a href="">`;
+				parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
+				parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
+				parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
+				parseHtmlSlider += `</a></li>`;
 				if ((z+1) >= data.size) {
-					$('#owl-div').html(parseHtmlSlider);
-					owl.owlCarousel();
-					updAgl();
+					parseHtmlSlider += `</ul>`;
+					$('#vid_view').html(parseHtmlSlider);
+					$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
+					// updAgl();
 				}
 			};
 		}

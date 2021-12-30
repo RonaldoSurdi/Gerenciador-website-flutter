@@ -104,14 +104,14 @@
 <section class="disco-agileinfo" id="disco">
 	<div class="container">
 		<h3 class="text-center">Discografia</h3>
-		<div id="owl-div2" class="owl-carousel">
+		<!--<div id="owl-div2" class="owl-carousel">
 			<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">
 				<h2>str_replace(". ", "</h2><h3>", $axtitle)</h3>
 				<div class="dsc">
 					<a title="'.utf8_decode('MAIS').'" rel="$albid-$axwh"><img class="img-responsive" src="$_File_WebIcons" alt="$axtitle"></a>$axtitlelabel
 				</div>
 			</div></div>
-		</div>
+		</div>-->
 		<div class="clearfix"></div>
 	</div>
     <div id="discoinfo"></div>
@@ -130,17 +130,17 @@
 	<div class="container">
 		<h3 class="text-center">Fotos</h3>
 		<div class="content">
-			<div class="galeria col-xs-6 col-sm-4 col-md-3"><ul id="galview'.$prtID.'" class="list-unstyled row">
+			<!--<div class="galeria col-xs-6 col-sm-4 col-md-3"><ul id="galview'.$prtID.'" class="list-unstyled row">
 				</ul>
 					<li class="hide" data-responsive="'.$_File_Web.' 375, '.$_File_Web.' 480, '.$_File_Web.' 800" data-src="'.$_File_Web.'" data-sub-html="'.$xtitle_gal.'">
 						<a href="">
 							<img class="img-responsive" src="'.$_File_WebThumb.'">
-							<div class="gallery-poster"><img src="/images/zoom.png"></div><br>
+							<div class="gallery-poster"><img src="images/zoom.png"></div><br>
 							<div class="gallery-label">$xtitlecap_gal</div>
 						</a>
 					</li>
 				</ul>
-			</div>
+			</div>-->
 		</div>
 	</div>
 </section>
@@ -148,29 +148,19 @@
 <section class="videos-w3ls" id="videos">
 	<div class="container">
 		<h3 class="text-center">Vídeos</h3>
-		<div class="content galeria">
-			<ul id="vidview" class="list-unstyled row">
-				<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v='.utf8_encode($axpturl).'" data-sub-html="'.$axpttag.'">
-					<a href="">
-						<img class="img-responsive" src="http://i2.ytimg.com/vi/'.utf8_encode($axpturl).'/mqdefault.jpg">
-						<div class="gallery-poster"><img src="/images/play.png"></div>
-						<div class="gallery-label">$axpttag</div>
-					</a>
-				</li>
-			</ul>
-        </div>
+		<div id="vid_view" class="content galeria"></div>
 	</div>
 </section>
 
 <section class="imprensa-w3ls" id="imprensa">
 	<div class="container">
 		<h2>Imprensa</h2>
-        <div class="col-lg-6 col-md-6 col-sm-6 imprensa-w3-agile1" data-aos="flip-right">
+        <!--<div class="col-lg-6 col-md-6 col-sm-6 imprensa-w3-agile1" data-aos="flip-right">
 			<div class="imprensa-news">
                 <h4>Novidades</h4>
 				<div class="imprensa-item"><h2>$axtitle</h2><h3>$xaxdt</h3>
 					<div class="divcap"><img class="img-responsive" src="'.$_File_WebIcons.'" alt="'.$axtitle.'"></div>
-					<div class="divtxt">'.$xaxdt.': '.$axtitle.'<br><a href="#alb'.$axwh.'" title="'.utf8_decode('Saiba Mais...').'" rel="'.$albid.'-'.$axwh.'"><img src="/images/social/saiba-mais.png"></a></div>
+					<div class="divtxt">'.$xaxdt.': '.$axtitle.'<br><a href="#alb'.$axwh.'" title="'.utf8_decode('Saiba Mais...').'" rel="'.$albid.'-'.$axwh.'"><img src="images/social/saiba-mais.png"></a></div>
 				</div>
 				<div id="alb'.$axwh.'" class="modalDialog2">
 					<div>
@@ -184,7 +174,7 @@
 		<div class="col-lg-6 col-md-6 col-sm-6 imprensa-w3-agile2" data-aos="flip-left">
 			<div id="imprensa-restrict">
 			</div>
-		</div>
+		</div>-->
 		<div class="clearfix"></div>
 	</div>
 </section>
@@ -208,8 +198,8 @@
                 <div id="central-mural">
 		   			
         		</div>
-                <div id="fbrec"><a title="Envie seu Recado"><img src="/images/social/envie-seu-recado.png" /></a></div>
-                <div id="fbcls"><a title="Fechar"><img src="/images/social/close.png" /></a></div>
+                <div id="fbrec"><a title="Envie seu Recado"><img src="images/social/envie-seu-recado.png" /></a></div>
+                <div id="fbcls"><a title="Fechar"><img src="images/social/close.png" /></a></div>
             </div>
         </div>        
         <div class="clearfix"></div>
@@ -275,7 +265,8 @@
 
 <div class="footer">
 	<div class="container">
-		<p class="text-center">©<? print(date("Y")); ?>. Todos os direitos reservados | By <a href="https://taxonvirtual.com.br/" target="_blank">Táxon Marketing e Tecnologia</a></p>
+		<p class="text-center">©João Luiz Corrêa e Grupo Campeirismo.<br>
+			Todos os direitos reservados | By <a href="https://taxonvirtual.com.br/" title="Táxon Marketing e Tecnologia" target="_blank">Táxon</a></p>
 	</div>
 </div>
 
