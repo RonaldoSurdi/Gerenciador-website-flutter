@@ -152,20 +152,20 @@
             if (isVideo.youtube || isVideo.vimeo || isVideo.dailymotion) {
                 if (isVideo.youtube) {
                     if (_this.core.s.loadYoutubeThumbnail) {
-                        thumbImg = '//img.youtube.com/vi/' + isVideo.youtube[1] + '/' + _this.core.s.youtubeThumbSize + '.jpg';
+                        thumbImg = 'https://img.youtube.com/vi/' + isVideo.youtube[1] + '/' + _this.core.s.youtubeThumbSize + '.jpg';
                     } else {
                         thumbImg = thumb;
                     }
                 } else if (isVideo.vimeo) {
                     if (_this.core.s.loadVimeoThumbnail) {
-                        thumbImg = '//i.vimeocdn.com/video/error_' + vimeoErrorThumbSize + '.jpg';
+                        thumbImg = 'https://i.vimeocdn.com/video/error_' + vimeoErrorThumbSize + '.jpg';
                         vimeoId = isVideo.vimeo[1];
                     } else {
                         thumbImg = thumb;
                     }
                 } else if (isVideo.dailymotion) {
                     if (_this.core.s.loadDailymotionThumbnail) {
-                        thumbImg = '//www.dailymotion.com/thumbnail/video/' + isVideo.dailymotion[1];
+                        thumbImg = 'https://www.dailymotion.com/thumbnail/video/' + isVideo.dailymotion[1];
                     } else {
                         thumbImg = thumb;
                     }
@@ -204,7 +204,7 @@
             var vimeoVideoId = $this.attr('data-vimeo-id');
 
             if (vimeoVideoId) {
-                $.getJSON('//www.vimeo.com/api/v2/video/' + vimeoVideoId + '.json?callback=?', {
+                $.getJSON('https://www.vimeo.com/api/v2/video/' + vimeoVideoId + '.json?callback=?', {
                     format: 'json'
                 }, function(data) {
                     $this.find('img').attr('src', data[0][_this.core.s.vimeoThumbSize]);

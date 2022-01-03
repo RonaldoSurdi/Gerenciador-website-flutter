@@ -419,7 +419,7 @@
      *  @desc Check the given src is video
      *  @param {String} src
      *  @return {Object} video type
-     *  Ex:{ youtube  :  ["//www.youtube.com/watch?v=c0asJgSyxcY", "c0asJgSyxcY"] }
+     *  Ex:{ youtube  :  ["https://www.youtube.com/watch?v=c0asJgSyxcY", "c0asJgSyxcY"] }
      */
     Plugin.prototype.isVideo = function(src, index) {
 

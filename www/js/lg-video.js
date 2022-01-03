@@ -258,7 +258,7 @@
                 a = a + '&' + $.param(this.core.s.youtubePlayerParams);
             }
 
-            video = '<iframe class="lg-video-object lg-youtube ' + addClass + '" width="560" height="315" src="//www.youtube.com/embed/' + isVideo.youtube[1] + a + '" frameborder="0" allowfullscreen></iframe>';
+            video = '<iframe class="lg-video-object lg-youtube ' + addClass + '" width="560" height="315" src="https://www.youtube.com/embed/' + isVideo.youtube[1] + a + '" frameborder="0" allowfullscreen></iframe>';
 
         } else if (isVideo.vimeo) {
 
@@ -267,7 +267,7 @@
                 a = a + '&' + $.param(this.core.s.vimeoPlayerParams);
             }
 
-            video = '<iframe class="lg-video-object lg-vimeo ' + addClass + '" width="560" height="315"  src="//player.vimeo.com/video/' + isVideo.vimeo[1] + a + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+            video = '<iframe class="lg-video-object lg-vimeo ' + addClass + '" width="560" height="315"  src="https://player.vimeo.com/video/' + isVideo.vimeo[1] + a + '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
 
         } else if (isVideo.dailymotion) {
 
@@ -276,7 +276,7 @@
                 a = a + '&' + $.param(this.core.s.dailymotionPlayerParams);
             }
 
-            video = '<iframe class="lg-video-object lg-dailymotion ' + addClass + '" width="560" height="315" src="//www.dailymotion.com/embed/video/' + isVideo.dailymotion[1] + a + '" frameborder="0" allowfullscreen></iframe>';
+            video = '<iframe class="lg-video-object lg-dailymotion ' + addClass + '" width="560" height="315" src="https://www.dailymotion.com/embed/video/' + isVideo.dailymotion[1] + a + '" frameborder="0" allowfullscreen></iframe>';
 
         } else if (isVideo.html5) {
             var fL = html.substring(0, 1);

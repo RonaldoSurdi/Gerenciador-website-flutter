@@ -422,11 +422,11 @@ $(document).ready(function () {
 			statusChangeCallback(response);
 		  });
 	  };
-	  (function(d, s, id) {
+	  /*(function(d, s, id) {
 		var js, fjs = d.getElementsByTagName(s)[0];
 		if (d.getElementById(id)) return;
 		js = d.createElement(s); js.id = id;
-		js.src = "//connect.facebook.net/pt_BR/sdk.js";
+		js.src = "https://connect.facebook.net/pt_BR/sdk.js";
 		fjs.parentNode.insertBefore(js, fjs);
 	  }(document, 'script', 'facebook-jssdk'));
 	  function conectFB() {
@@ -441,7 +441,7 @@ $(document).ready(function () {
 			$("#email").val(response.email);
 			openpage("/view/down.php","fbdwn");
 		});
-	  }
+	  }*/
 
 	  async function getdata(getIdx) {
 		var titleSite = "João Luiz Corrêa e Grupo Campeirismo";
@@ -593,13 +593,44 @@ $(document).ready(function () {
 		} else if (getIdx == 7) {
 			//VIDEOS
 			console.log('videos');
-			var db = firebase.firestore();
+			const Http = new XMLHttpRequest();
+			const url='https://www.googleapis.com/youtube/v3/search?key=AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM&channelId=UCbDaA750q0NCXdaQlptSa9A&part=snippet,id&order=date&maxResults=16';
+			Http.open("GET", url);
+			Http.send();
+
+			Http.onloadend = (e) => {
+				var res = Http.responseText;
+				var data = JSON.parse(res);
+				parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
+				console.log(data.items);
+				console.log(data);
+				for (var z = 0; z < data.items.length; z++) {
+					parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${data.items[z].id.videoId}&autoplay=true" data-sub-html="${data.items[z].snippet.description.title}"><a href="">`;
+					parseHtmlSlider += `<img class="img-responsive" src="${data.items[z].snippet.thumbnails.high.url}">`;
+					parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
+					parseHtmlSlider += `<div class="gallery-label">${data.items[z].snippet.description.title}</div>`;
+					parseHtmlSlider += `</a></li>`;
+					if ((z+1) >= data.items.length) {
+						parseHtmlSlider += `</ul>`;
+						$('#vid_view').html(parseHtmlSlider);
+						setTimeout(function() { 
+							$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
+						}, 2000);
+					}
+				};
+			}
+
+			/*var client = new HttpClient();
+			client.get('https://www.googleapis.com/youtube/v3/search?key=AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM&channelId=UCbDaA750q0NCXdaQlptSa9A&part=snippet,id&order=date&maxResults=20', function(response) {
+				console.log(response);
+			});*/
+			/*var db = firebase.firestore();
         	data = await db.collection("videos").orderBy("date", "desc").get();
 			response = data.docs;
 			parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
 			for (var z = 0; z < data.size; z++) {
 				res = response[z].data();				
-				parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v='.utf8_encode(${res.watch}).'" data-sub-html="${res.title}"><a href="">`;
+				parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
 				parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
 				parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
 				parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
@@ -607,10 +638,11 @@ $(document).ready(function () {
 				if ((z+1) >= data.size) {
 					parseHtmlSlider += `</ul>`;
 					$('#vid_view').html(parseHtmlSlider);
-					$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
-					// updAgl();
+					setTimeout(function() { 
+						$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
+					}, 2000);
 				}
-			};
+			};*/
 		}
 		return;
     }
