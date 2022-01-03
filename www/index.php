@@ -878,6 +878,8 @@
 		}
 		$photosp = true;
 		$xtag_caross = true;
+		$conteudo = "";
+		$idxDir = 1;
 		for ($xgalid = 0; $xgalid < $xgaldadoscount; $xgalid++) {
 			$photosp = true;
 			if ($printfancyboxEft) $galID = $xgalid;
@@ -887,6 +889,13 @@
 			$xtitle_gal = $xgaldados['title'][$galID];
 			$xtitle_gal = addslashes($xtitle_gal);
 			//$tagContent.= '<p>'.$xcod_gal.'</p>';
+			$idxDirPath = "E:/www/joaoluizcorrea.com.br/files/".date("Ymd").str_pad($idxDir, 6, "0", STR_PAD_LEFT);
+			$conteudo .= str_pad($idxDir, 6, "0", STR_PAD_LEFT).PHP_EOL;
+			$conteudo .= $xtitle_gal.PHP_EOL;
+			if (!is_dir($idxDirPath)) {
+				mkdir($idxDirPath);
+			}
+			$idxDir++;
 			$xtag_imgs = '';
 			$rowcods = 0;
 			$capaload = true;
@@ -906,6 +915,7 @@
 				$_File_Web = "";
 				$_File_WebThumb = "";
 				$imgID = 1;
+				$idxImgDir = 1;
 				while($listasql = mysql_fetch_array($excod)) {
 					$axwh = $listasql[1];
 					$axpttag = $listasql[2];
@@ -915,6 +925,11 @@
 					$axptimJ = $axptimN.".jpg";
 					$_File_Web = $www_web_ImgAmpli.$axptimJ;
 					$_File_WebThumb = $www_web_ImgThumb.$axptimJ;
+					$idxImgDirPath = $idxDirPath."/".str_pad($idxImgDir, 5, "0", STR_PAD_LEFT).".jpg";
+					if (file_exists($pth_ImgHost.$axptimT)) {
+						copy($pth_ImgHost.$axptimT,$idxImgDirPath);
+					}
+					$idxImgDir++;
 					$geralink = ((!file_exists($pth_ImgWeb_Ampli.$axptimJ)) || (!file_exists($pth_ImgWeb_Thumb.$axptimJ)) || (!file_exists($pth_ImgWeb_Hompg.$axptimJ)));
 					if ((file_exists($pth_ImgHost.$axptimT)) && ($geralink)) {
 						$xfname_tmp = $pth_ImgHost.$axptimT;
@@ -985,6 +1000,10 @@
 			  }
 			}			
 		}
+		
+		$fp = fopen("E:/www/joaoluizcorrea.com.br/files/albums.txt","wb");
+		fwrite($fp,$conteudo);
+		fclose($fp);
 	}
 	//$xtagTitle = utf8_encode($xtagTitle);
 	$axptButtonPrint =  ''; //utf8_encode($axptButtonPrint);

@@ -7,6 +7,7 @@ $(document).ready(function () {
 	});
 
 	var scheduleData;
+	var settingsData;
 
     var firebaseConfig = {
         apiKey: "AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM",
@@ -456,7 +457,19 @@ $(document).ready(function () {
 			res,
 			uri,
 			filename;
-		if (getIdx == 1) {
+		if (getIdx == 0) {
+			//BIOGRAFIA
+			var db = firebase.firestore();
+        	data = await db.collection("settings").get();
+			response = data.docs;
+			if (data.size > 0) {
+				console.log(response);
+				settingsData = response[0].data();
+				getdata(1);
+			} else {
+				getdata(1);
+			}
+		} else if (getIdx == 1) {
 			//BANNERS
 			var db = firebase.firestore();
         	data = await db.collection("banners").orderBy("date", "desc").get();
@@ -480,11 +493,15 @@ $(document).ready(function () {
 			var db = firebase.firestore();
         	data = await db.collection("biography").get();
 			response = data.docs;
-			res = response[0].data();
-			parseHtmlSlider = res.description;
-			parseHtmlSlider = parseHtmlSlider.replace("\r", "").replace("\n", "<br><br>");
-			$('#biography').html(parseHtmlSlider);
-			getdata(3);
+			if (data.size > 0) {
+				res = response[0].data();
+				parseHtmlSlider = res.description;
+				parseHtmlSlider = parseHtmlSlider.replace("\r", "").replace("\n", "<br><br>");
+				$('#biography').html(parseHtmlSlider);
+				getdata(3);
+			} else {
+				getdata(3);
+			}
 		} else if (getIdx == 3) {
 			//ARTISTAS
 			var storageRef = await firebase.storage().ref("artists");
@@ -592,25 +609,19 @@ $(document).ready(function () {
 			//FOTOS
 		} else if (getIdx == 7) {
 			//VIDEOS
-			console.log('videos');
-			const Http = new XMLHttpRequest();
-			const url='https://www.googleapis.com/youtube/v3/search?key=AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM&channelId=UCbDaA750q0NCXdaQlptSa9A&part=snippet,id&order=date&maxResults=16';
-			Http.open("GET", url);
-			Http.send();
-
-			Http.onloadend = (e) => {
-				var res = Http.responseText;
-				var data = JSON.parse(res);
+			if (settingsData.videostype == 0) {
+				var db = firebase.firestore();
+				data = await db.collection("videos").orderBy("date", "desc").get();
+				response = data.docs;
 				parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
-				console.log(data.items);
-				console.log(data);
-				for (var z = 0; z < data.items.length; z++) {
-					parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${data.items[z].id.videoId}&autoplay=true" data-sub-html="${data.items[z].snippet.description.title}"><a href="">`;
-					parseHtmlSlider += `<img class="img-responsive" src="${data.items[z].snippet.thumbnails.high.url}">`;
+				for (var z = 0; z < data.size; z++) {
+					res = response[z].data();				
+					parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
+					parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
 					parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
-					parseHtmlSlider += `<div class="gallery-label">${data.items[z].snippet.description.title}</div>`;
+					parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
 					parseHtmlSlider += `</a></li>`;
-					if ((z+1) >= data.items.length) {
+					if ((z+1) >= data.size) {
 						parseHtmlSlider += `</ul>`;
 						$('#vid_view').html(parseHtmlSlider);
 						setTimeout(function() { 
@@ -618,31 +629,50 @@ $(document).ready(function () {
 						}, 2000);
 					}
 				};
-			}
-
-			/*var client = new HttpClient();
-			client.get('https://www.googleapis.com/youtube/v3/search?key=AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM&channelId=UCbDaA750q0NCXdaQlptSa9A&part=snippet,id&order=date&maxResults=20', function(response) {
-				console.log(response);
-			});*/
-			/*var db = firebase.firestore();
-        	data = await db.collection("videos").orderBy("date", "desc").get();
-			response = data.docs;
-			parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
-			for (var z = 0; z < data.size; z++) {
-				res = response[z].data();				
-				parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
-				parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
-				parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
-				parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
-				parseHtmlSlider += `</a></li>`;
-				if ((z+1) >= data.size) {
-					parseHtmlSlider += `</ul>`;
-					$('#vid_view').html(parseHtmlSlider);
-					setTimeout(function() { 
-						$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
-					}, 2000);
+			} else {
+				var Http = new XMLHttpRequest();			
+				var url = 'https://www.googleapis.com/youtube/v3/search?key=AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM';
+				url += '&channelId=UCbDaA750q0NCXdaQlptSa9A';
+				url += '&part=snippet,id';
+				url += '&type=video';
+				url += '&videoSyndicated=true';
+				url += '&order=date';
+				url += '&maxResults=16';
+				Http.open("GET", url);
+				Http.send();
+				Http.onloadend = (e) => {
+					var res = Http.responseText;
+					var data = JSON.parse(res);
+					parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
+					if (data.items) {
+						for (var z = 0; z < data.items.length; z++) {
+							parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${data.items[z].id.videoId}&autoplay=true" data-sub-html="${data.items[z].snippet.title}"><a href="">`;
+							parseHtmlSlider += `<img class="img-responsive" src="${data.items[z].snippet.thumbnails.high.url}">`;
+							parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
+							parseHtmlSlider += `<div class="gallery-label">${data.items[z].snippet.title}<br>${data.items[z].snippet.description}</div>`;
+							parseHtmlSlider += `</a></li>`;
+							if ((z+1) >= data.items.length) {
+								parseHtmlSlider += `</ul>`;
+								$('#vid_view').html(parseHtmlSlider);
+								setTimeout(function() { 
+									$('#vidview').lightGallery({
+										download:false,
+										zoom:false,
+										autoplayControls:false,
+										hash:false,
+										youtubePlayerParams:{
+											modestbranding:1,
+											showinfo:0,
+											rel:0,
+											controls:1
+										}
+									});
+								}, 2000);
+							}
+						};
+					}
 				}
-			};*/
+			}
 		}
 		return;
     }
@@ -695,5 +725,5 @@ $(document).ready(function () {
 		});
 	}*/
 
-	getdata(1);
+	getdata(0);
 });

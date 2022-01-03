@@ -71,7 +71,9 @@
     };
 
     Fullscreen.prototype.exitFullscreen = function() {
-        if (document.exitFullscreen) {
+        const cancellFullScreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen || document.msExitFullscreen;
+        // cancellFullScreen.call(document);
+        /*if (document.exitFullscreen) {
             document.exitFullscreen();
         } else if (document.msExitFullscreen) {
             document.msExitFullscreen();
@@ -79,7 +81,7 @@
             document.mozCancelFullScreen();
         } else if (document.webkitExitFullscreen) {
             document.webkitExitFullscreen();
-        }
+        }*/
     };
 
     // https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Using_full_screen_mode

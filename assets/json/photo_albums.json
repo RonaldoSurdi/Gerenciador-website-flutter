@@ -1,0 +1,98 @@
+[
+    {
+        "id": "20220103000001",
+        "description": "Sociedade Alvorada",
+        "place": "Joinville/SC",
+        "date": "08/03/2020"
+    },
+    {
+        "id": "20220103000002",
+        "description": "30º Rodeio Estadual e 15ª Edição Internacional",
+        "place": "Chaequeadas/RS",
+        "date": "06/03/2020"
+    },
+    {
+        "id": "20220103000003",
+        "description": "Joy Club",
+        "place": "São Leopoldo/RS",
+        "date": "05/03/2020"
+    },
+    {
+        "id": "20220103000004",
+        "description": "14º Fenavindima",
+        "place": "Flores da Cunha/RS",
+        "date": "01/03/2020"
+    },
+    {
+        "id": "20220103000005",
+        "description": "21º Rodeio de Nova Bassano",
+        "place": "Nova Bassano/RS",
+        "date": "29/02/2020"
+    },
+    {
+        "id": "20220103000006",
+        "description": "CTG Presilha Sombriense",
+        "place": "Sombrio/SC",
+        "date": "28/02/2020"
+    },
+    {
+        "id": "20220103000007",
+        "description": "Clube Tradição",
+        "place": "Curitiba/PR",
+        "date": "07/02/2020"
+    },
+    {
+        "id": "20220103000008",
+        "description": "Clube Maré Alta",
+        "place": "São José/SC",
+        "date": "30/12/2019"
+    },
+    {
+        "id": "20220103000009",
+        "description": "CTG Porteira das Tradições",
+        "place": "Mato Castelhano/RS",
+        "date": "28/12/2019"
+    },
+    {
+        "id": "20220103000010",
+        "description": "Clube Fantástico",
+        "place": "Balneário Camboriú/SC",
+        "date": "27/12/2019"
+    },
+    {
+        "id": "20220103000011",
+        "description": "CTG Tarca Nativista",
+        "place": "Pato Branco/PR",
+        "date": "14/12/2019"
+    },
+    {
+        "id": "20220103000012",
+        "description": "CTG Coração do Paraná",
+        "place": "Manoel Ribas/PR",
+        "date": "13/12/2019"
+    },
+    {
+        "id": "20220103000013",
+        "description": "Sítio Novo",
+        "place": "Joinville/SC",
+        "date": "23/11/2019"
+    },
+    {
+        "id": "20220103000014",
+        "description": "ExpoMormaço",
+        "place": "Mormaço/RS",
+        "date": "17/11/2019"
+    },
+    {
+        "id": "20220103000015",
+        "description": "CTG Os Tropeiros",
+        "place": "Santiago/RS",
+        "date": "16/11/2019"
+    },
+    {
+        "id": "20220103000016",
+        "description": "DN Carlos Bastos do Prado",
+        "place": "Sao Luiz Gonzaga/RS",
+        "date": "15/11/2019"
+    }
+]

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/pages/modules/photo_images.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
@@ -17,26 +19,82 @@ class PhotoAlbums extends StatefulWidget {
 }
 
 class _PhotoAlbumsState extends State<PhotoAlbums> {
-  final TextEditingController _textFieldController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _placeController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   late String valueText;
 
   final List<AlbumModel> _widgetList = [];
 
+  /*Future _importData(type) async {
+    EasyLoading.showInfo(
+      'importando dados...',
+      maskType: EasyLoadingMaskType.custom,
+    );
+
+    if (type == 1) {
+      String response =
+          await rootBundle.loadString('assets/json/photo_albums.json');
+
+      final dataImport = await json.decode(response);
+      PhotoModel photoModel;
+      String idItem = '';
+
+      for (int i = 0; i < dataImport.length; i++) {
+        idItem = dataImport[i]["id"];
+        photoModel = PhotoModel(
+          id: idItem,
+          description: dataImport[i]["description"],
+          place: dataImport[i]["place"],
+          date: dataImport[i]["date"],
+        );
+        FirebaseFirestore db = FirebaseFirestore.instance;
+        await db
+            .collection("photos")
+            .doc(idItem)
+            .set(photoModel.toMap());
+      }
+    }
+
+    setState(() {
+      Timer(const Duration(milliseconds: 1500), () {
+        _getData();
+      });
+    });
+  }*/
+  
   Future<void> _addNew(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Adicionar álbum de fotos'),
-          content: TextField(
-            onChanged: (value) {
-              setState(() {
-                valueText = value;
-              });
-            },
-            controller: _textFieldController,
-            maxLength: 100,
-            decoration: const InputDecoration(hintText: "Digite a descrição"),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _descriptionController,
+                maxLength: 250,
+                decoration: const InputDecoration(
+                  hintText: "Descrição",
+                ),
+              ),
+              TextField(
+                controller: _placeController,
+                maxLength: 100,
+                decoration: const InputDecoration(
+                  hintText: "Cidade / UF",
+                ),
+              ),
+              TextField(
+                controller: _dateController,
+                maxLength: 10,
+                decoration: const InputDecoration(
+                  hintText: "DD/MM/AAAA",
+                ),
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -56,7 +114,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
             ),
             TextButton(
               onPressed: () {
-                _saveData(valueText);
+                _saveData(_descriptionController.text, _placeController.text, _dateController.text);
                 Navigator.pop(context);
               },
               style: TextButton.styleFrom(
@@ -80,7 +138,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
   }
 
   // faz o envio da imagem para o storage
-  Future _saveData(descriptionText) async {
+  Future _saveData(descriptionText, placeText, dataText) async {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
@@ -90,7 +148,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
     PhotoModel photoModel =
-        PhotoModel(description: descriptionText, date: dateNow, count: 0);
+        PhotoModel(id: dateNow, description: descriptionText, place: placeText, date: dataText);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("photos").doc(dateNow).set(photoModel.toMap());
@@ -141,13 +199,12 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     var data =
-        await db.collection("photos").orderBy('date', descending: true).get();
-
+        await db.collection("photos").orderBy('id', descending: true).get();
     setState(() {
       var response = data.docs;
       if (response.isNotEmpty) {
         for (int i = 0; i < response.length; i++) {
-          String idAlbum = response[i]["date"];
+          String idAlbum = response[i]["id"];
           String description = response[i]["description"];
           firebase_storage.Reference arquive = firebase_storage
               .FirebaseStorage.instance
@@ -165,12 +222,19 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
             description = description.toUpperCase();
 
             AlbumModel albumModel = AlbumModel(
-                id: idAlbum, description: description, image: imageParse);
-
-            _widgetList.add(albumModel);
+                id: idAlbum,
+                description: description,
+                image: imageParse
+            );
+            setState(() {
+              _widgetList.add(albumModel);
+            });
           }).catchError((error) {});
         }
       }
+      _descriptionController.text = "";
+      _placeController.text = "";
+      _dateController.text = "";
       closeLoading();
     });
   }
@@ -205,6 +269,16 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
         title: const Text('Galeria de fotos'),
         backgroundColor: Colors.black38,
         actions: [
+          /*IconButton(
+            icon: const Icon(Icons.upload_file),
+            iconSize: 40,
+            color: Colors.amber,
+            splashColor: Colors.yellow,
+            tooltip: 'Importar JSON álbums',
+            onPressed: () {
+              _importData(1);
+            },
+          ),*/
           IconButton(
             icon: const Icon(Icons.add_photo_alternate),
             iconSize: 40,

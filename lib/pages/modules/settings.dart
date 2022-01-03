@@ -16,17 +16,27 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _channelidController = TextEditingController();
+
+  int? _videosValue = 1;
 
   _onVerifyData() {
     //Recupera dados dos campos
     String name = _nameController.text;
     String email = _emailController.text;
+    String channelid = _channelidController.text;    
 
     if (name.trim().isNotEmpty &&
         name.trim().length >= 3 &&
         email.trim().isNotEmpty &&
         email.trim().length >= 3) {
-      SettingsModel settingsModel = SettingsModel(name: name, email: email);
+
+      SettingsModel settingsModel = SettingsModel(
+        name: name, 
+        email: email, 
+        videostype: _videosValue, 
+        channelid: channelid,
+      );
 
       _onSaveData(settingsModel);
     } else {
@@ -65,6 +75,8 @@ class _SettingsState extends State<Settings> {
         if (documentSnapshot.exists) {
           _nameController.text = documentSnapshot['name'].toString();
           _emailController.text = documentSnapshot['email'].toString();
+          _channelidController.text = documentSnapshot['channelid'].toString();
+          _videosValue = int.parse(documentSnapshot['videostype']);
         }
         closeLoading();
       });
@@ -190,6 +202,103 @@ class _SettingsState extends State<Settings> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 50,
+                color: Colors.black26,
+                thickness: .1,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Radio(
+                    value: 0,
+                    groupValue: _videosValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _videosValue = value as int;
+                      });
+                    },
+                  ),
+                  const Text(
+                    'Vídeos youtube',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansMedium',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Radio(
+                    value: 1,
+                    groupValue: _videosValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _videosValue = value as int;
+                      });
+                    },
+                  ),
+                  const Text(
+                    'Canal Youtube',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansMedium',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 50,
+                color: Colors.black26,
+                thickness: .1,
+              ),
+              TextField(
+                controller: _channelidController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                cursorColor: Colors.white,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
+                  labelText: "Canal Youtube Id",
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    fontFamily: 'WorkSansThin',
+                    color: Colors.white38,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.white38,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 50,
+                color: Colors.black26,
+                thickness: .1,
               ),
             ],
           ),

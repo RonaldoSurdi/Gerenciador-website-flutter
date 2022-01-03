@@ -1,15 +1,17 @@
 class PhotoModel {
+  String? id;
   String? description;
+  String? place;
   String? date;
-  num? count;
 
-  PhotoModel({this.description, this.date, this.count});
+  PhotoModel({this.id, this.description, this.place, this.date});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
+      "id": id,
       "description": description,
-      "date": date,
-      "count": count
+      "place": place,
+      "date": date
     };
 
     return map;

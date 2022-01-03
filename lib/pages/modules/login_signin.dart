@@ -26,10 +26,10 @@ class _LoginSigninState extends State<LoginSignin> {
 
   _validateFields() {
     //Recupera dados dos campos
-    //String email = 'ronaldohws@gmail.com';
-    //String password = '111111';
-    String email = _loginEmailController.text;
-    String password = _loginPasswordController.text;
+    String email = 'ronaldohws@gmail.com';
+    String password = '111111';
+    //String email = _loginEmailController.text;
+    //String password = _loginPasswordController.text;
 
     if (email.trim().isNotEmpty && email.trim().contains("@")) {
       if (password.isNotEmpty) {
@@ -67,10 +67,10 @@ class _LoginSigninState extends State<LoginSignin> {
   _logarUsuario() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    //String email = 'ronaldohws@gmail.com';
-    //String password = '111111';
-    String email = _loginEmailController.text;
-    String password = _loginPasswordController.text;
+    String email = 'ronaldohws@gmail.com';
+    String password = '111111';
+    //String email = _loginEmailController.text;
+    //String password = _loginPasswordController.text;
 
     auth
         .signInWithEmailAndPassword(
