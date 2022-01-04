@@ -81,13 +81,20 @@ $(document).ready(function () {
 			var schedulePlace = res.place;
 			var scheduleDateIni = new Date(res.dateini.toDate());
 			var scheduleDateEnd = new Date(res.dateend.toDate());
+			var dateParse = ("00" + scheduleDateIni.getDate()).slice(-2);
+			var monthParse = ("00" + (scheduleDateIni.getMonth() + 1)).slice(-2);
+			var yearParse = scheduleDateIni.getFullYear();
+			var hoursParse = ("00" + scheduleDateIni.getHours()).slice(-2);
+			var minutesParse = ("00" + scheduleDateIni.getMinutes()).slice(-2);
+			var hoursParse2 = ("00" + scheduleDateEnd.getHours()).slice(-2);
+			var minutesParse2 = ("00" + scheduleDateEnd.getMinutes()).slice(-2);
 			var parseHtmlPop = `<div class="row">`;
 			parseHtmlPop += `<div class="col-md-6"><div class="cap"><img src="images/agenda-info.png" alt="Agenda"></div></div>`;
 			parseHtmlPop += `<div class="col-md-6"><div id="jp_container">`;
 			parseHtmlPop += `<h2>${scheduleTitle}</h2>`;
-			parseHtmlPop += `<p>Local: ${schedulePlace}<br>`;
-			parseHtmlPop += `Data: ${scheduleDateIni.getDay()}/${scheduleDateIni.getMonth()}/${scheduleDateIni.getFullYear()}<br>`;
-			parseHtmlPop += `Hora: ${scheduleDateIni.getHours()}:${scheduleDateIni.getMinutes()}hs às ${scheduleDateEnd.getHours()}:${scheduleDateEnd.getMinutes()}hs</p>`;
+			parseHtmlPop += `<p>${schedulePlace}<br>`;
+			parseHtmlPop += `No dia ${dateParse}/${monthParse}/${yearParse}<br>`;
+			parseHtmlPop += `das ${hoursParse}:${minutesParse}hs às ${hoursParse2}:${minutesParse2}hs</p>`;
 			if (scheduleDescription != null) {
 				parseHtmlPop += `<p>${scheduleDescription}</p>`;
 			}
@@ -585,9 +592,15 @@ $(document).ready(function () {
 					var schedulePlace = res.place;
 					var scheduleDateIni = new Date(res.dateini.toDate());
 					var scheduleDateEnd = new Date(res.dateend.toDate());
+					var dateParse = ("00" + scheduleDateIni.getDate()).slice(-2);
+					var monthParse = ("00" + (scheduleDateIni.getMonth() + 1)).slice(-2);
+					var hoursParse = ("00" + scheduleDateIni.getHours()).slice(-2);
+					var minutesParse = ("00" + scheduleDateIni.getMinutes()).slice(-2);
+					var hoursParse2 = ("00" + scheduleDateEnd.getHours()).slice(-2);
+					var minutesParse2 = ("00" + scheduleDateEnd.getMinutes()).slice(-2);
 					parseHtmlSlider += `<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">`;
-					parseHtmlSlider += `<div class="agdt"><span class="dia">${scheduleDateIni.getDay()}</span><span class="mes">/${scheduleDateIni.getMonth()}</span></div>`;
-					parseHtmlSlider += `<div class="agtm"><span class="hora">${scheduleDateIni.getHours()}:${scheduleDateIni.getMinutes()}hs às ${scheduleDateEnd.getHours()}:${scheduleDateEnd.getMinutes()}hs</span></div>`;
+					parseHtmlSlider += `<div class="agdt"><span class="dia">${dateParse}</span><span class="mes">/${monthParse}</span></div>`;
+					parseHtmlSlider += `<div class="agtm"><span class="hora">${hoursParse}:${minutesParse}hs - ${hoursParse2}:${minutesParse2}hs</span></div>`;
 					parseHtmlSlider += `<div class="aglc"><h3>${schedulePlace}</h3><h2>${scheduleTitle}</h2></div>`;
 					parseHtmlSlider += `<div class="rodape">`;
 					parseHtmlSlider += `<div class="infosh"><div class="agl"><a title="Informações sobre o Evento" rel="${z}"><img src="images/social/maisinfo.png"></a></div></div>`;
@@ -607,6 +620,25 @@ $(document).ready(function () {
 			}
 		} else if (getIdx == 6) {
 			//FOTOS
+			var db = firebase.firestore();
+			data = await db.collection("photos").orderBy("date", "desc").get();
+			response = data.docs;
+			parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
+			for (var z = 0; z < data.size; z++) {
+				res = response[z].data();				
+				parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
+				parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
+				parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
+				parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
+				parseHtmlSlider += `</a></li>`;
+				if ((z+1) >= data.size) {
+					parseHtmlSlider += `</ul>`;
+					$('#photo_view').html(parseHtmlSlider);
+					setTimeout(function() { 
+						$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
+					}, 2000);
+				}
+			};
 		} else if (getIdx == 7) {
 			//VIDEOS
 			if (settingsData.videostype == 0) {

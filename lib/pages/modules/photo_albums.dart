@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
+//import 'dart:convert';
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'dart:convert';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/pages/modules/photo_images.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
@@ -62,7 +62,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
       });
     });
   }*/
-  
+
   Future<void> _addNew(BuildContext context) async {
     return showDialog(
       context: context,
@@ -114,7 +114,8 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
             ),
             TextButton(
               onPressed: () {
-                _saveData(_descriptionController.text, _placeController.text, _dateController.text);
+                _saveData(_descriptionController.text, _placeController.text,
+                    _dateController.text);
                 Navigator.pop(context);
               },
               style: TextButton.styleFrom(
@@ -147,8 +148,11 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
-    PhotoModel photoModel =
-        PhotoModel(id: dateNow, description: descriptionText, place: placeText, date: dataText);
+    PhotoModel photoModel = PhotoModel(
+        id: dateNow,
+        description: descriptionText,
+        place: placeText,
+        date: dataText);
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("photos").doc(dateNow).set(photoModel.toMap());
@@ -222,10 +226,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
             description = description.toUpperCase();
 
             AlbumModel albumModel = AlbumModel(
-                id: idAlbum,
-                description: description,
-                image: imageParse
-            );
+                id: idAlbum, description: description, image: imageParse);
             setState(() {
               _widgetList.add(albumModel);
             });
