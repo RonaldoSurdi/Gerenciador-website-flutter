@@ -402,7 +402,7 @@ class _DiscAlbumsState extends State<DiscAlbums> {
   Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db.collection("discs").orderBy('year').get();
+    var data = await db.collection("discs").orderBy('id').get();
     var response = data.docs;
     setState(() {
       if (response.isNotEmpty) {

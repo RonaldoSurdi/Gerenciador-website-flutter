@@ -8,6 +8,7 @@ $(document).ready(function () {
 
 	var scheduleData;
 	var settingsData;
+	var printfancybox = '';
 
     var firebaseConfig = {
         apiKey: "AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM",
@@ -470,7 +471,7 @@ $(document).ready(function () {
         	data = await db.collection("settings").get();
 			response = data.docs;
 			if (data.size > 0) {
-				console.log(response);
+				// console.log(response);
 				settingsData = response[0].data();
 				getdata(1);
 			} else {
@@ -512,7 +513,7 @@ $(document).ready(function () {
 		} else if (getIdx == 3) {
 			//ARTISTAS
 			var storageRef = await firebase.storage().ref("artists");
-			storageRef.listAll().then(function(result) {
+			await storageRef.listAll().then(function(result) {
 				if (result.items.length > 0) {
 					for (var z = 0; z < result.items.length; z++) {
 						filename = result.items[z].fullPath
@@ -526,56 +527,43 @@ $(document).ready(function () {
 						parseHtmlSlider += `</div></div></div>`;
 						if ((z+1) >= result.items.length) {
 							$('#artists').html(parseHtmlSlider);
-							getdata(5);
+							getdata(4);
 						}
 					};
 				} else {
-					getdata(5);
+					getdata(4);
 				}
 			}).catch(function(error) {
 				console.log(error);
+				getdata(4);
 			});
 		} else if (getIdx == 4) {
 			//DISCOGRAFIA
-			/*var db = firebase.firestore();
-        	data = await db.collection("photos").orderBy("date", "desc").get();
-			response = data.docs;
-			for (var z = 0; z < data.size; z++) {
-				res = response[z].data();
-				var albId = res.date;
-				var albTitle = res.description;
-				var storageRef = await firebase.storage().ref().child("photos").child(albId);
-				storageRef.listAll().then(function(result) {
-					console.log(result.items);
-					parseHtmlSlider = '';
-					for (var z = 0; z < result.items.length; z++) {
-						filename = result.items[z].fullPath
-						filename = filename.replace("/", "%2F");
-						uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${filename}?alt=media`;
-						parseHtmlSlider += `<div class="col-lg-2 col-md-2 col-sm-4 wthree2" data-aos="zoom-in"><div class="w3-agileits">`;
-						parseHtmlSlider += `<div class="bgf">`;
-						//parseHtmlSlider += `<a title="mais" rel="artist${filename}">`;
-						parseHtmlSlider += `<img src="${uri}" alt="${filename}">`;//<br/>${filename}
-						//parseHtmlSlider += `</a>`;
-						parseHtmlSlider += `</div></div></div>`;
-						if ((z+1) >= result.items.length) {
-							console.log(parseHtmlSlider);
-							$('#artists').html(parseHtmlSlider);
-						}
-					};
-				}).catch(function(error) {
-					console.log(error);
-				});
-
-				uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/photos%2F${res.filename}?alt=media`;
-				parseHtmlSlider += `<div class="pogoSlider-slide" data-transition="fade" data-duration="6000" style="background-image:url(${uri});"></div>`;
-				if ((z+1) >= data.size) {
-					$('#js-main-slider').html(parseHtmlSlider);
-					owl2.owlCarousel({items:4,autoHeight:false});
-					owl2.trigger('owl.goTo', 24);
-					getdata(2);
-				}
-			};*/
+			var db = firebase.firestore();
+			data = await db.collection("discs").orderBy("id").get();
+			if (data.size > 0) {
+				response = data.docs;
+				var titleAlb, imageAlb;
+				var pathImage = 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/';
+				for (var z = 0; z < data.size; z++) {
+					res = response[z].data();
+					titleAlb = res.title.replace(`${res.year}. `,'');
+					imageAlb = `${pathImage}discs%2F${("000000" + res.id).slice(-5)}%2F${res.image}?alt=media`;
+					parseHtmlSlider += `<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">`;
+					parseHtmlSlider += `<div class="dsc"><a title="MAIS" rel="${z + 1}-${res.id}">`;
+					parseHtmlSlider += `<img class="img-responsive" src="${imageAlb}" alt="${res.title}"></a>`;
+					parseHtmlSlider += `<h2>${res.year}</h2>`;
+					parseHtmlSlider += `<h3>${titleAlb}</h3>`;
+					parseHtmlSlider += `</div></div></div>`;
+					if ((z+1) >= data.size) {
+						owl2.html(parseHtmlSlider);
+						owl2.owlCarousel();
+						getdata(5);
+					}
+				};
+			} else {
+				getdata(5);
+			}
 		} else if (getIdx == 5) {
 			//AGENDA
 			var db = firebase.firestore();
@@ -609,36 +597,58 @@ $(document).ready(function () {
 					parseHtmlSlider += `<a href="https://plus.google.com/share?url=${webUtf8}" title="Compartilhar no Google" target="_new"><img src="images/social/gg-ico.png"></a></div>`;
 					parseHtmlSlider += `</div></div></div>`;
 					if ((z+1) >= data.size) {
-						$('#owl-div').html(parseHtmlSlider);
+						owl.html(parseHtmlSlider);
 						owl.owlCarousel();
 						updAgl();
+						getdata(6);
+					}
+				};
+			} else {
+				getdata(6);
+			}
+		} else if (getIdx == 6) {
+			//FOTOS
+			var db = firebase.firestore();
+			data = await db.collection("photos").orderBy("date", "desc").get();
+			if (data.size > 0) {
+				response = data.docs;
+				var storageRef = firebase.storage();
+				var titleAlbum, descAlbum, photosp, listRef, resStorage, fileName;
+				var filePath = 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/';
+				for (var z = 0; z < data.size; z++) {
+					res = response[z].data();
+					titleAlbum = res.description;
+					descAlbum = `${titleAlbum}<br>${res.place}<br>${res.date}`;
+					parseHtmlSlider += `<div class="galeria col-xs-6 col-sm-4 col-md-3">`;
+					parseHtmlSlider += `<ul id="galview${(z + 1)}" class="list-unstyled row">`;
+					photosp = '';
+					
+					listRef = storageRef.ref().child(`photos/${res.id}`);
+					resStorage = await listRef.listAll();
+					await resStorage.items.forEach((itemRef) => {
+						fileName = itemRef.fullPath;
+						fileName = filePath + fileName.replaceAll("/", "%2F") + '?alt=media';
+						parseHtmlSlider += `<li class="${photosp}" data-responsive="${fileName} 375, ${fileName} 480, ${fileName} 800" data-src="${fileName}" data-sub-html="${titleAlbum}"><a href="">`;
+						parseHtmlSlider += `<img class="img-responsive" src="${fileName}">`;
+						parseHtmlSlider += `<div class="gallery-poster"><img src="images/zoom.png"></div>`;
+						parseHtmlSlider += `<div class="gallery-label">${descAlbum}</div></a></li>`;
+						photosp = 'hide';
+					});
+
+					parseHtmlSlider += `</ul></div>`;
+					if ((z+1) >= data.size) {
+						$('#photo_view').html(parseHtmlSlider);
+						setTimeout(function() { 
+							for (var y = 0; y < data.size; y++) {
+								$(`#galview${(y + 1)}`).lightGallery({thumbnail:true,hash:false});
+							}
+						}, 2000);
 						getdata(7);
 					}
 				};
 			} else {
 				getdata(7);
 			}
-		} else if (getIdx == 6) {
-			//FOTOS
-			var db = firebase.firestore();
-			data = await db.collection("photos").orderBy("date", "desc").get();
-			response = data.docs;
-			parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
-			for (var z = 0; z < data.size; z++) {
-				res = response[z].data();				
-				parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
-				parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
-				parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
-				parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
-				parseHtmlSlider += `</a></li>`;
-				if ((z+1) >= data.size) {
-					parseHtmlSlider += `</ul>`;
-					$('#photo_view').html(parseHtmlSlider);
-					setTimeout(function() { 
-						$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
-					}, 2000);
-				}
-			};
 		} else if (getIdx == 7) {
 			//VIDEOS
 			if (settingsData.videostype == 0) {
@@ -708,22 +718,6 @@ $(document).ready(function () {
 		}
 		return;
     }
-
-	/*
-
-	fotos
-		$printfancybox.= "$('#galview".$prtID."').lightGallery({thumbnail:true,hash:false});";//{subHtmlSelectorRelative:true}
-	videos
-		$printfancybox2.= "$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});";//{subHtmlSelectorRelative:true}
-
-	$xtag .= '<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">';
-			$axwh = $listasql[0];					
-			$axtext = '';
-			$axtitle = $listasql[1];
-			$axtitlelabel = "<h2>".str_replace(". ", "</h2><h3>", $axtitle)."</h3>";
-			$axtext.= '<div class="dsc"><a title="'.utf8_decode('MAIS').'" rel="'.$albid.'-'.$axwh.'"><img class="img-responsive" src="'.$_File_WebIcons.'" alt="'.$axtitle.'"></a>'.$axtitlelabel.'</div>';
-			$xtag .= $axtext.'</div></div>';
-			*/
 
     function sliderInit() {
         $('#js-main-slider').pogoSlider({
