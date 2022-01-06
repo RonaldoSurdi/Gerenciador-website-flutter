@@ -6,9 +6,10 @@ $(document).ready(function () {
 		}
 	});
 
-	var scheduleData;
-	var settingsData;
-	var printfancybox = '';
+	var scheduleData,
+		settingsData,
+		discsData,
+		soundsData;
 
     var firebaseConfig = {
         apiKey: "AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM",
@@ -58,20 +59,157 @@ $(document).ready(function () {
 	}
 	
 	//bts
-	$(".dsc").delegate("a", "click", function(e) {
-		e.preventDefault();
-		href = $( this ).attr('href');
-		hid = $( this ).attr('id');
-		htitle = $( this ).attr('title');
-		hrel = $( this ).attr('rel');
-		openpage("/view/disco.php?id="+hrel,"discoinfo");
-		var x = $("#discoinfo").position().top-100;
-		$('body,html').animate({
-			scrollTop: x ,
-		 	}, 700
-		);
-		/*window.scrollTo(0, (x.top-100));*/
-	});
+	function updDsc() {
+		$(".dsc").delegate("a", "click", async function(e) {
+			console.log(e);
+			e.preventDefault();
+			href = $( this ).attr('href');
+			hid = $( this ).attr('id');
+			htitle = $( this ).attr('title');
+			hrel = $( this ).attr('rel');
+
+			var relParse = hrel.split("-");
+			var ixAlb = relParse[0];
+			var idAlb = relParse[1];
+			var imageAlb = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${idAlb}%2F${discsData[ixAlb].image}?alt=media`;
+			var yearAlb = discsData[ixAlb].year;
+			var altAlb = discsData[ixAlb].title;
+			var titleAlb = altAlb.replace(`${yearAlb}. `,'');
+			var infoAlb = discsData[ixAlb].info;
+			infoAlb = infoAlb.replaceAll('\n','<br>');
+			
+			var parseHtmlPop = `<div class="row">`;
+			parseHtmlPop += `<div class="col-md-6"><div class="cap"><img src="${imageAlb}" alt="${altAlb}"></div></div>`;
+			parseHtmlPop += `<div class="col-md-6"><div id="jp_container"><h2>${yearAlb}</h2><h3>${infoAlb}</h3>`;
+			parseHtmlPop += `<p>`;
+
+			var parseHtmlSound = '';
+
+			var db = firebase.firestore();
+			data = await db.collection("discs").doc(idAlb).collection("sounds").orderBy("track").get();
+			soundsData = [];
+			if (data.size > 0) {
+				response = data.docs;
+				var idSnd, titleSnd, audioSnd, lyricSnd, cipherSnd;
+				var tagSnd = 'track track-default';
+				parseHtmlPop += `Músicas:<br>`;
+				for (var z = 0; z < data.size; z++) {
+					res = response[z].data();
+					soundsData.push(res);
+					idSnd = ("00" + res.track).slice(-2);
+					titleSnd = res.title;
+					audioSnd = res.audio;
+					lyricSnd = res.lyric.replaceAll('\n', '<br>');
+					cipherSnd = res.cipher;
+					if (audioSnd != '') {
+						if (!audioSnd.includes('https://') && !audioSnd.includes('https://')) {
+							audioSnd = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${audioSnd}%2F$uri?alt=media`;
+						}
+						parseHtmlPop += `<a href="${audioSnd}" title="Reproduzir" class="${tagSnd}"><img src="images/player/play.png" alt="Reproduzir"></a>`;
+						tagSnd = 'track';
+					} else {
+						parseHtmlPop += `<img src="images/player/play-off.png" alt="Audio indisponível">`;
+					}
+					if (lyricSnd != '' && lyricSnd != 'Letra não disponível' && lyricSnd != 'Letra não disponível<br>') {
+						parseHtmlPop += `<a href="#msc${idSnd}" title="Letra"><img src="images/player/letra.png" alt="Letra"></a>`;
+						parseHtmlSound += `<div id="msc${idSnd}" class="modalDialog2"><div><a class="close" title="Fechar" href="#close">X</a><div class="divtxt"><h4>${altAlb}</h4><p>${lyricSnd}</p></div></div></div>`;
+					} else {
+						parseHtmlPop += `<img src="images/player/letra-off.png" alt="Letra indisponível"></img>`;
+					}
+					if (cipherSnd != '') {
+						parseHtmlPop += `<a href="${cipherSnd}" title="Cifra" target="_blank"><img src="images/player/cifra.png" alt="Cifra"></a>`;
+					} else {
+						parseHtmlPop += `<img src="images/player/cifra-off.png" alt="Cifra indisponível">`;
+					}
+					parseHtmlPop += `${idSnd}. ${titleSnd}<br>`;
+					if ((z+1) >= data.size) {
+						parseHtmlPop += `</p></div>`;
+						$("#discoinfo").html(parseHtmlPop);
+						$("#soundinfo").html(parseHtmlSound);
+						updSnd();
+						var x = $("#discoinfo").position().top-100;
+						$('body,html').animate({
+							scrollTop: x ,
+							}, 700
+						);
+						/*window.scrollTo(0, (x.top-100));*/
+					}
+				};
+			} else {
+				parseHtmlPop += `Nenhuma música cadastrada.`;
+				parseHtmlPop += `</p></div></div></div>`;
+				$("#discoinfo").html(parseHtmlPop);
+				$("#soundinfo").html(parseHtmlSound);
+				var x = $("#discoinfo").position().top-100;
+				$('body,html').animate({
+					scrollTop: x ,
+					}, 700
+				);
+				/*window.scrollTo(0, (x.top-100));*/
+			}
+		});
+	}
+
+	function updSnd() {
+		var	my_jPlayer = $("#jquery_jplayer"),
+			rd_jPlayer = $("#jquery_jplayer_1"),
+			my_trackName = $("#jp_container .track-name"),
+			my_playState = $("#jp_container .play-state"),
+			my_extraPlayInfo = $("#jp_container .extra-play-info");
+		var	opt_play_first = false,
+			opt_auto_play = true,
+			opt_text_playing = "",
+			opt_text_selected = "";
+		var first_track = true;
+		$.jPlayer.timeFormat.padMin = false;
+		$.jPlayer.timeFormat.padSec = false;
+		$.jPlayer.timeFormat.sepMin = "";
+		$.jPlayer.timeFormat.sepSec = "";
+		my_playState.text(opt_text_selected);
+		var trackname = '';
+		var tracknamelast = '';
+		my_jPlayer.jPlayer({
+			ready: function () {
+				$("#jp_container .track-default").click();
+			},
+			ended: function() {
+				rd_jPlayer.jPlayer("play");
+			},
+			swfPath: "/js",
+			cssSelectorAncestor: "#jp_container",
+			supplied: "mp3",
+			wmode: "window"
+		});
+		$("#jp_container .track").click(function(e) {
+			my_jPlayer.jPlayer("setMedia", {
+				mp3: $(this).attr("href")
+			});
+			if((opt_play_first && first_track) || (opt_auto_play && !first_track)) {
+				if (tracknamelast != '') {
+					tracknamelast.html('<img src="images/player/play.png">');
+				}
+				if (trackname != $(this).attr("href")) {
+					my_jPlayer.jPlayer("play");
+					$(this).html('<img src="images/player/pause.png">');
+					trackname = $(this).attr("href");
+					tracknamelast = $(this);
+					//if(rd_jPlayer.jPlayer("getData","diag.isPlaying") == true){
+						rd_jPlayer.jPlayer("pause");
+					//}
+				} else {
+					my_jPlayer.jPlayer("stop");
+					$(this).html('<img src="images/player/play.png">');
+					trackname = '';
+					tracknamelast = '';
+					rd_jPlayer.jPlayer("play");
+				}			
+			}
+			first_track = false;
+			$(this).blur();
+			return false;
+		});
+	}
+
 	function updAgl() {
 		$(".agl").delegate("a", "click", function(e) {
 			e.preventDefault();
@@ -146,35 +284,36 @@ $(document).ready(function () {
 			central_scroller.mCustomScrollbar("scrollTo", "bottom");
 		}
 	});
+
 	// disco
 	var owl2 = $("#owl-div2");
 	$(".next").click(function(){
-	owl2.trigger('owl2.next');
-	})
+		owl2.trigger('owl2.next');
+	});
 	$(".prev").click(function(){
-	owl2.trigger('owl2.prev');
-	})
+		owl2.trigger('owl2.prev');
+	});
 	$(".play").click(function(){
-	owl2.trigger('owl2.play',1000);
-	})
+		owl2.trigger('owl2.play',1000);
+	});
 	$(".stop").click(function(){
-	owl2.trigger('owl2.stop');
-	})
+		owl2.trigger('owl2.stop');
+	});
+
 	// agenda
 	var owl = $("#owl-div");
 	$(".next").click(function(){
-	owl.trigger('owl.next');
-	})
+		owl.trigger('owl.next');
+	});
 	$(".prev").click(function(){
-	owl.trigger('owl.prev');
-	})
+		owl.trigger('owl.prev');
+	});
 	$(".play").click(function(){
-	owl.trigger('owl.play',1000);
-	})
+		owl.trigger('owl.play',1000);
+	});
 	$(".stop").click(function(){
-	owl.trigger('owl.stop');
-	})
-	
+		owl.trigger('owl.stop');
+	});
 	
 	//imprensa
 	$('form[name="sendImp"]').find('input').not('[type=submit]').jqBootstrapValidation({
@@ -465,13 +604,13 @@ $(document).ready(function () {
 			res,
 			uri,
 			filename;
+
 		if (getIdx == 0) {
 			//BIOGRAFIA
 			var db = firebase.firestore();
         	data = await db.collection("settings").get();
-			response = data.docs;
 			if (data.size > 0) {
-				// console.log(response);
+				response = data.docs;
 				settingsData = response[0].data();
 				getdata(1);
 			} else {
@@ -481,8 +620,8 @@ $(document).ready(function () {
 			//BANNERS
 			var db = firebase.firestore();
         	data = await db.collection("banners").orderBy("date", "desc").get();
-			response = data.docs;
 			if (data.size > 0) {
+				response = data.docs;
 				for (var z = 0; z < data.size; z++) {
 					res = response[z].data();
 					uri = `https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/banners%2F${res.filename}?alt=media`;
@@ -500,8 +639,8 @@ $(document).ready(function () {
 			//BIOGRAFIA
 			var db = firebase.firestore();
         	data = await db.collection("biography").get();
-			response = data.docs;
 			if (data.size > 0) {
+				response = data.docs;
 				res = response[0].data();
 				parseHtmlSlider = res.description;
 				parseHtmlSlider = parseHtmlSlider.replace("\r", "").replace("\n", "<br><br>");
@@ -541,16 +680,19 @@ $(document).ready(function () {
 			//DISCOGRAFIA
 			var db = firebase.firestore();
 			data = await db.collection("discs").orderBy("id").get();
+			discsData = [];
 			if (data.size > 0) {
 				response = data.docs;
-				var titleAlb, imageAlb;
+				var idAlb, titleAlb, imageAlb;
 				var pathImage = 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/';
 				for (var z = 0; z < data.size; z++) {
 					res = response[z].data();
+					discsData.push(res);
+					idAlb = ("000000" + res.id).slice(-5);
 					titleAlb = res.title.replace(`${res.year}. `,'');
-					imageAlb = `${pathImage}discs%2F${("000000" + res.id).slice(-5)}%2F${res.image}?alt=media`;
+					imageAlb = `${pathImage}discs%2F${idAlb}%2F${res.image}?alt=media`;
 					parseHtmlSlider += `<div class="item wthree1" data-aos="zoom-in"><div class="w3-agileits">`;
-					parseHtmlSlider += `<div class="dsc"><a title="MAIS" rel="${z + 1}-${res.id}">`;
+					parseHtmlSlider += `<div class="dsc"><a title="MAIS" rel="${z}-${idAlb}">`;
 					parseHtmlSlider += `<img class="img-responsive" src="${imageAlb}" alt="${res.title}"></a>`;
 					parseHtmlSlider += `<h2>${res.year}</h2>`;
 					parseHtmlSlider += `<h3>${titleAlb}</h3>`;
@@ -558,6 +700,7 @@ $(document).ready(function () {
 					if ((z+1) >= data.size) {
 						owl2.html(parseHtmlSlider);
 						owl2.owlCarousel();
+						updDsc();
 						getdata(5);
 					}
 				};
@@ -568,9 +711,9 @@ $(document).ready(function () {
 			//AGENDA
 			var db = firebase.firestore();
         	data = await db.collection("schedule").orderBy("id", "desc").get();//.where("view", "=", "1")
-			response = data.docs;
 			scheduleData = [];
 			if (data.size > 0) {
+				response = data.docs;
 				for (var z = 0; z < data.size; z++) {
 					res = response[z].data();
 					scheduleData.push(res);
@@ -654,23 +797,25 @@ $(document).ready(function () {
 			if (settingsData.videostype == 0) {
 				var db = firebase.firestore();
 				data = await db.collection("videos").orderBy("date", "desc").get();
-				response = data.docs;
-				parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
-				for (var z = 0; z < data.size; z++) {
-					res = response[z].data();				
-					parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
-					parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
-					parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
-					parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
-					parseHtmlSlider += `</a></li>`;
-					if ((z+1) >= data.size) {
-						parseHtmlSlider += `</ul>`;
-						$('#vid_view').html(parseHtmlSlider);
-						setTimeout(function() { 
-							$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
-						}, 2000);
-					}
-				};
+				if (data.size > 0) {
+					response = data.docs;
+					parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
+					for (var z = 0; z < data.size; z++) {
+						res = response[z].data();				
+						parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${res.watch}&autoplay=true" data-sub-html="${res.title}"><a href="">`;
+						parseHtmlSlider += `<img class="img-responsive" src="${res.image}">`;
+						parseHtmlSlider += `<div class="gallery-poster"><img src="images/play.png"></div>`;
+						parseHtmlSlider += `<div class="gallery-label">${res.title}</div>`;
+						parseHtmlSlider += `</a></li>`;
+						if ((z+1) >= data.size) {
+							parseHtmlSlider += `</ul>`;
+							$('#vid_view').html(parseHtmlSlider);
+							setTimeout(function() { 
+								$('#vidview').lightGallery({download:true,zoom:false,autoplayControls:false,hash:false,youtubePlayerParams:{modestbranding:1,showinfo:0,rel:0,controls:0}});
+							}, 2000);
+						}
+					};
+				}
 			} else {
 				var Http = new XMLHttpRequest();			
 				var url = 'https://www.googleapis.com/youtube/v3/search?key=AIzaSyB3RoRyyHmYtqp2CqhohJN9zIWkhYPJaMM';
@@ -685,8 +830,8 @@ $(document).ready(function () {
 				Http.onloadend = (e) => {
 					var res = Http.responseText;
 					var data = JSON.parse(res);
-					parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
 					if (data.items) {
+						parseHtmlSlider += `<ul id="vidview" class="list-unstyled row">`;
 						for (var z = 0; z < data.items.length; z++) {
 							parseHtmlSlider += `<li class="col-xs-6 col-sm-4 col-md-3" data-src="https://www.youtube.com/watch?v=${data.items[z].id.videoId}&autoplay=true" data-sub-html="${data.items[z].snippet.title}"><a href="">`;
 							parseHtmlSlider += `<img class="img-responsive" src="${data.items[z].snippet.thumbnails.high.url}">`;
@@ -730,26 +875,6 @@ $(document).ready(function () {
             responsive: true
         }).data('plugin_pogoSlider');
     }
-	
-
-	/*var transitionDemoOpts = {
-		displayProgess: false,
-		generateNav: false,
-		generateButtons: false
-	}
-	$('#demo1').pogoSlider(transitionDemoOpts);*/
-
-	/*var script = document.createElement('script');
-	script.src = 'js/jquery.pogo-slider.min.js';
-	script.type = 'text/javascript';
-	document.getElementsByTagName('head')[0].appendChild(script);*/
-	
-	/*function displayImage(imageRef) {
-		imageRef.getDownloadURL().then(function(url) {
-		}).catch(function(error) {
-			console.log(error);
-		});
-	}*/
 
 	getdata(0);
 });

@@ -32,6 +32,7 @@ class _DiscSoundsState extends State<DiscSounds> {
   final TextEditingController _infoController = TextEditingController();
   final TextEditingController _movieController = TextEditingController();
   final TextEditingController _lyricController = TextEditingController();
+  final TextEditingController _audioController = TextEditingController();
   final TextEditingController _cipherController = TextEditingController();
 
   final List<SoundModel> _widgetList = [];
@@ -139,6 +140,13 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
+                  controller: _audioController,
+                  maxLength: 200,
+                  decoration: const InputDecoration(
+                    hintText: "Url MP3 (opcional https://...)",
+                  ),
+                ),
+                TextField(
                   controller: _cipherController,
                   maxLines: 5,
                   decoration: const InputDecoration(
@@ -185,6 +193,7 @@ class _DiscSoundsState extends State<DiscSounds> {
                         _titleController.text,
                         _movieController.text,
                         _lyricController.text,
+                        _audioController.text,
                         _cipherController.text,
                         _infoController.text);
                     Navigator.pop(context);
@@ -217,6 +226,7 @@ class _DiscSoundsState extends State<DiscSounds> {
     String _titleValue,
     String _movieValue,
     String _lyricValue,
+    String _audioValue,
     String _cipherValue,
     String _infoValue,
   ) async {
@@ -232,7 +242,7 @@ class _DiscSoundsState extends State<DiscSounds> {
       movie: _movieValue,
       lyric: _lyricValue,
       cipher: _cipherValue,
-      audio: '',
+      audio: _audioValue,
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -294,7 +304,7 @@ class _DiscSoundsState extends State<DiscSounds> {
         _trackController.text = (response.length + 1).toString();
         for (int i = 0; i < response.length; i++) {
           String uri = response[i]["audio"].toString().replaceAll('null', '');
-          if (uri.indexOf("https://") == 0 && uri.indexOf("http://") == 0) {
+          if (!uri.contains("https://") && !uri.contains("http://")) {
             uri =
                 'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${widget.itemId}%2F$uri?alt=media';
           }
