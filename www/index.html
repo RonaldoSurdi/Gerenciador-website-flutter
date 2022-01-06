@@ -137,7 +137,7 @@
 <section class="imprensa-w3ls" id="imprensa">
 	<div class="container">
 		<h2>Imprensa</h2>
-        <!--<div class="col-lg-6 col-md-6 col-sm-6 imprensa-w3-agile1" data-aos="flip-right">
+<!--        <div class="col-lg-6 col-md-6 col-sm-6 imprensa-w3-agile1" data-aos="flip-right">
 			<div class="imprensa-news">
                 <h4>Novidades</h4>
 				<div class="imprensa-item"><h2>$axtitle</h2><h3>$xaxdt</h3>
@@ -280,6 +280,31 @@
 <script src="js/jquery.pogo-slider.min.js"></script>
 <script src="js/jquery.dialogBox.js"></script>
 <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+	$("#jquery_jplayer_1").jPlayer({
+		ready: function (event) {
+			$(this).jPlayer("setMedia", {
+				title: "João Luiz Corrêa",
+				mp3: "http://centova2.ciclanohost.com.br:10005/stream",
+				m4a: "http://centova2.ciclanohost.com.br:10005/stream",
+				oga: "http://centova2.ciclanohost.com.br:10005/stream"
+			}).jPlayer("play");
+		},
+		play: function() {
+    		$(this).jPlayer("pauseOthers", 0);
+  		},
+		swfPath: "js",
+		supplied: "mp3, m4a, oga",
+		wmode: "window",
+		useStateClassSkin: true,
+		autoBlur: false,
+		keyEnabled: false
+	});
+});
+//]]>
+</script>
 <script src="js/main.js?v5"></script>
 <script src="js/aos.js"></script>
 <script src="js/index.js"></script>
