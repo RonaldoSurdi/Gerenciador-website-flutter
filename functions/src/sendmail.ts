@@ -1,7 +1,8 @@
-exports.handler = function(req, res, cors, nodemailer) {
+exports.handler = function(req, res, firestore, cors, nodemailer) {
     if (req.method !== "POST") {
         return res.status(405).send(`${req.method} method not allowed`);
     }
+    const ipAddress = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
     const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
@@ -16,10 +17,10 @@ exports.handler = function(req, res, cors, nodemailer) {
         const to = `"${req.body["to_name"]}" <${req.body["to_email"]}>`;
         const subject = `Contato site ${req.body["from_name"]}`;
         let content = req.body["content"];
-        const textFrom = `${subject}\n\nNome: ${req.body["to_name"]}\nEmail: ${req.body["to_email"]}\nFone: ${req.body["to_phone"]}\n\nMensagem:\n${content}\n\n\nAtt,\n\n${req.body["from_name"]}`;
+        const textFrom = `${subject}\n\nNome: ${req.body["to_name"]}\nEmail: ${req.body["to_email"]}\nFone: ${req.body["to_phone"]}\nIp address: ${ipAddress}\n\nMensagem:\n${content}\n\n\nAtt,\n\n${req.body["from_name"]}`;
         const textTo = `Olá ${req.body["to_name"]},\n\nRecebemos sua mensagem, em breve entraremos em contato.\n\n\nAtenciosamente,\n\n${req.body["from_name"]}`;
         content = content.replace(/(?:\r\n|\r|\n)/g, "<br>");
-        const htmlFrom = `<h2>${subject}</h2>Nome: <strong>${req.body["to_name"]}</strong><br>Email: <strong>${req.body["to_email"]}</strong><br>Fone: <strong>${req.body["to_phone"]}</strong><br><br>Mensagem:<br><strong>${content}</strong><br><br><br>Att,<br><br>${req.body["from_name"]}`;
+        const htmlFrom = `<h2>${subject}</h2>Nome: <strong>${req.body["to_name"]}</strong><br>Email: <strong>${req.body["to_email"]}</strong><br>Fone: <strong>${req.body["to_phone"]}</strong><br>Ip address: <strong>${ipAddress}</strong><br><br>Mensagem:<br><strong>${content}</strong><br><br><br>Att,<br><br>${req.body["from_name"]}`;
         const htmlTo = `Olá <strong>${req.body["to_name"]}</strong>,<br><br>Recebemos sua mensagem, em breve entraremos em contato.<br><br><br>Atenciosamente,<br><br>${req.body["from_name"]}`;
         const emailEnterprise = {
             from: to,

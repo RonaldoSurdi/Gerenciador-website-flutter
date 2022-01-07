@@ -17,25 +17,38 @@ class _SettingsState extends State<Settings> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _channelidController = TextEditingController();
+  final TextEditingController _smtpHostController = TextEditingController();
+  final TextEditingController _smtpPortController = TextEditingController();
+  final TextEditingController _smtpUserController = TextEditingController();
+  final TextEditingController _smtpPassController = TextEditingController();
 
   int? _videosValue = 1;
+  bool? _smtpSecure = true;
 
   _onVerifyData() {
     //Recupera dados dos campos
     String name = _nameController.text;
     String email = _emailController.text;
-    String channelid = _channelidController.text;    
+    String channelid = _channelidController.text;
+    String smtpHost = _smtpHostController.text;
+    int smtpPort = int.parse(_smtpPortController.text);
+    String smtpUser = _smtpUserController.text;
+    String smtpPass = _smtpPassController.text;
 
     if (name.trim().isNotEmpty &&
         name.trim().length >= 3 &&
         email.trim().isNotEmpty &&
         email.trim().length >= 3) {
-
       SettingsModel settingsModel = SettingsModel(
-        name: name, 
-        email: email, 
-        videostype: _videosValue, 
+        name: name,
+        email: email,
+        videostype: _videosValue,
         channelid: channelid,
+        smtphost: smtpHost,
+        smtpport: smtpPort,
+        smtpsecure: _smtpSecure,
+        smtpuser: smtpUser,
+        smtppass: smtpPass,
       );
 
       _onSaveData(settingsModel);
@@ -77,6 +90,11 @@ class _SettingsState extends State<Settings> {
           _emailController.text = documentSnapshot['email'].toString();
           _channelidController.text = documentSnapshot['channelid'].toString();
           _videosValue = int.parse(documentSnapshot['videostype']);
+          _smtpHostController.text = documentSnapshot['smtphost'];
+          _smtpPortController.text = documentSnapshot['smtpport'];
+          _smtpSecure = documentSnapshot['smtpsecure'];
+          _smtpUserController.text = documentSnapshot['smtpuser'];
+          _smtpPassController.text = documentSnapshot['smtppass'];
         }
         closeLoading();
       });
@@ -272,6 +290,165 @@ class _SettingsState extends State<Settings> {
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
                   labelText: "Canal Youtube Id",
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    fontFamily: 'WorkSansThin',
+                    color: Colors.white38,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.white38,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 50,
+                color: Colors.black26,
+                thickness: .1,
+              ),
+              const Text('Servidor SMTP'),
+              TextField(
+                controller: _smtpHostController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                cursorColor: Colors.white,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
+                  labelText: "Host",
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    fontFamily: 'WorkSansThin',
+                    color: Colors.white38,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.white38,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+              TextField(
+                controller: _smtpPortController,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
+                cursorColor: Colors.white,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
+                  labelText: "Porta",
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    fontFamily: 'WorkSansThin',
+                    color: Colors.white38,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.white38,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+              CheckboxListTile(
+                controlAffinity: ListTileControlAffinity.leading,
+                title: Text('Modo seguro'),
+                value: _smtpSecure,
+                onChanged: (value) {
+                  setState(() {
+                    _smtpSecure = !_smtpSecure!;
+                  });
+                },
+              ),
+              TextField(
+                controller: _smtpUserController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                cursorColor: Colors.white,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
+                  labelText: "Usuário",
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    fontFamily: 'WorkSansThin',
+                    color: Colors.white38,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white38,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.white38,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+              TextField(
+                controller: _smtpPassController,
+                keyboardType: TextInputType.text,
+                obscureText: true,
+                textInputAction: TextInputAction.next,
+                cursorColor: Colors.white,
+                textAlign: TextAlign.left,
+                style: const TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.fromLTRB(16, 20, 15, 20),
+                  labelText: "Senha",
                   filled: true,
                   labelStyle: const TextStyle(
                     fontFamily: 'WorkSansThin',

@@ -14,7 +14,7 @@ const cors = require("cors")({
 });
 
 exports.sendMail = functions.https.onRequest((req, res) => {
-    sendMail.handler(req, res, cors, nodemailer);
+    sendMail.handler(req, res, firestore, cors, nodemailer);
 });
 
 exports.counterView = functions.https.onRequest((req, res) => {
