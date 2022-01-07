@@ -5,10 +5,12 @@
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
-    "start-dev": "functions-framework --target=enviarEmail",
+    "start-sendmail": "functions-framework --target=sendMail",
+    "start-counterview": "functions-framework --target=counterView",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log --only enviarEmail"
+    "log-sendmail": "firebase functions:log --only sendMail",
+    "log-counterview": "firebase functions:log --only counterView"
   },
   "engines": {
     "node": "14"

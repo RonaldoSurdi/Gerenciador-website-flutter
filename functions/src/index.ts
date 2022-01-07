@@ -1,42 +1,22 @@
 "use strict";
+const sendMail = require("./sendmail");
+const counterView = require("./counterview");
+
 const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp(functions.config().firebase);
+
+const firestore = admin.firestore();
+
 const nodemailer = require("nodemailer");
 const cors = require("cors")({
-  origin: true
+    origin: true
 });
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: "ronaldohws@gmail.com",
-    pass: "lqkmhihwxljwiser"
-  }
+
+exports.sendMail = functions.https.onRequest((req, res) => {
+    sendMail.handler(req, res, cors, nodemailer);
 });
-// const functions = require("@google-cloud/functions-framework");
-// const url = "smtps://ronaldohws%40gmail.com:" + encodeURIComponent("lqkmhihwxljwiser") + "@smtp.gmail.com:465";
-// const transporter = nodemailer.createTransport(url);
-exports.enviarEmail = functions.https.onRequest(
-    (req: any, res: any, conf: any) => {
-      cors(req, res, () => {
-        const remetente = `"${conf["from_name"]}" <${conf["from_email"]}>`;
-        const assunto = req.body["assunto"];
-        const destinatarios = req.body["destinatarios"];
-        const corpo = req.body["corpo"];
-        const corpoHtml = req.body["corpoHtml"];
-        const email = {
-          from: remetente,
-          to: destinatarios,
-          subject: assunto,
-          text: corpo,
-          html: corpoHtml
-        };
-        transporter.sendMail(email, (error: any, info: any) => {
-          if (error) {
-            return console.log(error);
-          }
-          console.log("Mensagem %s enviada: %s", info.messageId, info.response);
-        });
-      });
-    }
-);
+
+exports.counterView = functions.https.onRequest((req, res) => {
+    counterView.handler(req, res, firestore);
+});
