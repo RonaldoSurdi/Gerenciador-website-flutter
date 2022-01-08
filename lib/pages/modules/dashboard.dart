@@ -26,17 +26,26 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   // settings do app
-  _settingsApp() async {
+  /*_settingsApp() async {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const Settings(),
       ),
     );
-  }
+  }*/
 
   _openSite() async {
     String url = 'https://www.joaoluizcorrea.com.br';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Site não disponível $url';
+    }
+  }
+
+  _openSupport() async {
+    String url = 'https://taxonvirtual.com.br';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -156,15 +165,9 @@ class _DashboardState extends State<Dashboard> {
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 10),
-            icon: const Icon(Icons.add_to_home_screen_outlined),
-            tooltip: 'Abrir Site',
-            onPressed: _openSite,
-          ),
-          IconButton(
-            padding: const EdgeInsets.only(right: 10),
-            icon: const Icon(Icons.settings_suggest),
-            tooltip: 'Configurações',
-            onPressed: _settingsApp,
+            icon: const Icon(Icons.help_outline),
+            tooltip: 'Fale com o suporte',
+            onPressed: _openSupport,
           ),
           IconButton(
             padding: const EdgeInsets.only(right: 10),

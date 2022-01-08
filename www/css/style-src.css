@@ -151,8 +151,8 @@ ul.nav.navbar-nav.cl-effect-10 {
 	filter: alpha(opacity=10);
 	-webkit-filter: alpha(opacity=10);
 }
-.cl-effect-10 a::before {
-	/*position: absolute;
+/*.cl-effect-10 a::before {
+	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: -1;
@@ -166,8 +166,8 @@ ul.nav.navbar-nav.cl-effect-10 {
 	-webkit-transition: -webkit-transform 0.3s;
 	-moz-transition: -moz-transform 0.3s;
 	transition: transform 0.3s;
-	-webkit-transform: translateY(-0%);*/
-}
+	-webkit-transform: translateY(-0%);
+}*/
 .cl-effect-10 a:hover span,
 .cl-effect-10 a:focus span {
 	color:#FFF;
@@ -189,12 +189,12 @@ ul.nav.navbar-nav.cl-effect-10 {
     -moz-transition: all 0.3s linear;
     transition: all 0.3s linear;
 }
-.cl-effect-10 a:hover::before,
+/*.cl-effect-10 a:hover::before,
 .cl-effect-10 a:focus::before {
-	/*-webkit-transform: translateY(0%);
+	-webkit-transform: translateY(0%);
 	-moz-transform: translateY(0%);
-	transform: translateY(0%);*/
-}
+	transform: translateY(0%);
+}*/
 /*-- /navigation --*/ 
 /*-- banner section --*/
 .clearfix:before,
@@ -982,7 +982,7 @@ section.imprensa-w3ls .divcap {
 	float:left;
 	margin:5px;
 	padding:5px;
-	display:inline-block;
+	/*display:inline-block;*/
 }
 section.imprensa-w3ls .divcap img {
 	width: 100% !important;
@@ -1223,7 +1223,7 @@ section.central-w3ls .divcap {
 	float:left;
 	margin:5px;
 	padding:5px;
-	display:inline-block;
+	/*display:inline-block;*/
 }
 section.central-w3ls .divcap img {
 	width: 100% !important;
@@ -1279,13 +1279,13 @@ section.central-w3ls p.help-block {
     color: rgb(171, 88, 88) !important;
 	text-align: left;
 }
-section.central-w3ls input#name, section.central-w3ls input#ciduf, section.central-w3ls input#email  {
+section.central-w3ls input#name, section.central-w3ls input#cityuf, section.central-w3ls input#email, section.contato-w3ls input#cityuf  {
 	height:50px;
 }
 section.central-w3ls textarea#messagem {
     height: 140px;
 }
-section.central-w3ls input#name, section.central-w3ls input#ciduf, section.central-w3ls input#email, section.central-w3ls textarea#messagem {
+section.central-w3ls input#name, section.central-w3ls input#cityuf, section.central-w3ls input#email, section.contato-w3ls input#cityuf, section.central-w3ls textarea#messagem {
 	font-size:17px;
 	font-weight:normal;
 	color:#fff;
@@ -2189,13 +2189,13 @@ section.contato-w3ls label.contato-p1 {
 section.contato-w3ls p.help-block {
     color: rgb(171, 88, 88) !important;
 }
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone  {
+section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf  {
 	height:50px;
 }
 section.contato-w3ls textarea#message {
     height: 140px;
 }
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls textarea#message {
+section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
 	font-size:17px;
 	font-weight:normal;
 	color:#fff;
@@ -2248,11 +2248,20 @@ color: #fff !important;
 }
 .footer p.text-center a {
 	text-decoration:none;
-	color:#e2e2e2;
+	color:#999;
 }
 .footer p.text-center a:hover {
-	color:#fff;
+	color:#999;
 } 
+.footer .counter-foother {
+	position: relative;
+	font-size: 20px;
+	color: #e2e2e2;
+}
+.footer .counter-foother span {
+	font-size: 25px;
+	font-weight: 600;
+}
 /*-- /footer --*/
 /*-- back to top --*/
 .cd-top {
@@ -2336,7 +2345,7 @@ color: #fff !important;
 	position:relative;
 	float:left;
 	margin:15px 40px 5px 20px;
-	display:inline-block;
+	/*display:inline-block;*/
 }
 
 .modalDialog .divcap img {
@@ -2399,7 +2408,7 @@ color: #fff !important;
 	position:relative;
 	float:left;
 	margin:15px 40px 15px 20px;
-	display:inline-block;
+	/*display:inline-block;*/
 }
 
 .modalDialog2 .divcap img {
@@ -3166,13 +3175,13 @@ section.contato-w3ls h4 {
 section.contato-w3ls .contato-agileits {
 	padding:20px 20px;
 }
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone {
+section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf {
     height: 45px;
 }
 section.contato-w3ls textarea#message {
     height: 120px;
 }
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls textarea#message {
+section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
     font-size: 15px;
 }
 }
@@ -3267,13 +3276,13 @@ section.contato-w3ls p.contato-agile2 {
     font-size: 14px;
     padding-bottom: 15px;
 }
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone {
+section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf {
     height: 40px;
 }
 section.contato-w3ls textarea#message {
     height: 110px;
 }
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls textarea#message {
+section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
     font-size: 14px;
 }
 section.contato-w3ls label.contato-p1 {

@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/settings_model.dart';
+import 'package:hwscontrol/core/models/settings_public_model.dart';
+import 'package:hwscontrol/core/models/settings_private_model.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -24,6 +24,8 @@ class _SettingsState extends State<Settings> {
 
   int? _videosValue = 1;
   bool? _smtpSecure = true;
+  String? _smtpUser = 'digite seu email';
+  String? _smtpPass = 'digite sua chave';
 
   _onVerifyData() {
     //Recupera dados dos campos
@@ -32,26 +34,34 @@ class _SettingsState extends State<Settings> {
     String channelid = _channelidController.text;
     String smtpHost = _smtpHostController.text;
     int smtpPort = int.parse(_smtpPortController.text);
-    String smtpUser = _smtpUserController.text;
-    String smtpPass = _smtpPassController.text;
+    int idx = _smtpUser!.indexOf('***@');
+    if (_smtpUserController.text != 'digite seu email' && idx > 0) {
+      _smtpUser = _smtpUserController.text;
+    }
+    if (_smtpPassController.text != 'digite sua chave') {
+      _smtpPass = _smtpPassController.text;
+    }
 
     if (name.trim().isNotEmpty &&
         name.trim().length >= 3 &&
         email.trim().isNotEmpty &&
         email.trim().length >= 3) {
-      SettingsModel settingsModel = SettingsModel(
+      SettingspublicModel settingspublicModel = SettingspublicModel(
         name: name,
         email: email,
         videostype: _videosValue,
         channelid: channelid,
+      );
+
+      SettingsprivateModel settingsprivateModel = SettingsprivateModel(
         smtphost: smtpHost,
         smtpport: smtpPort,
         smtpsecure: _smtpSecure,
-        smtpuser: smtpUser,
-        smtppass: smtpPass,
+        smtpuser: _smtpUser,
+        smtppass: _smtpPass,
       );
 
-      _onSaveData(settingsModel);
+      _onSaveData(settingspublicModel, settingsprivateModel);
     } else {
       setState(() {
         CustomSnackBar(context, const Text('Preencha todos os dados!'),
@@ -60,14 +70,16 @@ class _SettingsState extends State<Settings> {
     }
   }
 
-  _onSaveData(SettingsModel settingsModel) {
+  _onSaveData(SettingspublicModel settingspublicModel,
+      SettingsprivateModel settingsprivateModel) {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("settings").doc("data").set(settingsModel.toMap());
+    db.collection("settings").doc("data").set(settingspublicModel.toMap());
+    db.collection("settings").doc("secure").set(settingsprivateModel.toMap());
 
     setState(() {
       Timer(const Duration(milliseconds: 1500), () {
@@ -78,29 +90,28 @@ class _SettingsState extends State<Settings> {
 
   _getData() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
-
-    await db
-        .collection("settings")
-        .doc("data")
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      setState(() {
-        if (documentSnapshot.exists) {
-          _nameController.text = documentSnapshot['name'].toString();
-          _emailController.text = documentSnapshot['email'].toString();
-          _channelidController.text = documentSnapshot['channelid'].toString();
-          _videosValue = int.parse(documentSnapshot['videostype']);
-          _smtpHostController.text = documentSnapshot['smtphost'];
-          _smtpPortController.text = documentSnapshot['smtpport'];
-          _smtpSecure = documentSnapshot['smtpsecure'];
-          _smtpUserController.text = documentSnapshot['smtpuser'];
-          _smtpPassController.text = documentSnapshot['smtppass'];
-        }
-        closeLoading();
-      });
-    }).catchError((error) {
-      closeLoading();
+    var data = await db.collection("settings").get();
+    setState(() {
+      var response = data.docs;
+      if (response.isNotEmpty) {
+        _nameController.text = response[0]['name'].toString();
+        _emailController.text = response[0]['email'].toString();
+        _channelidController.text = response[0]['channelid'].toString();
+        _videosValue = response[0]['videostype'];
+        _smtpHostController.text = response[1]['smtphost'];
+        _smtpPortController.text = response[1]['smtpport'].toString();
+        _smtpSecure = response[1]['smtpsecure'];
+        _smtpUser = response[1]['smtpuser'].toString();
+        int idx = _smtpUser.toString().indexOf('@');
+        int cnt = _smtpUser.toString().length;
+        String viewUser =
+            _smtpUser!.substring(0, 2) + '***' + _smtpUser!.substring(idx, cnt);
+        _smtpUserController.text = viewUser;
+        _smtpPass = response[1]['smtppass'].toString();
+        _smtpPassController.text = 'digite sua chave';
+      }
     });
+    closeLoading();
   }
 
   closeLoading() {
@@ -182,7 +193,7 @@ class _SettingsState extends State<Settings> {
               const Divider(
                 indent: 15,
                 endIndent: 15,
-                height: 50,
+                height: 10,
                 color: Colors.black26,
                 thickness: .1,
               ),
@@ -228,6 +239,21 @@ class _SettingsState extends State<Settings> {
                 color: Colors.black26,
                 thickness: .1,
               ),
+              const Text(
+                'Vídeos Youtube',
+                style: TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 10,
+                color: Colors.black26,
+                thickness: .1,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -241,7 +267,7 @@ class _SettingsState extends State<Settings> {
                     },
                   ),
                   const Text(
-                    'Vídeos youtube',
+                    'Cadastrados',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.0,
@@ -259,7 +285,7 @@ class _SettingsState extends State<Settings> {
                     },
                   ),
                   const Text(
-                    'Canal Youtube',
+                    'Canal oficial',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.0,
@@ -272,7 +298,7 @@ class _SettingsState extends State<Settings> {
               const Divider(
                 indent: 15,
                 endIndent: 15,
-                height: 50,
+                height: 10,
                 color: Colors.black26,
                 thickness: .1,
               ),
@@ -318,7 +344,21 @@ class _SettingsState extends State<Settings> {
                 color: Colors.black26,
                 thickness: .1,
               ),
-              const Text('Servidor SMTP'),
+              const Text(
+                'Servidor SMTP',
+                style: TextStyle(
+                  fontFamily: 'WorkSansThin',
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 10,
+                color: Colors.black26,
+                thickness: .1,
+              ),
               TextField(
                 controller: _smtpHostController,
                 keyboardType: TextInputType.text,
@@ -354,9 +394,16 @@ class _SettingsState extends State<Settings> {
                   ),
                 ),
               ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 10,
+                color: Colors.black26,
+                thickness: .1,
+              ),
               TextField(
                 controller: _smtpPortController,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 cursorColor: Colors.white,
                 textAlign: TextAlign.left,
@@ -389,15 +436,12 @@ class _SettingsState extends State<Settings> {
                   ),
                 ),
               ),
-              CheckboxListTile(
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text('Modo seguro'),
-                value: _smtpSecure,
-                onChanged: (value) {
-                  setState(() {
-                    _smtpSecure = !_smtpSecure!;
-                  });
-                },
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 10,
+                color: Colors.black26,
+                thickness: .1,
               ),
               TextField(
                 controller: _smtpUserController,
@@ -433,6 +477,13 @@ class _SettingsState extends State<Settings> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
+              ),
+              const Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 10,
+                color: Colors.black26,
+                thickness: .1,
               ),
               TextField(
                 controller: _smtpPassController,
@@ -473,9 +524,26 @@ class _SettingsState extends State<Settings> {
               const Divider(
                 indent: 15,
                 endIndent: 15,
-                height: 50,
+                height: 10,
                 color: Colors.black26,
                 thickness: .1,
+              ),
+              CheckboxListTile(
+                controlAffinity: ListTileControlAffinity.leading,
+                title: const Text(
+                  'Modo seguro',
+                  style: TextStyle(
+                    fontFamily: 'WorkSansThin',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                value: _smtpSecure,
+                onChanged: (value) {
+                  setState(() {
+                    _smtpSecure = !_smtpSecure!;
+                  });
+                },
               ),
             ],
           ),

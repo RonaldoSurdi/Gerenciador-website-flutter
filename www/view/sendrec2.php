@@ -19,13 +19,13 @@
 	$xdest = "atendimento@joaoluizcorrea.com.br";
 	$xname = utf8_decode(strip_tags($_POST['name']));
 	$xemail = trim(@utf8_decode(strip_tags($_POST['email'])));
-	$xciduf = utf8_decode(strip_tags($_POST['ciduf']));
+	$xcityuf = utf8_decode(strip_tags($_POST['cityuf']));
 	$xmessage = utf8_decode(strip_tags($_POST['message']));
 	$errorlvid = 0;
 	if (empty($xname) || ($xname=='Nome')) $xname = '';
 	if (empty($xemail) || ($xemail=='E-mail')) $xemail = '';
 	if (empty($xmessage) || ($xmessage=='Mensagem')) $xmessage = '';
-	if (empty($xciduf) || ($xciduf=='Cidade/UF')) $xciduf = '';
+	if (empty($xcityuf) || ($xcityuf=='Cidade/UF')) $xcityuf = '';
 	if (!empty($xemail)) {
 		if (preg_match ("/^[A-Za-z0-9]+([_.-][A-Za-z0-9]+)*@[A-Za-z0-9]+([_.-][A-Za-z0-9]+)*\\.[A-Za-z0-9]{2,4}$/", $xemail)) {
 		} else {
@@ -82,7 +82,7 @@
 		$vx_cp6 = '1';
 		$vx_cp7 = getIPAddress();
 		$v1_1 = '0';
-		$v1_2 = $xciduf; //$xme_city;
+		$v1_2 = $xcityuf; //$xme_city;
 		$v1_3 = '';
 		/*if ($xme_city) {
 			$array_city=explode("/",$v1_2);

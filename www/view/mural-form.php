@@ -17,7 +17,7 @@
                     <div class="control-group form-group">
                         <div class="controls">
                             <label class="central-p1">Cidade/UF:</label>
-                            <input type="text" class="form-control" name="ciduf" id="ciduf" required data-validation-required-message="Digite sua Cidade/UF.">
+                            <input type="text" class="form-control" name="cityuf" id="cityuf" required data-validation-required-message="Digite sua Cidade/UF.">
 							<p class="help-block"></p>
 						</div>
                     </div>

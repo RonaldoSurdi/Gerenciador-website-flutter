@@ -1,19 +1,11 @@
-class SettingsModel {
-  String? name;
-  String? email;
-  int? videostype;
-  String? channelid;
+class SettingsprivateModel {
   String? smtphost;
   int? smtpport;
   bool? smtpsecure;
   String? smtpuser;
   String? smtppass;
 
-  SettingsModel({
-    this.name,
-    this.email,
-    this.videostype,
-    this.channelid,
+  SettingsprivateModel({
     this.smtphost,
     this.smtpport,
     this.smtpsecure,
@@ -23,10 +15,6 @@ class SettingsModel {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      "name": name,
-      "email": email,
-      "videostype": videostype,
-      "channelid": channelid,
       "smtphost": smtphost,
       "smtpport": smtpport,
       "smtpsecure": smtpsecure,

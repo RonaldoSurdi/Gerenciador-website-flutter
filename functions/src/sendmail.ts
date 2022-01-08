@@ -1,27 +1,59 @@
-exports.handler = function(req, res, firestore, cors, nodemailer) {
+exports.handler = async function(req, res, firestore, cors, nodemailer) {
+    res.set("Access-Control-Allow-Origin", "*");
     if (req.method !== "POST") {
         return res.status(405).send(`${req.method} method not allowed`);
     }
-    const ipAddress = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-    const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-            user: "ronaldohws@gmail.com",
-            pass: "lqkmhihwxljwiser"
-        }
-    });
     cors(req, res, async () => {
-        const from = `"${req.body["from_name"]}" <${req.body["from_email"]}>`;
-        const to = `"${req.body["to_name"]}" <${req.body["to_email"]}>`;
-        const subject = `Contato site ${req.body["from_name"]}`;
+        const refSecure = await firestore.collection("settings").doc("secure").get();
+        const settingsSecure = await refSecure.data();
+        const ipAddress = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+        const transporter = await nodemailer.createTransport({
+            host: settingsSecure.smtphost,
+            port: settingsSecure.smtpport,
+            secure: settingsSecure.smtpsecure,
+            auth: {
+                user: settingsSecure.smtpuser,
+                pass: settingsSecure.smtppass
+            }
+        });
+        const refData = await firestore.collection("settings").doc("data").get();
+        const settingsData = await refData.data();
+        const fromName = settingsData.name;
+        const fromEmail = settingsData.email;
+        const toName = req.body["to_name"];
+        const toEmail = req.body["to_email"];
+        let toPhone = req.body["to_phone"];
+        let cityUf = req.body["city_uf"];
         let content = req.body["content"];
-        const textFrom = `${subject}\n\nNome: ${req.body["to_name"]}\nEmail: ${req.body["to_email"]}\nFone: ${req.body["to_phone"]}\nIp address: ${ipAddress}\n\nMensagem:\n${content}\n\n\nAtt,\n\n${req.body["from_name"]}`;
-        const textTo = `Olá ${req.body["to_name"]},\n\nRecebemos sua mensagem, em breve entraremos em contato.\n\n\nAtenciosamente,\n\n${req.body["from_name"]}`;
+        if (toName == null || toName == undefined || toName == "") {
+            return res.status(422).send("Digite o seu nome completo");
+        }
+        if (toEmail == null || toEmail == undefined || toEmail == "") {
+            return res.status(422).send("Digite o seu email");
+        }
+        if (cityUf == null || cityUf == undefined || cityUf == "") {
+            return res.status(422).send("Digite o seu local (Cidade/UF)");
+        }
+        if (content == null || content == undefined || content == "") {
+            return res.status(422).send("Digite a mensagem");
+        }
+        if (toPhone == null || toPhone == undefined) {
+            toPhone = "";
+        }
+        if (cityUf == null || cityUf == undefined) {
+            cityUf = "";
+        }
+        if (content == null || content == undefined) {
+            content = "";
+        }
+        const from = `"${fromName}" <${fromEmail}>`;
+        const to = `"${toName}" <${toEmail}>`;
+        const subject = `Contato site ${fromName}`;
+        const textFrom = `${subject}\n\nNome: ${toName}\nEmail: ${toEmail}\nFone: ${toPhone}\nLocal: ${cityUf}\nIp address: ${ipAddress}\n\nMensagem:\n${content}\n\n\nAtt,\n\n${fromName}`;
+        const textTo = `Olá ${toName},\n\nRecebemos sua mensagem, em breve entraremos em contato.\n\n\nAtenciosamente,\n\n${fromName}`;
         content = content.replace(/(?:\r\n|\r|\n)/g, "<br>");
-        const htmlFrom = `<h2>${subject}</h2>Nome: <strong>${req.body["to_name"]}</strong><br>Email: <strong>${req.body["to_email"]}</strong><br>Fone: <strong>${req.body["to_phone"]}</strong><br>Ip address: <strong>${ipAddress}</strong><br><br>Mensagem:<br><strong>${content}</strong><br><br><br>Att,<br><br>${req.body["from_name"]}`;
-        const htmlTo = `Olá <strong>${req.body["to_name"]}</strong>,<br><br>Recebemos sua mensagem, em breve entraremos em contato.<br><br><br>Atenciosamente,<br><br>${req.body["from_name"]}`;
+        const htmlFrom = `<h2>${subject}</h2>Nome: <strong>${toName}</strong><br>Email: <strong>${toEmail}</strong><br>Fone: <strong>${toPhone}</strong><br>Local: ${cityUf}<br>Ip address: <strong>${ipAddress}</strong><br><br>Mensagem:<br><strong>${content}</strong><br><br><br>Att,<br><br>${fromName}`;
+        const htmlTo = `Olá <strong>${toName}</strong>,<br><br>Recebemos sua mensagem, em breve entraremos em contato.<br><br><br>Atenciosamente,<br><br>${fromName}`;
         const emailEnterprise = {
             from: to,
             to: from,
@@ -39,7 +71,7 @@ exports.handler = function(req, res, firestore, cors, nodemailer) {
         };
         await transporter.sendMail(emailEnterprise, async (error, info) => {
             if (error) {
-                console.log(`Erro ao enviar email...\n${error}`);
+                console.log(`Erro ao enviar email...\n${error}\n${info}`);
                 return res.status(400).send("Erro ao enviar email, tente novamente...");
             }
             await transporter.sendMail(emailClient, (error, info) => {

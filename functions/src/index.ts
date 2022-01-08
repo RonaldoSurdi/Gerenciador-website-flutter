@@ -18,5 +18,5 @@ exports.sendMail = functions.https.onRequest((req, res) => {
 });
 
 exports.counterView = functions.https.onRequest((req, res) => {
-    counterView.handler(req, res, firestore);
+    counterView.handler(req, res, firestore, cors);
 });
