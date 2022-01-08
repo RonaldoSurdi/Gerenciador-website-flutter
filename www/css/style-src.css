@@ -3013,315 +3013,318 @@ section.info-agileinfo h4 {
 }*/
 
 @media (max-width: 667px) {
-.navbar-brand h1 {
-    font-size: 35px;
-}
-/*.pogoSlider {
-    height: 312px!important;
-}*/
-.pogoSlider-slide-element h3 {
-    font-size: 30px;
-	padding-bottom:10px;
-}
-.pogoSlider-slide-element {
-    margin-top: 75px!important;
-}
-/*section.biografia-w3ls p {
-	padding:0 20px 40px;
-}*/
-section.info-agileinfo .agileits-w3layouts {
-    padding: 20px 20px;
-}
-section.info-agileinfo h4 {
-	padding-bottom:10px;
-}
-.footer p.text-center {
-	font-size:14px;
-}
+	.navbar-brand h1 {
+		font-size: 35px;
+	}
+	/*.pogoSlider {
+		height: 312px!important;
+	}*/
+	.pogoSlider-slide-element h3 {
+		font-size: 30px;
+		padding-bottom:10px;
+	}
+	.pogoSlider-slide-element {
+		margin-top: 75px!important;
+	}
+	/*section.biografia-w3ls p {
+		padding:0 20px 40px;
+	}*/
+	section.info-agileinfo .agileits-w3layouts {
+		padding: 20px 20px;
+	}
+	section.info-agileinfo h4 {
+		padding-bottom:10px;
+	}
+	.footer p.text-center {
+		font-size:14px;
+	}
 }
 
 @media (max-width: 640px) {
-section.info-agileinfo h4 {
-    font-size: 25px;
-}
-section.info-agileinfo .agileits-w3layouts {
-    padding: 17px 20px;
-}
-section.contato-w3ls h3 {
-	padding-bottom:15px;
-}
-section.contato-w3ls p.contato-agile1 {
-    font-size: 16px;
-}
-section.contato-w3ls p.contato-agile3 {
-    font-size: 12px;
-}
-.navbar-fixed-bottom .navbar-collapse, .navbar-fixed-top .navbar-collapse {
-    max-height: 390px;
-}
+	section.info-agileinfo h4 {
+		font-size: 25px;
+	}
+	section.info-agileinfo .agileits-w3layouts {
+		padding: 17px 20px;
+	}
+	section.contato-w3ls h3 {
+		padding-bottom:15px;
+	}
+	section.contato-w3ls p.contato-agile1 {
+		font-size: 16px;
+	}
+	section.contato-w3ls p.contato-agile3 {
+		font-size: 12px;
+	}
+	.navbar-fixed-bottom .navbar-collapse, .navbar-fixed-top .navbar-collapse {
+		max-height: 390px;
+	}
 }
 
 @media (max-width: 600px) {
-/*.pogoSlider {
-    height: 365px!important;
-}*/
-.pogoSlider-slide-element {
-    margin-top: 105px!important;
-}
-section.info-agileinfo .agileits-w3layouts {
-    padding: 8px 20px;
-}
+	/*.pogoSlider {
+		height: 365px!important;
+	}*/
+	.pogoSlider-slide-element {
+		margin-top: 105px!important;
+	}
+	section.info-agileinfo .agileits-w3layouts {
+		padding: 8px 20px;
+	}
 }	
 
 @media (max-width: 568px) {
-.pogoSlider-slide-element p {
-	display:none;	
-}
-/*.pogoSlider {
-    height: 257px!important;
-}*/
-.pogoSlider-slide-element h3 {
-    font-size: 25px;
-    padding-bottom: 22px;
-}
-section.info-agileinfo .agileits-w3layouts {
-    padding: 1px 10px;
-}
-.map iframe.googlemaps {
-    width: 100%;
-    height: 250px;
-}
-section.contato-w3ls h4 {
-    font-size: 35px;
-	padding-bottom:15px;
-}
+	.pogoSlider-slide-element p {
+		display:none;	
+	}
+	/*.pogoSlider {
+		height: 257px!important;
+	}*/
+	.pogoSlider-slide-element h3 {
+		font-size: 25px;
+		padding-bottom: 22px;
+	}
+	section.info-agileinfo .agileits-w3layouts {
+		padding: 1px 10px;
+	}
+	.map iframe.googlemaps {
+		width: 100%;
+		height: 250px;
+	}
+	section.contato-w3ls h4 {
+		font-size: 35px;
+		padding-bottom:15px;
+	}
 }
 
 @media (max-width: 480px) {
-.pogoSlider-nav-btn {
-	width:10px;
-	height:10px;
-}
-section.biografia-w3ls h2 {
-    padding: 30px 0px 10px;
-    font-size: 30px;
-}
-section.biografia-w3ls img.agile2.img-responsive {
-	width:130px;
-}
-section.artista-agileinfo h3.text-center, section.agenda-agileinfo h3.text-center, section.special-w3ls h3, section.info-agileinfo h3.text-center, section.fotos-w3ls h3.text-center {
-    font-size: 30px;
-    padding-bottom: 25px;
-}
-.col-lg-3.col-md-3.col-sm-6.wthree1, .col-lg-3.col-md-3.col-sm-6.wthree2, .col-lg-3.col-md-3.col-sm-6.wthree3, .col-lg-3.col-md-3.col-sm-6.wthree4 {
-    width: 100%;
-    float: left;
-}
-.col-lg-3.col-md-3.col-sm-6.wthree1, .col-lg-3.col-md-3.col-sm-6.wthree2, .col-lg-3.col-md-3.col-sm-6.wthree3{
-    padding-bottom: 60px;
-}
-section.artista-agileinfo h4 {
-    font-size: 20px;
-    padding: 40px 0 15px;
-}
-section.agenda-agileinfo h4 {
-    font-size: 20px;
-    padding: 40px 0 15px;
-}
-section.special-w3ls h3 {
-	padding-bottom:20px;
-}
-.col-lg-6.col-md-6.col-sm-6.info-w3-agile1 {
-    width: 100%;
-    float: left;
-}
-section.info-agileinfo .info-agile1, section.info-agileinfo .info-agile2 {
-    margin-bottom: 30px;
-}
-.col-lg-12.col-md-12.col-sm-12.info-w3-agile2 {
-    width: 100%;
-    float: left;
-}
-section.info-agileinfo .agileits-w3layouts {
-    padding: 20px 20px;
-}
-ul.social-icons2 {
-    padding: 10px 0 0;
-}
+	.pogoSlider-nav-btn {
+		width:10px;
+		height:10px;
+	}
+	section.biografia-w3ls h2 {
+		padding: 30px 0px 10px;
+		font-size: 30px;
+	}
+	section.biografia-w3ls img.agile2.img-responsive {
+		width:130px;
+	}
+	section.artista-agileinfo h3.text-center, section.agenda-agileinfo h3.text-center, section.special-w3ls h3, section.info-agileinfo h3.text-center, section.fotos-w3ls h3.text-center {
+		font-size: 30px;
+		padding-bottom: 25px;
+	}
+	.col-lg-3.col-md-3.col-sm-6.wthree1, .col-lg-3.col-md-3.col-sm-6.wthree2, .col-lg-3.col-md-3.col-sm-6.wthree3, .col-lg-3.col-md-3.col-sm-6.wthree4 {
+		width: 100%;
+		float: left;
+	}
+	.col-lg-3.col-md-3.col-sm-6.wthree1, .col-lg-3.col-md-3.col-sm-6.wthree2, .col-lg-3.col-md-3.col-sm-6.wthree3{
+		padding-bottom: 60px;
+	}
+	section.artista-agileinfo h4 {
+		font-size: 20px;
+		padding: 40px 0 15px;
+	}
+	section.agenda-agileinfo h4 {
+		font-size: 20px;
+		padding: 40px 0 15px;
+	}
+	section.special-w3ls h3 {
+		padding-bottom:20px;
+	}
+	.col-lg-6.col-md-6.col-sm-6.info-w3-agile1 {
+		width: 100%;
+		float: left;
+	}
+	section.info-agileinfo .info-agile1, section.info-agileinfo .info-agile2 {
+		margin-bottom: 30px;
+	}
+	.col-lg-12.col-md-12.col-sm-12.info-w3-agile2 {
+		width: 100%;
+		float: left;
+	}
+	section.info-agileinfo .agileits-w3layouts {
+		padding: 20px 20px;
+	}
+	ul.social-icons2 {
+		padding: 10px 0 0;
+	}
 }
 
 @media (max-width: 414px) {
-.pogoSlider-slide-element h3 {
-    font-size: 20px;
-    padding-bottom: 22px;
-}
-section.special-w3ls h3 {
-    padding-bottom: 15px;
-}
-section.special-w3ls p.special-agile1 {
-    font-size: 20px;
-    padding-bottom: 10px;
-}
-section.info-agileinfo h4 {
-    padding-bottom: 5px;
-}
-section.contato-w3ls h3 {
-    font-size: 30px;
-}
-section.contato-w3ls h4 {
-    font-size: 30px;
-    padding-bottom: 10px;
-}
-section.contato-w3ls .contato-agileits {
-	padding:20px 20px;
-}
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf {
-    height: 45px;
-}
-section.contato-w3ls textarea#message {
-    height: 120px;
-}
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
-    font-size: 15px;
-}
+	.pogoSlider-slide-element h3 {
+		font-size: 20px;
+		padding-bottom: 22px;
+	}
+	section.special-w3ls h3 {
+		padding-bottom: 15px;
+	}
+	section.special-w3ls p.special-agile1 {
+		font-size: 20px;
+		padding-bottom: 10px;
+	}
+	section.info-agileinfo h4 {
+		padding-bottom: 5px;
+	}
+	section.contato-w3ls h3 {
+		font-size: 30px;
+	}
+	section.contato-w3ls h4 {
+		font-size: 30px;
+		padding-bottom: 10px;
+	}
+	section.contato-w3ls .contato-agileits {
+		padding:20px 20px;
+	}
+	section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf {
+		height: 45px;
+	}
+	section.contato-w3ls textarea#message {
+		height: 120px;
+	}
+	section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
+		font-size: 15px;
+	}
 }
 
 /*@media (max-width: 384px) {*/
 /*@media (max-width: 375px) {*/
 /*@media (max-width: 320px) {*/
 @media (max-width: 384px) {
-.pogoSlider-slide-element h3 {
-    font-size: 18px;
-    padding-bottom: 30px;
-    letter-spacing: 1px;
+	.pogoSlider-slide-element h3 {
+		font-size: 18px;
+		padding-bottom: 30px;
+		letter-spacing: 1px;
+	}
+	.pogoSlider-slide-element {
+		margin-top: 87px!important;
+	}
+	section.biografia-w3ls h2 {
+		padding: 20px 0px 10px;
+		font-size: 30px;
+		/*text-align: center;*/
+		margin-left:10px;
+	}
+	section.biografia-w3ls p {
+		font-size: 13px;
+	}
+	section.biografia-w3ls img.agile2.img-responsive {
+		width: 95px;
+	}
+	section.artista-agileinfo h4 {
+		font-size: 20px;
+		padding: 25px 0 15px;
+	}
+	section.artista-agileinfo img.img-responsive {
+		width: 50px;
+		height: 50px;
+		display: block;
+		position: absolute;
+		top: -23px;
+		left: 38px;
+	}
+	section.disco-agileinfo h3.text-center {
+		font-size:30px;
+		padding: 20px 0px 10px;
+		margin: 0px;
+		text-align: center;
+	}
+	section.videos-w3ls h3.text-center {
+		font-size:30px;
+		padding: 20px 0px 10px;
+		margin: 0px;
+		text-align: center;
+	}
+	section.imprensa-w3ls h2 {
+		font-size:30px;
+		padding: 20px 0px 10px;
+		margin: 0px;
+		text-align: center;
+	}
+	section.central-w3ls h2 {
+		font-size:30px;
+		padding: 20px 0px 10px;
+		margin: 0px;
+		text-align: center;
+	}
+	section.central-w3ls h4 {
+		font-size:25px;
+		padding-bottom:10px;
+	}
+	section.agenda-agileinfo h3.text-center {
+		font-size:30px;
+		padding: 20px 0px 10px;
+		margin: 0px;
+		text-align: center;
+	}
+	section.agenda-agileinfo h4 {
+		font-size: 20px;
+		padding: 25px 0 15px;
+	}
+	.col-lg-3.col-md-3.col-sm-6.wthree1, .col-lg-3.col-md-3.col-sm-6.wthree2, .col-lg-3.col-md-3.col-sm-6.wthree3 {
+		padding-bottom: 40px;
+	}
+	section.info-agileinfo h4 {
+		font-size: 20px;
+	}
+	section.info-agileinfo p {
+		font-size: 13px;
+	}
+	section.contato-w3ls .contato-agileits {
+		padding: 20px 10px;
+	}
+	section.contato-w3ls p.contato-agile2 {
+		font-size: 14px;
+		padding-bottom: 15px;
+	}
+	section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf {
+		height: 40px;
+	}
+	section.contato-w3ls textarea#message {
+		height: 110px;
+	}
+	section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
+		font-size: 14px;
+	}
+	section.contato-w3ls label.contato-p1 {
+		font-size: 15px;
+	}
+	section.contato-w3ls button.btn.btn-primary {
+		font-size: 15px;
+		padding: 10px 20px;
+		margin:10px 0;
+	}
+	.footer p.text-center {
+		font-size: 13px;
+	}
+	a.navbar-brand {
+		margin-left: -25px;
+	}
+	button.navbar-toggle.collapsed {
+		margin-right:-10px;
+	}
+	.btn-circle {
+		width: 40px;
+		height: 40px;
+		line-height:31px;
+		margin-top:37px;	
+	}
+	.btn-circle i.animated {
+		font-size: 28px;
+	}
+	section.artista-agileinfo h4:after {
+		width: 203px;
+		right: inherit;
+		left: 0;
+	}
+	section.agenda-agileinfo h4:after {
+		width: 203px;
+		right: inherit;
+		left: 0;
+	}
+	.owl-theme .owl-controls {
+		display: none !important;
+	}
 }
-.pogoSlider-slide-element {
-    margin-top: 87px!important;
-}
-section.biografia-w3ls h2 {
-    padding: 20px 0px 10px;
-    font-size: 30px;
-    /*text-align: center;*/
-	margin-left:10px;
-}
-section.biografia-w3ls p {
-    font-size: 13px;
-}
-section.biografia-w3ls img.agile2.img-responsive {
-    width: 95px;
-}
-section.artista-agileinfo h4 {
-    font-size: 20px;
-    padding: 25px 0 15px;
-}
-section.artista-agileinfo img.img-responsive {
-    width: 50px;
-    height: 50px;
-    display: block;
-    position: absolute;
-    top: -23px;
-    left: 38px;
-}
-section.disco-agileinfo h3.text-center {
-	font-size:30px;
-	padding: 20px 0px 10px;
-	margin: 0px;
-    text-align: center;
-}
-section.videos-w3ls h3.text-center {
-	font-size:30px;
-	padding: 20px 0px 10px;
-	margin: 0px;
-    text-align: center;
-}
-section.imprensa-w3ls h2 {
-	font-size:30px;
-	padding: 20px 0px 10px;
-	margin: 0px;
-    text-align: center;
-}
-section.central-w3ls h2 {
-	font-size:30px;
-	padding: 20px 0px 10px;
-	margin: 0px;
-    text-align: center;
-}
-section.central-w3ls h4 {
-	font-size:25px;
-	padding-bottom:10px;
-}
-section.agenda-agileinfo h3.text-center {
-	font-size:30px;
-	padding: 20px 0px 10px;
-	margin: 0px;
-    text-align: center;
-}
-section.agenda-agileinfo h4 {
-    font-size: 20px;
-    padding: 25px 0 15px;
-}
-.col-lg-3.col-md-3.col-sm-6.wthree1, .col-lg-3.col-md-3.col-sm-6.wthree2, .col-lg-3.col-md-3.col-sm-6.wthree3 {
-    padding-bottom: 40px;
-}
-section.info-agileinfo h4 {
-    font-size: 20px;
-}
-section.info-agileinfo p {
-    font-size: 13px;
-}
-section.contato-w3ls .contato-agileits {
-    padding: 20px 10px;
-}
-section.contato-w3ls p.contato-agile2 {
-    font-size: 14px;
-    padding-bottom: 15px;
-}
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf {
-    height: 40px;
-}
-section.contato-w3ls textarea#message {
-    height: 110px;
-}
-section.contato-w3ls input#name, section.contato-w3ls input#email, section.contato-w3ls input#phone, section.contato-w3ls input#cityuf, section.contato-w3ls textarea#message {
-    font-size: 14px;
-}
-section.contato-w3ls label.contato-p1 {
-    font-size: 15px;
-}
-section.contato-w3ls button.btn.btn-primary {
-	font-size: 15px;
-    padding: 10px 20px;
-	margin:10px 0;
-}
-.footer p.text-center {
-    font-size: 13px;
-}
-a.navbar-brand {
-    margin-left: -25px;
-}
-button.navbar-toggle.collapsed {
-	margin-right:-10px;
-}
-.btn-circle {
-    width: 40px;
-    height: 40px;
-	line-height:31px;
-	margin-top:37px;	
-}
-.btn-circle i.animated {
-    font-size: 28px;
-}
-section.artista-agileinfo h4:after {
-    width: 203px;
-    right: inherit;
-    left: 0;
-}
-section.agenda-agileinfo h4:after {
-    width: 203px;
-    right: inherit;
-    left: 0;
-}
-.owl-theme .owl-controls {
-	display: none !important;
-}
+.sortable-handler {
+  touch-action: none !important;
 }

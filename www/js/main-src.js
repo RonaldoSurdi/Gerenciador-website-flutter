@@ -152,36 +152,40 @@ $(document).ready(function () {
 		});
 	}
 
+	var	my_jPlayer = $("#jquery_jplayer"),
+		my_trackName = $("#jp_container .track-name"),
+		my_playState = $("#jp_container .play-state"),
+		my_extraPlayInfo = $("#jp_container .extra-play-info");
+	var	opt_play_first = false,
+		opt_auto_play = true,
+		opt_text_playing = "",
+		opt_text_selected = "";
+	var first_track = true;
+	$.jPlayer.timeFormat.padMin = false;
+	$.jPlayer.timeFormat.padSec = false;
+	$.jPlayer.timeFormat.sepMin = "";
+	$.jPlayer.timeFormat.sepSec = "";
+	my_playState.text(opt_text_selected);
+	var trackname = "";
+	var tracknamelast = '';
+	my_jPlayer.jPlayer({
+		ready: function () {
+			$("#jp_container .track-default").click();
+		},
+		ended: function() {
+		},
+		swfPath: "/js",
+		cssSelectorAncestor: "#jp_container",
+		supplied: "mp3",
+		wmode: "window"
+	});
+	
+	my_jPlayer.jPlayer("setMedia", {
+		// title: "João Luiz Corrêa & Mano Lima - Virou linguiça",
+		mp3: trackname
+	});
+
 	function updSnd() {
-		var	my_jPlayer = $("#jquery_jplayer"),
-			rd_jPlayer = $("#jquery_jplayer_1"),
-			my_trackName = $("#jp_container .track-name"),
-			my_playState = $("#jp_container .play-state"),
-			my_extraPlayInfo = $("#jp_container .extra-play-info");
-		var	opt_play_first = false,
-			opt_auto_play = true,
-			opt_text_playing = "",
-			opt_text_selected = "";
-		var first_track = true;
-		$.jPlayer.timeFormat.padMin = false;
-		$.jPlayer.timeFormat.padSec = false;
-		$.jPlayer.timeFormat.sepMin = "";
-		$.jPlayer.timeFormat.sepSec = "";
-		my_playState.text(opt_text_selected);
-		var trackname = '';
-		var tracknamelast = '';
-		my_jPlayer.jPlayer({
-			ready: function () {
-				$("#jp_container .track-default").click();
-			},
-			ended: function() {
-				rd_jPlayer.jPlayer("play");
-			},
-			swfPath: "/js",
-			cssSelectorAncestor: "#jp_container",
-			supplied: "mp3",
-			wmode: "window"
-		});
 		$("#jp_container .track").click(function(e) {
 			my_jPlayer.jPlayer("setMedia", {
 				mp3: $(this).attr("href")
@@ -195,15 +199,11 @@ $(document).ready(function () {
 					$(this).html('<img src="images/player/pause.png">');
 					trackname = $(this).attr("href");
 					tracknamelast = $(this);
-					//if(rd_jPlayer.jPlayer("getData","diag.isPlaying") == true){
-						rd_jPlayer.jPlayer("pause");
-					//}
 				} else {
 					my_jPlayer.jPlayer("stop");
 					$(this).html('<img src="images/player/play.png">');
 					trackname = '';
 					tracknamelast = '';
-					rd_jPlayer.jPlayer("play");
 				}			
 			}
 			first_track = false;
@@ -701,10 +701,13 @@ $(document).ready(function () {
 					parseHtmlSlider += `<h3>${titleAlb}</h3>`;
 					parseHtmlSlider += `</div></div></div>`;
 					if ((z+1) >= data.size) {
-						owl2.html(parseHtmlSlider);
+						owl2.html(parseHtmlSlider);						
 						owl2.owlCarousel();
-						updDsc();
 						getdata(5);
+						setTimeout(function() {
+							updDsc();
+							owl2.trigger('owl.jumpTo', data.size - 1);
+						}, 2000);
 					}
 				};
 			} else {
@@ -744,8 +747,10 @@ $(document).ready(function () {
 					if ((z+1) >= data.size) {
 						owl.html(parseHtmlSlider);
 						owl.owlCarousel();
-						updAgl();
 						getdata(6);
+						setTimeout(function() { 
+							updAgl();
+						}, 2000);
 					}
 				};
 			} else {
