@@ -32,6 +32,21 @@ class _ScheduleState extends State<Schedule> {
   DateTime? _dataEndValue = DateTime.now().add(const Duration(hours: 3));
   bool? _viewValue = true;
 
+  _dateDifference(itemDataIni, itemDataEnd) {
+    DateTime dataIniCalc = itemDataIni.toDate();
+    DateTime dataEndCalc = itemDataEnd.toDate();
+    int diffDateDif = dataIniCalc.difference(dataEndCalc).inMinutes.abs();
+    int diffDateHours = (diffDateDif / 60).floor();
+    int diffDateMinutes = diffDateDif - (diffDateHours * 60);
+    String diffText =
+        '${diffDateHours.toString().padLeft(2, '0')}:${diffDateMinutes.toString().padLeft(2, '0')}';
+    return {
+      "diffhours": diffDateHours,
+      "diffminutes": diffDateMinutes,
+      "difftext": diffText,
+    };
+  }
+
   Future<void> _addNew(
     BuildContext context,
     itemId,
@@ -50,15 +65,13 @@ class _ScheduleState extends State<Schedule> {
     _descriptionController.text = _descriptionValue;
     _dataIniValue = itemDataIni.toDate();
     _dataEndValue = itemDataEnd.toDate();
-    int diffDate =
-        itemDataIni.toDate().difference(itemDataEnd.toDate()).inMinutes;
-    int diffDateHour = (diffDate / 60).floor();
-    int diffDateMinutes = diffDate - (diffDateHour * 60);
+    var dateDifference = await _dateDifference(itemDataIni, itemDataEnd);
+    int diffDateHours = dateDifference["diffhours"];
+    int diffDateMinutes = dateDifference["diffminutes"];
     _datainiDaysController.text =
         DateFormat('dd/MM/yyyy').format(_dataIniValue!);
     _datainiTimeController.text = DateFormat('HH:mm').format(_dataIniValue!);
-    _dataendTimeController.text =
-        '${diffDateHour.toString().padLeft(2, '0')}:${diffDateMinutes.toString().padLeft(2, '0')}';
+    _dataendTimeController.text = dateDifference["difftext"];
     _viewValue = itemView!;
     return showDialog(
       context: context,
@@ -261,18 +274,15 @@ class _ScheduleState extends State<Schedule> {
                     );
                     if (time != null) {
                       _dataEndValue = _dataIniValue;
-                      _dataEndValue = _dataEndValue?.add(Duration(
-                        hours: time.hour,
-                      ));
-                      diffDateHour = time.hour;
+                      diffDateHours = time.hour;
                       diffDateMinutes = time.minute;
                       _dataEndValue = _dataEndValue?.add(Duration(
-                        hours: diffDateHour,
+                        hours: diffDateHours,
                         minutes: diffDateMinutes,
                       ));
                     } else {
                       time = TimeOfDay(
-                        hour: diffDateHour,
+                        hour: diffDateHours,
                         minute: diffDateMinutes,
                       );
                     }
