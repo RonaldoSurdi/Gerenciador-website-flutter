@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hwscontrol/pages/modules/dashboard.dart';
+import 'package:hwscontrol/views/dashboard.dart';
 import 'package:loading_overlay_pro/animations/bouncing_line.dart';
 
 class LoginSignin extends StatefulWidget {

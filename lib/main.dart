@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hwscontrol/core/theme/default_theme.dart';
-import 'package:hwscontrol/pages/modules/initialize.dart';
+import 'package:hwscontrol/views/initialize.dart';
 import 'package:hwscontrol/core/theme/custom_animation.dart';
 
 void configLoading() {

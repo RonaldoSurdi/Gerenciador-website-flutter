@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hwscontrol/pages/modules/login_password.dart';
-import 'package:hwscontrol/pages/modules/login_signin.dart';
-import 'package:hwscontrol/pages/modules/login_signup.dart';
+import 'package:hwscontrol/views/login_password.dart';
+import 'package:hwscontrol/views/login_signin.dart';
+import 'package:hwscontrol/views/login_signup.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 
 class LoginAuth extends StatefulWidget {

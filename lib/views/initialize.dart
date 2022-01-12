@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hwscontrol/pages/modules/dashboard.dart';
-import 'package:hwscontrol/pages/modules/login_auth.dart';
+import 'package:hwscontrol/views/dashboard.dart';
+import 'package:hwscontrol/views/login_auth.dart';
 
 class Initialize extends StatefulWidget {
   final String title;

@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:hwscontrol/core/models/disc_model.dart';
-import 'package:hwscontrol/pages/modules/disc_sounds.dart';
+import 'package:hwscontrol/views/disc_sounds.dart';
 //import 'package:flutter/services.dart';
 //import 'dart:convert';
 //import 'package:hwscontrol/core/models/sound_model.dart';

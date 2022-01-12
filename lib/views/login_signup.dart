@@ -5,7 +5,7 @@ import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
-import 'package:hwscontrol/pages/modules/dashboard.dart';
+import 'package:hwscontrol/views/dashboard.dart';
 
 class LoginSignup extends StatefulWidget {
   const LoginSignup({Key? key}) : super(key: key);

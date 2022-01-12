@@ -4,7 +4,7 @@ import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
-import 'package:hwscontrol/pages/modules/dashboard.dart';
+import 'package:hwscontrol/views/dashboard.dart';
 
 class LoginPassword extends StatefulWidget {
   const LoginPassword({Key? key}) : super(key: key);
