@@ -50,7 +50,8 @@ class _ScheduleState extends State<Schedule> {
     _descriptionController.text = _descriptionValue;
     _dataIniValue = itemDataIni.toDate();
     _dataEndValue = itemDataEnd.toDate();
-    int diffDate = _dataIniValue!.difference(_dataEndValue!).inMinutes;
+    int diffDate =
+        itemDataIni.toDate().difference(itemDataEnd.toDate()).inMinutes;
     int diffDateHour = (diffDate / 60).floor();
     int diffDateMinutes = diffDate - (diffDateHour * 60);
     _datainiDaysController.text =
