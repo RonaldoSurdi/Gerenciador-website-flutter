@@ -715,7 +715,7 @@ $(document).ready(function () {
 			}
 		} else if (getIdx == 5) {
 			//AGENDA
-			data = await db.collection("schedule").orderBy("id", "desc").get();//.where("view", "=", "1")
+			data = await db.collection("schedule").orderBy("id").get();//.where("view", "=", "1")
 			scheduleData = [];
 			if (data.size > 0) {
 				response = data.docs;
