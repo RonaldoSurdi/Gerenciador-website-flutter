@@ -100,13 +100,8 @@ class _ArtistsState extends State<Artists> {
   }
 
   Future<void> _addNew(BuildContext context, itemId, itemName, itemInfo) async {
-    if (itemId == 0) {
-      _nameController.text = '';
-      _infoController.text = '';
-    } else {
-      _nameController.text = itemName;
-      _infoController.text = itemInfo;
-    }
+    _nameController.text = itemName;
+    _infoController.text = itemInfo;
     return showDialog(
       context: context,
       builder: (context) {

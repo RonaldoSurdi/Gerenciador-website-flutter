@@ -19,16 +19,46 @@ class _ScheduleState extends State<Schedule> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _datainiDaysController = TextEditingController();
+  final TextEditingController _datainiTimeController = TextEditingController();
+  final TextEditingController _dataendTimeController = TextEditingController();
   final List<ScheduleModel> _widgetList = [];
-  final formatDate = DateFormat("yyyy-MM-dd HH:mm");
-  String? _titleValue;
-  String? _placeValue;
-  String? _descriptionValue;
-  DateTime? _dataIniValue;
-  DateTime? _dataEndValue;
+  final formatDaysDate = DateFormat("dd/MM/yyyy");
+  final formatTimeDate = DateFormat("HH:mm");
+  String _titleValue = '';
+  String _placeValue = '';
+  String _descriptionValue = '';
+  DateTime? _dataIniValue = DateTime.now();
+  DateTime? _dataEndValue = DateTime.now().add(const Duration(hours: 3));
   bool? _viewValue = true;
 
-  Future<void> _addNewSchedule(BuildContext context) async {
+  Future<void> _addNew(
+    BuildContext context,
+    itemId,
+    itemTitle,
+    itemPlace,
+    itemDescription,
+    itemView,
+    itemDataIni,
+    itemDataEnd,
+  ) async {
+    _titleValue = itemTitle.toString();
+    _placeValue = itemPlace.toString();
+    _descriptionValue = itemDescription.toString();
+    _titleController.text = _titleValue;
+    _placeController.text = _placeValue;
+    _descriptionController.text = _descriptionValue;
+    _dataIniValue = itemDataIni.toDate();
+    _dataEndValue = itemDataEnd.toDate();
+    int diffDate = _dataIniValue!.difference(_dataEndValue!).inMinutes;
+    int diffDateHour = (diffDate / 60).floor();
+    int diffDateMinutes = diffDate - (diffDateHour * 60);
+    _datainiDaysController.text =
+        DateFormat('dd/MM/yyyy').format(_dataIniValue!);
+    _datainiTimeController.text = DateFormat('HH:mm').format(_dataIniValue!);
+    _dataendTimeController.text =
+        '${diffDateHour.toString().padLeft(2, '0')}:${diffDateMinutes.toString().padLeft(2, '0')}';
+    _viewValue = itemView!;
     return showDialog(
       context: context,
       builder: (context) {
@@ -112,7 +142,7 @@ class _ScheduleState extends State<Schedule> {
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Text(
-                    'Horário de abertura',
+                    'Data do evento',
                     style: TextStyle(
                       color: Colors.black54,
                       fontSize: 14.0,
@@ -121,40 +151,44 @@ class _ScheduleState extends State<Schedule> {
                   ),
                 ),
                 DateTimeField(
-                  format: formatDate,
-                  decoration:
-                      const InputDecoration(hintText: "0000-00-00 00:00"),
+                  format: formatDaysDate,
+                  controller: _datainiDaysController,
+                  decoration: const InputDecoration(
+                    hintText: "00/00/0000",
+                  ),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    if (currentValue == null) {
-                      final date = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime(DateTime.now().year),
-                        initialDate: currentValue ?? DateTime.now(),
-                        lastDate: DateTime(DateTime.now().year + 1),
+                    final date = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(DateTime.now().year),
+                      initialDate: currentValue ?? DateTime.now(),
+                      lastDate: DateTime(DateTime.now().year + 1),
+                      confirmText: 'Confirmar',
+                      cancelText: 'Cancelar',
+                      helpText: 'Data do evento',
+                      fieldLabelText: 'Data do evento',
+                      fieldHintText: 'DD/MM/AAAA',
+                    );
+                    if (date != null) {
+                      _dataIniValue = DateTimeField.combine(
+                        date,
+                        TimeOfDay(
+                          hour: _dataIniValue!.hour,
+                          minute: _dataIniValue!.minute,
+                        ),
                       );
-                      if (date != null) {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(
-                            currentValue ?? DateTime.now(),
-                          ),
-                        );
-                        _dataIniValue = DateTimeField.combine(date, time);
-                        return _dataIniValue;
-                      }
                     }
-                    return currentValue;
+                    return _dataIniValue;
                   },
                 ),
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Text(
-                    'Horário de término',
+                    'Hora de inicio do evento',
                     style: TextStyle(
                       color: Colors.black54,
                       fontSize: 14.0,
@@ -163,34 +197,88 @@ class _ScheduleState extends State<Schedule> {
                   ),
                 ),
                 DateTimeField(
-                  format: formatDate,
-                  decoration:
-                      const InputDecoration(hintText: "0000-00-00 00:00"),
+                  format: formatTimeDate,
+                  controller: _datainiTimeController,
+                  decoration: const InputDecoration(
+                    hintText: "00:00",
+                  ),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 16.0,
                     fontFamily: 'WorkSansMedium',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    if (currentValue == null) {
-                      final date = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime(DateTime.now().year),
-                        initialDate: currentValue ?? DateTime.now(),
-                        lastDate: DateTime(DateTime.now().year + 1),
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(
+                        currentValue ?? DateTime.now(),
+                      ),
+                      confirmText: 'Confirmar',
+                      cancelText: 'Cancelar',
+                      helpText: 'Hora de inicio do evento',
+                    );
+                    if (time != null) {
+                      _dataIniValue = DateTimeField.combine(
+                        _dataIniValue!,
+                        time,
                       );
-                      if (date != null) {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(
-                            currentValue ?? DateTime.now(),
-                          ),
-                        );
-                        _dataEndValue = DateTimeField.combine(date, time);
-                        return _dataEndValue;
-                      }
                     }
-                    return currentValue;
+                    return _dataIniValue;
+                  },
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    'Tempo estimado de duração',
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansMedium',
+                    ),
+                  ),
+                ),
+                DateTimeField(
+                  format: formatTimeDate,
+                  controller: _dataendTimeController,
+                  decoration: const InputDecoration(
+                    hintText: "00:00",
+                  ),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                  onShowPicker: (context, currentValue) async {
+                    var time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(
+                        currentValue ?? DateTime.now(),
+                      ),
+                      confirmText: 'Confirmar',
+                      cancelText: 'Cancelar',
+                      helpText: 'Tempo estimado de duração',
+                    );
+                    if (time != null) {
+                      _dataEndValue = _dataIniValue;
+                      _dataEndValue = _dataEndValue?.add(Duration(
+                        hours: time.hour,
+                      ));
+                      diffDateHour = time.hour;
+                      diffDateMinutes = time.minute;
+                      _dataEndValue = _dataEndValue?.add(Duration(
+                        hours: diffDateHour,
+                        minutes: diffDateMinutes,
+                      ));
+                    } else {
+                      time = TimeOfDay(
+                        hour: diffDateHour,
+                        minute: diffDateMinutes,
+                      );
+                    }
+                    return DateTimeField.combine(
+                      _dataEndValue!,
+                      time,
+                    );
                   },
                 ),
                 TextField(
@@ -224,11 +312,30 @@ class _ScheduleState extends State<Schedule> {
               ),
               TextButton(
                 onPressed: () {
-                  _saveData(_titleValue, _placeValue, _descriptionValue,
-                          _dataIniValue, _dataEndValue)
-                      .then((value) => {
-                            if (value) {Navigator.pop(context)}
-                          });
+                  if (itemId == 0) {
+                    _saveData(
+                      _titleValue,
+                      _placeValue,
+                      _descriptionValue,
+                      _dataIniValue,
+                      _dataEndValue,
+                    ).then((value) => {
+                          if (value) {Navigator.pop(context)}
+                        });
+                    ;
+                  } else {
+                    _updateData(
+                      itemId,
+                      _titleValue,
+                      _placeValue,
+                      _descriptionValue,
+                      _dataIniValue,
+                      _dataEndValue,
+                    ).then((value) => {
+                          if (value) {Navigator.pop(context)}
+                        });
+                    ;
+                  }
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -251,9 +358,13 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 
-  // faz o envio da imagem para o storage
-  Future<bool> _saveData(_titleValue, _placeValue, _descriptionValue,
-      _dataIniValue, _dataEndValue) async {
+  Future<bool> _saveData(
+    _titleValue,
+    _placeValue,
+    _descriptionValue,
+    _dataIniValue,
+    _dataEndValue,
+  ) async {
     bool validate = false;
     if (_titleValue.trim().isNotEmpty &&
         _titleValue.trim().length >= 3 &&
@@ -262,8 +373,32 @@ class _ScheduleState extends State<Schedule> {
         _dataIniValue != null &&
         _dataEndValue != null) {
       validate = true;
-      _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
-          _dataEndValue);
+      EasyLoading.showInfo(
+        'gravando dados...',
+        maskType: EasyLoadingMaskType.custom,
+      );
+
+      String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataIniValue);
+      Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataIniValue);
+      Timestamp _dataEndTimestamp = Timestamp.fromDate(_dataEndValue);
+
+      ScheduleModel scheduleModel = ScheduleModel(
+          id: dateNow,
+          title: _titleValue,
+          place: _placeValue,
+          description: _descriptionValue,
+          dateini: _dataIniTimestamp,
+          dateend: _dataEndTimestamp,
+          view: _viewValue);
+
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      await db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
+
+      setState(() {
+        Timer(const Duration(milliseconds: 1500), () {
+          _getData();
+        });
+      });
     } else {
       CustomSnackBar(
           context, const Text('Preencha todos dados e tente novamente!'),
@@ -272,37 +407,52 @@ class _ScheduleState extends State<Schedule> {
     return Future.value(validate);
   }
 
-  Future _onSaveData(_titleValue, _placeValue, _descriptionValue, _dataIniValue,
-      _dataEndValue) async {
-    EasyLoading.showInfo(
-      'gravando dados...',
-      maskType: EasyLoadingMaskType.custom,
-    );
+  Future<bool> _updateData(
+    _idValue,
+    _titleValue,
+    _placeValue,
+    _descriptionValue,
+    _dataIniValue,
+    _dataEndValue,
+  ) async {
+    bool validate = false;
+    if (_titleValue.trim().isNotEmpty &&
+        _titleValue.trim().length >= 3 &&
+        _placeValue.trim().isNotEmpty &&
+        _placeValue.trim().length >= 3 &&
+        _dataIniValue != null &&
+        _dataEndValue != null) {
+      validate = true;
+      EasyLoading.showInfo(
+        'atualizando dados...',
+        maskType: EasyLoadingMaskType.custom,
+      );
 
-    String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataIniValue);
+      Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataIniValue);
+      Timestamp _dataEndTimestamp = Timestamp.fromDate(_dataEndValue);
 
-    Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataIniValue);
-    Timestamp _dataEndTimestamp = Timestamp.fromDate(_dataEndValue);
+      FirebaseFirestore db = FirebaseFirestore.instance;
 
-    ScheduleModel scheduleModel = ScheduleModel(
-        id: dateNow,
-        title: _titleValue,
-        place: _placeValue,
-        description: _descriptionValue,
-        dateini: _dataIniTimestamp,
-        dateend: _dataEndTimestamp,
-        view: true);
-
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
-
-    setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
-        _getData();
+      await db.collection("schedule").doc(_idValue).update({
+        "title": _titleValue,
+        "place": _placeValue,
+        "description": _descriptionValue,
+        "dateini": _dataIniTimestamp,
+        "dateend": _dataEndTimestamp,
+        "view": _viewValue
       });
-    });
 
-    return Future.value(true);
+      setState(() {
+        Timer(const Duration(milliseconds: 1500), () {
+          _getData();
+        });
+      });
+    } else {
+      CustomSnackBar(
+          context, const Text('Preencha todos dados e tente novamente!'),
+          backgroundColor: Colors.red);
+    }
+    return Future.value(validate);
   }
 
   Future _removeData(idSchedule) async {
@@ -326,20 +476,19 @@ class _ScheduleState extends State<Schedule> {
   Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data =
-        await db.collection("schedule").orderBy('id', descending: true).get();
+    var data = await db.collection("schedule").orderBy('id').get();
     setState(() {
       var response = data.docs;
       if (response.isNotEmpty) {
         for (int i = 0; i < response.length; i++) {
           ScheduleModel scheduleModel = ScheduleModel(
               id: response[i]["id"],
-              title: response[i]["title"],
-              place: response[i]["place"],
-              description: response[i]["description"],
-              dateini: response[i]["dateini"],
-              dateend: response[i]["dateend"],
-              view: response[i]["view"]);
+              title: response[i]["title"] ?? '',
+              place: response[i]["place"] ?? '',
+              description: response[i]["description"] ?? '',
+              dateini: response[i]["dateini"] ?? Timestamp.now(),
+              dateend: response[i]["dateend"] ?? Timestamp.now(),
+              view: response[i]["view"] ?? true);
           _widgetList.add(scheduleModel);
         }
       }
@@ -385,7 +534,16 @@ class _ScheduleState extends State<Schedule> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar data',
             onPressed: () {
-              _addNewSchedule(context);
+              _addNew(
+                context,
+                '0',
+                '',
+                '',
+                '',
+                true,
+                Timestamp.now(),
+                Timestamp.now(),
+              );
             },
           ),
         ],
@@ -452,6 +610,29 @@ class _ScheduleState extends State<Schedule> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: SizedBox(
+                          height: 40.0,
+                          width: 40.0,
+                          child: FloatingActionButton(
+                            mini: false,
+                            tooltip: 'Editar dados',
+                            child: const Icon(Icons.edit),
+                            backgroundColor: Colors.blue,
+                            onPressed: () => _addNew(
+                              context,
+                              value.id,
+                              value.title,
+                              value.place,
+                              value.description,
+                              value.view,
+                              value.dateini,
+                              value.dateend,
                             ),
                           ),
                         ),
