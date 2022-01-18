@@ -5,7 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/views/photo_images.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hwscontrol/core/models/album_model.dart';
+import 'package:hwscontrol/core/models/photo_view_model.dart';
 import 'package:hwscontrol/core/models/photo_album_model.dart';
 
 class PhotoAlbums extends StatefulWidget {
@@ -24,7 +24,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
   late String valueText;
 
-  final List<AlbumModel> _widgetList = [];
+  final List<PhotoViewModel> _widgetList = [];
 
   Future<void> _dialogData(
     BuildContext context,
@@ -198,7 +198,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
   _dialogDelete(
     String titleParse,
-    AlbumModel value,
+    PhotoViewModel value,
     bool isMob,
   ) {
     showDialog<String>(
@@ -377,14 +377,14 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
               }
               description = description.toUpperCase();
 
-              AlbumModel albumModel = AlbumModel(
+              PhotoViewModel photoViewModel = PhotoViewModel(
                 id: idAlbum,
                 description: description,
                 place: place,
                 date: date,
                 image: imageParse,
               );
-              _widgetList.add(albumModel);
+              _widgetList.add(photoViewModel);
             });
           }).catchError((error) {});
         }
@@ -454,7 +454,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
               controller: ScrollController(keepScrollOffset: false),
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
-              children: _widgetList.map((AlbumModel value) {
+              children: _widgetList.map((PhotoViewModel value) {
                 String titleParse = '${value.id} - ${value.description}';
                 return Container(
                   color: Colors.black26,

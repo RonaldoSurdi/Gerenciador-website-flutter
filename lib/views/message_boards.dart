@@ -25,6 +25,12 @@ class _MessageBoardsState extends State<MessageBoards> {
   String? _messageValue;
   DateTime? _dataValue;
   bool? _viewValue = true;
+  bool _viewFilter = true;
+
+  _viewChange() {
+    _viewFilter = _viewFilter;
+    _getData();
+  }
 
   Future<void> _dialogData(
     BuildContext context,
@@ -415,10 +421,20 @@ class _MessageBoardsState extends State<MessageBoards> {
   Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db
-        .collection("messageboards")
-        .orderBy('id', descending: true)
-        .get();
+
+    QuerySnapshot<Map<String, dynamic>> data;
+    if (_viewFilter) {
+      data = await db
+          .collection("messageboards")
+          .orderBy('id', descending: true)
+          .get();
+    } else {
+      data = await db
+          .collection("messageboards")
+          .where("view", isEqualTo: _viewFilter)
+          .orderBy('id', descending: true)
+          .get();
+    }
     setState(() {
       var response = data.docs;
       if (response.isNotEmpty) {
@@ -469,21 +485,14 @@ class _MessageBoardsState extends State<MessageBoards> {
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_circle_outline),
+            icon:
+                Icon(_viewFilter ? Icons.checklist_sharp : Icons.list_outlined),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
-            tooltip: 'Adicionar recado',
+            tooltip: _viewFilter ? 'Exibir todos' : 'Exibir novos',
             onPressed: () {
-              _dialogData(
-                context,
-                0,
-                '',
-                '',
-                Timestamp.now(),
-                '',
-                true,
-              );
+              _viewChange();
             },
           ),
         ],
