@@ -39,6 +39,7 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   AudioPlayer advancedPlayer = AudioPlayer();
 
+  bool _soundActive = false;
   String _soundPlaing = '';
   String _nextTrack = '';
 
@@ -49,11 +50,7 @@ class _DiscSoundsState extends State<DiscSounds> {
     }
 
     int result = await advancedPlayer.play(_widgetList[currentIndex].audio!);
-    if (result == 1) {
-      print('Success: is playing');
-    } else {
-      print('Error on audio play');
-    }
+    _soundActive = (result == 1);
     _soundPlaing = _widgetList[currentIndex].audio!;
 
     /*await advancedPlayer.play(
@@ -67,12 +64,15 @@ class _DiscSoundsState extends State<DiscSounds> {
   }
 
   Future _stopSound() async {
-    await advancedPlayer.stop();
-    _soundPlaing = '';
+    if (_soundActive) {
+      _soundActive = false;
+      await advancedPlayer.stop();
+      _soundPlaing = '';
+    }
   }
 
   // seleciona a música do computador
-  Future _selectSound(idSound) async {
+  Future _selectSound(idSound, _audioOriginalValue) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['mp3'],
@@ -113,6 +113,187 @@ class _DiscSoundsState extends State<DiscSounds> {
         });
       });
     }
+
+    return Future.value(true);
+  }
+
+  Future<void> _dialogAudio(
+    BuildContext context,
+    itemId,
+    itemAudio,
+  ) async {
+    String audioOriginal = '';
+    bool newAudio = (itemAudio != '');
+    bool externalLink = false;
+    int audioType = 0;
+    if (newAudio) {
+      externalLink =
+          (itemAudio.contains("https://") || itemAudio.contains("http://"));
+      if (externalLink) {
+        audioType = 0;
+      } else {
+        audioType = 1;
+        audioOriginal = itemAudio
+            .replaceAll(
+                'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/discs%2F${widget.itemId}%2F',
+                '')
+            .replaceAll('?alt=media', '');
+      }
+    }
+    _audioController.text = itemAudio;
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (builder, setState) => AlertDialog(
+            title: const Text('Adicionar áudio'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Selecione o método:',
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Radio(
+                      value: 0,
+                      groupValue: audioType,
+                      onChanged: (value) {
+                        setState(() {
+                          audioType = value as int;
+                        });
+                      },
+                    ),
+                    const Text(
+                      'Link url externo',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14.0,
+                        fontFamily: 'WorkSansMedium',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Radio(
+                      value: 1,
+                      groupValue: audioType,
+                      onChanged: (value) {
+                        setState(() {
+                          audioType = value as int;
+                        });
+                      },
+                    ),
+                    const Text(
+                      'Enviar para storage',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14.0,
+                        fontFamily: 'WorkSansMedium',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    (newAudio && !externalLink)
+                        ? 'Existe um áudio importado em seu storage, exte processo eliminará o arquivo.'
+                        : 'Selecione o arquivo de áudio no formato mp3.',
+                    style: TextStyle(
+                      color: (newAudio && !externalLink)
+                          ? Colors.red
+                          : Colors.black,
+                      fontSize: 14.0,
+                      fontFamily: 'WorkSansMedium',
+                    ),
+                  ),
+                ),
+                (audioType == 0)
+                    ? TextField(
+                        autofocus: true,
+                        controller: _audioController,
+                        maxLength: 255,
+                        decoration: const InputDecoration(
+                          hintText: "https://domnio.com/sound/1/1.mp3",
+                        ),
+                      )
+                    : Container(
+                        height: 1.0,
+                        color: Colors.transparent,
+                      ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  alignment: Alignment.center,
+                ),
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (audioType == 0) {
+                    String linkAudio = _audioController.text;
+                    if (linkAudio.isEmpty ||
+                        (!linkAudio.contains("https://") &&
+                            !linkAudio.contains("http://"))) {
+                      CustomSnackBar(
+                          context, const Text('Digite a url do áudio mp3.'),
+                          backgroundColor: Colors.red);
+                    } else {
+                      _updateAudioData(
+                        itemId,
+                        linkAudio,
+                        audioOriginal,
+                      ).then(
+                        (value) => {
+                          if (value) {Navigator.pop(context)}
+                        },
+                      );
+                    }
+                  } else {
+                    _selectSound(itemId, audioOriginal).then(
+                      (value) => {
+                        if (value) {Navigator.pop(context)}
+                      },
+                    );
+                  }
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  backgroundColor: Colors.green,
+                  alignment: Alignment.center,
+                ),
+                child: Text(
+                  (audioType == 0) ? 'Gravar link' : 'Importar arquivo mp3',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _dialogData(
@@ -121,7 +302,6 @@ class _DiscSoundsState extends State<DiscSounds> {
     itemTitle,
     itemMovie,
     itemLyric,
-    itemAudio,
     itemCipher,
     itemInfo,
   ) async {
@@ -133,7 +313,6 @@ class _DiscSoundsState extends State<DiscSounds> {
     _titleController.text = itemTitle;
     _movieController.text = itemMovie;
     _lyricController.text = itemLyric;
-    _audioController.text = itemAudio;
     _cipherController.text = itemCipher;
     _infoController.text = itemInfo;
     return showDialog(
@@ -176,14 +355,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                   maxLength: 200,
                   decoration: const InputDecoration(
                     hintText: "Url Youtube (opcional)",
-                  ),
-                ),
-                TextField(
-                  autofocus: true,
-                  controller: _audioController,
-                  maxLength: 200,
-                  decoration: const InputDecoration(
-                    hintText: "Url MP3 (opcional)",
                   ),
                 ),
                 TextField(
@@ -244,7 +415,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                           _titleController.text,
                           _movieController.text,
                           _lyricController.text,
-                          _audioController.text,
                           _cipherController.text,
                           _infoController.text);
                     } else {
@@ -253,7 +423,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                           _titleController.text,
                           _movieController.text,
                           _lyricController.text,
-                          _audioController.text,
                           _cipherController.text,
                           _infoController.text);
                     }
@@ -286,7 +455,6 @@ class _DiscSoundsState extends State<DiscSounds> {
     String _titleValue,
     String _movieValue,
     String _lyricValue,
-    String _audioValue,
     String _cipherValue,
     String _infoValue,
   ) async {
@@ -304,7 +472,7 @@ class _DiscSoundsState extends State<DiscSounds> {
       movie: _movieValue,
       lyric: _lyricValue,
       cipher: _cipherValue,
-      audio: _audioValue,
+      audio: '',
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -329,7 +497,6 @@ class _DiscSoundsState extends State<DiscSounds> {
     String _titleValue,
     String _movieValue,
     String _lyricValue,
-    String _audioValue,
     String _cipherValue,
     String _infoValue,
   ) async {
@@ -352,8 +519,44 @@ class _DiscSoundsState extends State<DiscSounds> {
       "movie": _movieValue,
       "lyric": _lyricValue,
       "cipher": _cipherValue,
+    });
+
+    setState(() {
+      Timer(const Duration(milliseconds: 500), () {
+        _getData();
+      });
+    });
+
+    return Future.value(true);
+  }
+
+  Future _updateAudioData(
+    num _trackValue,
+    String _audioValue,
+    String _audioOriginalValue,
+  ) async {
+    EasyLoading.showInfo(
+      'atualizando dados...',
+      maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
+    );
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db
+        .collection("discs")
+        .doc(widget.itemId)
+        .collection("sounds")
+        .doc(_trackValue.toString().padLeft(5, '0'))
+        .update({
       "audio": _audioValue,
     });
+
+    if (_audioOriginalValue.isNotEmpty) {
+      await firebase_storage.FirebaseStorage.instance
+          .ref("discs/${widget.itemId}/$_audioOriginalValue")
+          .delete();
+    }
 
     setState(() {
       Timer(const Duration(milliseconds: 500), () {
@@ -426,8 +629,7 @@ class _DiscSoundsState extends State<DiscSounds> {
           .delete();
 
       await firebase_storage.FirebaseStorage.instance
-          .ref("discs/${widget.itemId}")
-          .child(itemFile)
+          .ref("discs/${widget.itemId}/$itemFile")
           .delete();
     }
 
@@ -526,7 +728,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                 '',
                 '',
                 '',
-                '',
               );
             },
           ),
@@ -579,12 +780,12 @@ class _DiscSoundsState extends State<DiscSounds> {
                             heroTag: "remove_${value.track}",
                             mini: false,
                             tooltip: value.audio!.isEmpty
-                                ? 'Enviar áudio'
+                                ? 'Nenhum áudio importado'
                                 : (_soundPlaing != value.audio)
                                     ? 'Reproduzir áudio'
                                     : 'Parar áudio',
                             child: Icon(value.audio!.isEmpty
-                                ? Icons.upload
+                                ? Icons.play_disabled_sharp
                                 : (_soundPlaing != value.audio)
                                     ? Icons.play_arrow
                                     : Icons.pause),
@@ -595,7 +796,11 @@ class _DiscSoundsState extends State<DiscSounds> {
                                 : Colors.green,
                             onPressed: () => value.audio!.isEmpty
                                 ? setState(() {
-                                    _selectSound(value.track);
+                                    _dialogAudio(
+                                      context,
+                                      value.track,
+                                      value.audio,
+                                    );
                                   })
                                 : (_soundPlaing != value.audio)
                                     ? setState(() {
@@ -611,6 +816,38 @@ class _DiscSoundsState extends State<DiscSounds> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            tooltip: value.audio!.isEmpty
+                                ? 'Enviar arquivo mp3'
+                                : 'Atualizar arquivo mp3',
+                            icon: Icon(value.audio!.isEmpty
+                                ? Icons.music_off
+                                : Icons.music_note),
+                            color: Colors.blueAccent,
+                            onPressed: () => setState(() {
+                              _dialogAudio(
+                                context,
+                                value.track,
+                                value.audio,
+                              );
+                            }),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'ÁUDIO MP3',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
                             tooltip: 'Editar dados',
                             icon: const Icon(Icons.edit),
                             color: Colors.blue,
@@ -620,7 +857,6 @@ class _DiscSoundsState extends State<DiscSounds> {
                               value.title,
                               value.movie,
                               value.lyric,
-                              value.audio,
                               value.cipher,
                               value.info,
                             ),

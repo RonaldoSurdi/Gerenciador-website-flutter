@@ -45,12 +45,12 @@ class _DiscAlbumsState extends State<DiscAlbums> {
 
   Future _selectFile(idDisc) async {
     try {
-      final image = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        maxHeight: 1600,
-        maxWidth: 1080,
-        imageQuality: 90,
-      );
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      /*
+      maxHeight: 1600,
+      maxWidth: 1080,
+      imageQuality: 90,
+      */
 
       if (image != null) {
         setState(() {
@@ -74,8 +74,6 @@ class _DiscAlbumsState extends State<DiscAlbums> {
     String fileName = _imageFileList![0].name;
     String? filePut;
     String filePath = _imageFileList![0].path;
-
-    File test = File(filePath);
 
     if (fileName.contains('.jpg') || fileName.contains('.jpeg')) {
       filePut = 'image.jpg';
@@ -451,19 +449,9 @@ class _DiscAlbumsState extends State<DiscAlbums> {
         .delete();
 
     if (itemImage.isNotEmpty && itemImage != 'images%2Fdefault.jpg') {
-      firebase_storage.Reference arquive = firebase_storage
-          .FirebaseStorage.instance
-          .ref()
-          .child("discs")
-          .child(itemId.toString().padLeft(5, '0'));
-
-      await arquive
-          .listAll()
-          .then((firebase_storage.ListResult listResult) async {
-        if (listResult.items.isNotEmpty) {
-          await arquive.delete();
-        }
-      });
+      await firebase_storage.FirebaseStorage.instance
+          .ref("discs/${itemId.toString().padLeft(5, '0')}")
+          .delete();
     }
 
     closeLoading();
