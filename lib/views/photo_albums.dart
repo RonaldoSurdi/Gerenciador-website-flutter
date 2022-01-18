@@ -39,87 +39,104 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Adicionar álbum de fotos'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                autofocus: true,
-                controller: _descriptionController,
-                maxLength: 250,
-                decoration: const InputDecoration(
-                  hintText: "Descrição",
+        return StatefulBuilder(
+          builder: (builder, setState) => AlertDialog(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            title: const Text('Adicionar álbum de fotos'),
+            content: Builder(
+              builder: (context) {
+                var width = MediaQuery.of(context).size.width;
+                if (width > 500) {
+                  width = 500;
+                } else {
+                  width = width - 10;
+                }
+                return SizedBox(
+                  width: width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        autofocus: true,
+                        controller: _descriptionController,
+                        maxLength: 250,
+                        decoration: const InputDecoration(
+                          hintText: "Descrição",
+                        ),
+                      ),
+                      TextField(
+                        autofocus: true,
+                        controller: _placeController,
+                        maxLength: 100,
+                        decoration: const InputDecoration(
+                          hintText: "Cidade / UF",
+                        ),
+                      ),
+                      TextField(
+                        autofocus: true,
+                        controller: _dateController,
+                        maxLength: 10,
+                        decoration: const InputDecoration(
+                          hintText: "DD/MM/AAAA",
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                  alignment: Alignment.center,
+                ),
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
                 ),
               ),
-              TextField(
-                autofocus: true,
-                controller: _placeController,
-                maxLength: 100,
-                decoration: const InputDecoration(
-                  hintText: "Cidade / UF",
+              TextButton(
+                onPressed: () {
+                  if (itemId == 0) {
+                    _saveData(
+                      _descriptionController.text,
+                      _placeController.text,
+                      _dateController.text,
+                    );
+                  } else {
+                    _updateData(
+                      itemId,
+                      _descriptionController.text,
+                      _placeController.text,
+                      _dateController.text,
+                    );
+                  }
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+                  backgroundColor: Colors.green,
+                  alignment: Alignment.center,
                 ),
-              ),
-              TextField(
-                autofocus: true,
-                controller: _dateController,
-                maxLength: 10,
-                decoration: const InputDecoration(
-                  hintText: "DD/MM/AAAA",
+                child: const Text(
+                  'Salvar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontFamily: 'WorkSansMedium',
+                  ),
                 ),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                alignment: Alignment.center,
-              ),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
-                  fontFamily: 'WorkSansMedium',
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if (itemId == 0) {
-                  _saveData(
-                    _descriptionController.text,
-                    _placeController.text,
-                    _dateController.text,
-                  );
-                } else {
-                  _updateData(
-                    itemId,
-                    _descriptionController.text,
-                    _placeController.text,
-                    _dateController.text,
-                  );
-                }
-                Navigator.pop(context);
-              },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-                backgroundColor: Colors.green,
-                alignment: Alignment.center,
-              ),
-              child: const Text(
-                'Salvar',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16.0,
-                  fontFamily: 'WorkSansMedium',
-                ),
-              ),
-            ),
-          ],
         );
       },
     );
@@ -413,7 +430,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_circle_outline_outlined),
+            icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,

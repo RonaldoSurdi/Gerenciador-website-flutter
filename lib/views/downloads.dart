@@ -337,7 +337,7 @@ class _DownloadsState extends State<Downloads> {
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
-            icon: const Icon(Icons.cloud_upload_rounded),
+            icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,

@@ -5,6 +5,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:fwfh_webview/fwfh_webview.dart';
+import 'package:decorated_icon/decorated_icon.dart';
 import 'package:hwscontrol/core/models/video_model.dart';
 import 'package:hwscontrol/core/models/youtube_model.dart';
 import 'package:hwscontrol/core/components/youtube.dart';
@@ -22,25 +25,92 @@ class _VideosState extends State<Videos> {
 
   final List<VideoModel> _widgetList = [];
 
+  _dialogUrl(idVideo, titleVideo) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (builder, setState) => AlertDialog(
+            insetPadding: const EdgeInsets.all(0),
+            elevation: 10,
+            titlePadding: const EdgeInsets.fromLTRB(10, 14, 10, 0),
+            contentPadding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+            backgroundColor: Colors.black87,
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            title: Stack(
+              children: [
+                Text(
+                  titleVideo,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 15.0,
+                    fontFamily: 'WorkSansLigth',
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(0),
+                    child: SizedBox(
+                      height: 20.0,
+                      width: 25.0,
+                      child: FloatingActionButton(
+                        heroTag: 'view_video',
+                        mini: true,
+                        tooltip: 'Fechar janela',
+                        child: const DecoratedIcon(
+                          Icons.close,
+                          color: Colors.grey,
+                          size: 20.0,
+                          shadows: [
+                            BoxShadow(
+                              color: Colors.black54,
+                              offset: Offset(2.0, 2.0),
+                            ),
+                          ],
+                        ),
+                        elevation: 0,
+                        disabledElevation: 0,
+                        highlightElevation: 0,
+                        focusElevation: 0,
+                        hoverElevation: 0,
+                        backgroundColor: Colors.transparent,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Builder(
+              builder: (context) {
+                //var height = MediaQuery.of(context).size.height;
+                var width = MediaQuery.of(context).size.width;
+                return SizedBox(
+                  width: width - 100,
+                  child: HtmlWidget(
+                    '<iframe src="https://www.youtube.com/embed/$idVideo?autoplay=1" frameborder="0" allowfullscreen></iframe>',
+                    factoryBuilder: () => VideoWidgetFactory(),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _dialogData(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (builder, setState) => AlertDialog(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
             title: const Text('Adicionar vídeo Youtube'),
-            content: TextField(
-              autofocus: true,
-              onChanged: (value) {
-                setState(() {
-                  _watchValue = value;
-                });
-              },
-              controller: _watchController,
-              maxLength: 200,
-              decoration: const InputDecoration(
-                  hintText: "Cole o link do vídeo aqui..."),
-            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -77,6 +147,31 @@ class _VideosState extends State<Videos> {
                 ),
               ),
             ],
+            content: Builder(
+              builder: (context) {
+                var width = MediaQuery.of(context).size.width;
+                if (width > 500) {
+                  width = 500;
+                } else {
+                  width = width - 10;
+                }
+                return SizedBox(
+                  width: width,
+                  child: TextField(
+                    autofocus: true,
+                    onChanged: (value) {
+                      setState(() {
+                        _watchValue = value;
+                      });
+                    },
+                    controller: _watchController,
+                    maxLength: 200,
+                    decoration: const InputDecoration(
+                        hintText: "Cole o link do vídeo aqui..."),
+                  ),
+                );
+              },
+            ),
           ),
         );
       },
@@ -253,6 +348,7 @@ class _VideosState extends State<Videos> {
   @override
   void initState() {
     super.initState();
+    // if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     _getData();
   }
 
@@ -269,7 +365,7 @@ class _VideosState extends State<Videos> {
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
-            icon: const Icon(Icons.move_to_inbox_outlined),
+            icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
@@ -324,15 +420,17 @@ class _VideosState extends State<Videos> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            tooltip: 'Abrir vídeo',
-                            icon: const Icon(Icons.movie_creation),
+                            tooltip: 'Abrir vídeo no Youtube',
+                            icon: const Icon(Icons.movie_outlined),
                             color: Colors.blue,
-                            onPressed: () => _openMovie(value.watch),
+                            onPressed: () =>
+                                _dialogUrl(value.watch, value.title),
+                            //_openMovie(value.watch),
                           ),
                           const Padding(
                             padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: Text(
-                              'YOUTUBE',
+                              'ABRIR VÍDEO',
                               style: TextStyle(
                                 color: Colors.white30,
                                 fontSize: 10.0,
@@ -390,3 +488,5 @@ class _VideosState extends State<Videos> {
     );
   }
 }
+
+class VideoWidgetFactory extends WidgetFactory with WebViewFactory {}

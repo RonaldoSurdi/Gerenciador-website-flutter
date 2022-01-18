@@ -469,7 +469,7 @@ class _MessageBoardsState extends State<MessageBoards> {
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_comment),
+            icon: const Icon(Icons.add_circle_outline),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
