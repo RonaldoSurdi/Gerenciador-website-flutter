@@ -40,16 +40,30 @@ class _DiscSoundsState extends State<DiscSounds> {
   AudioPlayer advancedPlayer = AudioPlayer();
 
   String _soundPlaing = '';
+  String _nextTrack = '';
 
-  Future _playSound(uriSound) async {
+  Future _playSound(int curIndex) async {
+    int currentIndex = curIndex - 1;
     if (_soundPlaing.isNotEmpty) {
       await advancedPlayer.stop();
     }
-    await advancedPlayer.play(
+
+    int result = await advancedPlayer.play(_widgetList[currentIndex].audio!);
+    if (result == 1) {
+      print('Success: is playing');
+    } else {
+      print('Error on audio play');
+    }
+    _soundPlaing = _widgetList[currentIndex].audio!;
+
+    /*await advancedPlayer.play(
       uriSound,
       isLocal: false,
-    );
-    _soundPlaing = uriSound;
+    );*/
+  }
+
+  void nextTrack(int currentIndex) {
+    _playSound(currentIndex);
   }
 
   Future _stopSound() async {
@@ -68,6 +82,8 @@ class _DiscSoundsState extends State<DiscSounds> {
       EasyLoading.showInfo(
         'enviando arquivo...',
         maskType: EasyLoadingMaskType.custom,
+        dismissOnTap: false,
+        duration: const Duration(seconds: 10),
       );
 
       Uint8List? fileBytes = result.files.first.bytes;
@@ -92,14 +108,34 @@ class _DiscSoundsState extends State<DiscSounds> {
       });
 
       setState(() {
-        Timer(const Duration(milliseconds: 1500), () {
+        Timer(const Duration(milliseconds: 500), () {
           _getData();
         });
       });
     }
   }
 
-  Future<void> _addNewSound(BuildContext context) async {
+  Future<void> _dialogData(
+    BuildContext context,
+    itemId,
+    itemTitle,
+    itemMovie,
+    itemLyric,
+    itemAudio,
+    itemCipher,
+    itemInfo,
+  ) async {
+    if (itemId == 0) {
+      _trackController.text = _nextTrack;
+    } else {
+      _trackController.text = itemId.toString();
+    }
+    _titleController.text = itemTitle;
+    _movieController.text = itemMovie;
+    _lyricController.text = itemLyric;
+    _audioController.text = itemAudio;
+    _cipherController.text = itemCipher;
+    _infoController.text = itemInfo;
     return showDialog(
       context: context,
       builder: (context) {
@@ -111,6 +147,14 @@ class _DiscSoundsState extends State<DiscSounds> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  autofocus: (itemId == 0),
+                  enableInteractiveSelection: (itemId == 0),
+                  readOnly: (itemId > 0),
+                  onTap: () {
+                    if (itemId > 0) {
+                      FocusScope.of(context).nextFocus();
+                    }
+                  },
                   controller: _trackController,
                   keyboardType: TextInputType.number,
                   maxLength: 2,
@@ -119,6 +163,7 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
+                  autofocus: true,
                   controller: _titleController,
                   maxLength: 100,
                   decoration: const InputDecoration(
@@ -126,27 +171,31 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
+                  autofocus: true,
                   controller: _movieController,
                   maxLength: 200,
                   decoration: const InputDecoration(
-                    hintText: "Url Youtube (opcional https://...)",
+                    hintText: "Url Youtube (opcional)",
                   ),
                 ),
                 TextField(
-                  controller: _lyricController,
-                  maxLength: 200,
-                  decoration: const InputDecoration(
-                    hintText: "Url Letra (opcional https://...)",
-                  ),
-                ),
-                TextField(
+                  autofocus: true,
                   controller: _audioController,
                   maxLength: 200,
                   decoration: const InputDecoration(
-                    hintText: "Url MP3 (opcional https://...)",
+                    hintText: "Url MP3 (opcional)",
                   ),
                 ),
                 TextField(
+                  autofocus: true,
+                  controller: _lyricController,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    hintText: "Letra (opcional)",
+                  ),
+                ),
+                TextField(
+                  autofocus: true,
                   controller: _cipherController,
                   maxLines: 5,
                   decoration: const InputDecoration(
@@ -154,6 +203,7 @@ class _DiscSoundsState extends State<DiscSounds> {
                   ),
                 ),
                 TextField(
+                  autofocus: true,
                   controller: _infoController,
                   maxLines: 3,
                   decoration:
@@ -188,14 +238,25 @@ class _DiscSoundsState extends State<DiscSounds> {
                         context, const Text('Digite o título do álbum.'),
                         backgroundColor: Colors.red);
                   } else {
-                    _saveData(
-                        num.parse(_trackController.text),
-                        _titleController.text,
-                        _movieController.text,
-                        _lyricController.text,
-                        _audioController.text,
-                        _cipherController.text,
-                        _infoController.text);
+                    if (itemId == 0) {
+                      _saveData(
+                          num.parse(_trackController.text),
+                          _titleController.text,
+                          _movieController.text,
+                          _lyricController.text,
+                          _audioController.text,
+                          _cipherController.text,
+                          _infoController.text);
+                    } else {
+                      _updateData(
+                          num.parse(_trackController.text),
+                          _titleController.text,
+                          _movieController.text,
+                          _lyricController.text,
+                          _audioController.text,
+                          _cipherController.text,
+                          _infoController.text);
+                    }
                     Navigator.pop(context);
                   }
                 },
@@ -220,7 +281,6 @@ class _DiscSoundsState extends State<DiscSounds> {
     );
   }
 
-  // faz o envio da imagem para o storage
   Future _saveData(
     num _trackValue,
     String _titleValue,
@@ -233,6 +293,8 @@ class _DiscSoundsState extends State<DiscSounds> {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     SoundModel soundModel = SoundModel(
@@ -254,12 +316,99 @@ class _DiscSoundsState extends State<DiscSounds> {
         .set(soundModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
 
     return Future.value(true);
+  }
+
+  Future _updateData(
+    num _trackValue,
+    String _titleValue,
+    String _movieValue,
+    String _lyricValue,
+    String _audioValue,
+    String _cipherValue,
+    String _infoValue,
+  ) async {
+    EasyLoading.showInfo(
+      'atualizando dados...',
+      maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
+    );
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db
+        .collection("discs")
+        .doc(widget.itemId)
+        .collection("sounds")
+        .doc(_trackValue.toString().padLeft(5, '0'))
+        .update({
+      "title": _titleValue,
+      "info": _infoValue,
+      "movie": _movieValue,
+      "lyric": _lyricValue,
+      "cipher": _cipherValue,
+      "audio": _audioValue,
+    });
+
+    setState(() {
+      Timer(const Duration(milliseconds: 500), () {
+        _getData();
+      });
+    });
+
+    return Future.value(true);
+  }
+
+  _dialogDelete(SoundModel value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover música'),
+        content: Text(
+            'Tem certeza que deseja remover a música\n${value.track.toString().padLeft(2, '0')} - ${value.title}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeData(value.track, value.audio);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future _removeData(itemId, itemFile) async {
@@ -301,7 +450,7 @@ class _DiscSoundsState extends State<DiscSounds> {
     var response = data.docs;
     setState(() {
       if (response.isNotEmpty) {
-        _trackController.text = (response.length + 1).toString();
+        _nextTrack = (response.length + 1).toString();
         for (int i = 0; i < response.length; i++) {
           String uri = response[i]["audio"].toString().replaceAll('null', '');
           if (!uri.contains("https://") && !uri.contains("http://")) {
@@ -320,20 +469,15 @@ class _DiscSoundsState extends State<DiscSounds> {
           _widgetList.add(soundModel);
         }
       } else {
-        _trackController.text = '1';
+        _nextTrack = '1';
       }
-      _titleController.text = '';
-      _movieController.text = '';
-      _lyricController.text = '';
-      _cipherController.text = '';
-      _infoController.text = '';
       closeLoading();
     });
   }
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -355,7 +499,7 @@ class _DiscSoundsState extends State<DiscSounds> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
     const double itemHeight = 100;
 
@@ -363,7 +507,7 @@ class _DiscSoundsState extends State<DiscSounds> {
       backgroundColor: Colors.black87,
       appBar: AppBar(
         title: Text(
-          '${widget.itemId} - ${widget.itemTitle}',
+          widget.itemTitle,
         ),
         backgroundColor: Colors.black38,
         actions: [
@@ -374,7 +518,16 @@ class _DiscSoundsState extends State<DiscSounds> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar música',
             onPressed: () {
-              _addNewSound(context);
+              _dialogData(
+                context,
+                0,
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+              );
             },
           ),
         ],
@@ -423,6 +576,7 @@ class _DiscSoundsState extends State<DiscSounds> {
                           height: 40.0,
                           width: 40.0,
                           child: FloatingActionButton(
+                            heroTag: "remove_${value.track}",
                             mini: false,
                             tooltip: value.audio!.isEmpty
                                 ? 'Enviar áudio'
@@ -438,14 +592,14 @@ class _DiscSoundsState extends State<DiscSounds> {
                                 ? (_soundPlaing != value.audio)
                                     ? Colors.grey
                                     : Colors.green
-                                : Colors.blue,
+                                : Colors.green,
                             onPressed: () => value.audio!.isEmpty
                                 ? setState(() {
                                     _selectSound(value.track);
                                   })
                                 : (_soundPlaing != value.audio)
                                     ? setState(() {
-                                        _playSound(value.audio);
+                                        _playSound(value.track as int);
                                       })
                                     : setState(() {
                                         _stopSound();
@@ -453,64 +607,58 @@ class _DiscSoundsState extends State<DiscSounds> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: FloatingActionButton(
-                            mini: true,
-                            tooltip: 'Remover música',
-                            child: const Icon(Icons.close),
-                            backgroundColor: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Remover música'),
-                                content: Text(
-                                    'Tem certeza que deseja remover a música\n${value.track.toString().padLeft(2, '0')} - ${value.title}?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 15, 15, 15),
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Cancelar',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _removeData(value.track, value.audio);
-                                      Navigator.pop(context);
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 15, 20, 15),
-                                      backgroundColor: Colors.red,
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Editar dados',
+                            icon: const Icon(Icons.edit),
+                            color: Colors.blue,
+                            onPressed: () => _dialogData(
+                              context,
+                              value.track,
+                              value.title,
+                              value.movie,
+                              value.lyric,
+                              value.audio,
+                              value.cipher,
+                              value.info,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EDITAR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Remover música',
+                            icon: const Icon(Icons.delete_forever),
+                            color: Colors.grey.shade300,
+                            onPressed: () => _dialogDelete(value),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EXCLUIR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

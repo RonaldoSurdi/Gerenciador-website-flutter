@@ -47,7 +47,7 @@ class _ScheduleState extends State<Schedule> {
     };
   }
 
-  Future<void> _addNew(
+  Future<void> _dialogData(
     BuildContext context,
     itemId,
     itemTitle,
@@ -84,6 +84,7 @@ class _ScheduleState extends State<Schedule> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  autofocus: true,
                   onChanged: (value) {
                     setState(() {
                       _titleValue = value;
@@ -144,6 +145,7 @@ class _ScheduleState extends State<Schedule> {
                   ],
                 ),
                 TextField(
+                  autofocus: true,
                   onChanged: (value) {
                     setState(() {
                       _placeValue = value;
@@ -330,10 +332,11 @@ class _ScheduleState extends State<Schedule> {
                       _descriptionValue,
                       _dataIniValue,
                       _dataEndValue,
-                    ).then((value) => {
-                          if (value) {Navigator.pop(context)}
-                        });
-                    ;
+                    ).then(
+                      (value) => {
+                        if (value) {Navigator.pop(context)}
+                      },
+                    );
                   } else {
                     _updateData(
                       itemId,
@@ -342,10 +345,11 @@ class _ScheduleState extends State<Schedule> {
                       _descriptionValue,
                       _dataIniValue,
                       _dataEndValue,
-                    ).then((value) => {
-                          if (value) {Navigator.pop(context)}
-                        });
-                    ;
+                    ).then(
+                      (value) => {
+                        if (value) {Navigator.pop(context)}
+                      },
+                    );
                   }
                 },
                 style: TextButton.styleFrom(
@@ -387,6 +391,8 @@ class _ScheduleState extends State<Schedule> {
       EasyLoading.showInfo(
         'gravando dados...',
         maskType: EasyLoadingMaskType.custom,
+        dismissOnTap: false,
+        duration: const Duration(seconds: 10),
       );
 
       String dateNow = DateFormat('yyyyMMddkkmmss').format(_dataIniValue);
@@ -406,7 +412,7 @@ class _ScheduleState extends State<Schedule> {
       await db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
 
       setState(() {
-        Timer(const Duration(milliseconds: 1500), () {
+        Timer(const Duration(milliseconds: 500), () {
           _getData();
         });
       });
@@ -437,6 +443,8 @@ class _ScheduleState extends State<Schedule> {
       EasyLoading.showInfo(
         'atualizando dados...',
         maskType: EasyLoadingMaskType.custom,
+        dismissOnTap: false,
+        duration: const Duration(seconds: 10),
       );
 
       Timestamp _dataIniTimestamp = Timestamp.fromDate(_dataIniValue);
@@ -454,7 +462,7 @@ class _ScheduleState extends State<Schedule> {
       });
 
       setState(() {
-        Timer(const Duration(milliseconds: 1500), () {
+        Timer(const Duration(milliseconds: 500), () {
           _getData();
         });
       });
@@ -466,10 +474,58 @@ class _ScheduleState extends State<Schedule> {
     return Future.value(validate);
   }
 
+  _dialogDelete(ScheduleModel value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover data'),
+        content: Text('Tem certeza que deseja remover a data\n${value.title}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeData(value.id);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future _removeData(idSchedule) async {
     EasyLoading.showInfo(
       'removendo data...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -487,7 +543,14 @@ class _ScheduleState extends State<Schedule> {
   Future _getData() async {
     _widgetList.clear();
     FirebaseFirestore db = FirebaseFirestore.instance;
-    var data = await db.collection("schedule").orderBy('id').get();
+
+    DateTime now = DateTime.now();
+    String dateFilter = DateFormat('yyyyMMddkkmmss').format(now);
+    var data = await db
+        .collection("schedule")
+        .where("id", isGreaterThanOrEqualTo: dateFilter)
+        .orderBy('id')
+        .get();
     setState(() {
       var response = data.docs;
       if (response.isNotEmpty) {
@@ -509,7 +572,7 @@ class _ScheduleState extends State<Schedule> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -528,7 +591,7 @@ class _ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
     const double itemHeight = 100;
 
@@ -545,7 +608,7 @@ class _ScheduleState extends State<Schedule> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar data',
             onPressed: () {
-              _addNew(
+              _dialogData(
                 context,
                 '0',
                 '',
@@ -625,17 +688,14 @@ class _ScheduleState extends State<Schedule> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: SizedBox(
-                          height: 40.0,
-                          width: 40.0,
-                          child: FloatingActionButton(
-                            mini: false,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
                             tooltip: 'Editar dados',
-                            child: const Icon(Icons.edit),
-                            backgroundColor: Colors.blue,
-                            onPressed: () => _addNew(
+                            icon: const Icon(Icons.edit),
+                            color: Colors.blue,
+                            onPressed: () => _dialogData(
                               context,
                               value.id,
                               value.title,
@@ -646,66 +706,40 @@ class _ScheduleState extends State<Schedule> {
                               value.dateend,
                             ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 15, 15, 5),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: FloatingActionButton(
-                            mini: true,
-                            tooltip: 'Remover data',
-                            child: const Icon(Icons.close),
-                            backgroundColor: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Remover data'),
-                                content: Text(
-                                    'Tem certeza que deseja remover a data\n${value.title}?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 15, 15, 15),
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Cancelar',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _removeData(value.id);
-                                      Navigator.pop(context);
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 15, 20, 15),
-                                      backgroundColor: Colors.red,
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EDITAR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Remover data',
+                            icon: const Icon(Icons.delete_forever),
+                            color: Colors.grey.shade300,
+                            onPressed: () => _dialogDelete(value),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EXCLUIR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

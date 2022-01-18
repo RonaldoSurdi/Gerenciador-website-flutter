@@ -178,7 +178,7 @@ class _LoginPasswordState extends State<LoginPassword> {
                     padding:
                         EdgeInsets.symmetric(vertical: 10.0, horizontal: 42.0),
                     child: Text(
-                      'ENVIAR',
+                      'Enviar email',
                       style: TextStyle(
                         color: Colors.yellow,
                         fontSize: 25.0,

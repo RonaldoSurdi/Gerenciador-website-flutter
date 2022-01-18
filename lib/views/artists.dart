@@ -47,6 +47,8 @@ class _ArtistsState extends State<Artists> {
     EasyLoading.showInfo(
       'enviando imagem...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     String fileName = _imageFileList![0].name;
@@ -91,7 +93,7 @@ class _ArtistsState extends State<Artists> {
     });
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -99,7 +101,8 @@ class _ArtistsState extends State<Artists> {
     return Future.value(uploadTask);
   }
 
-  Future<void> _addNew(BuildContext context, itemId, itemName, itemInfo) async {
+  Future<void> _dialogData(
+      BuildContext context, itemId, itemName, itemInfo) async {
     _nameController.text = itemName;
     _infoController.text = itemInfo;
     return showDialog(
@@ -114,17 +117,19 @@ class _ArtistsState extends State<Artists> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  autofocus: true,
                   controller: _nameController,
                   maxLength: 100,
                   decoration: const InputDecoration(
-                    hintText: "Nome",
+                    hintText: "Nome completo",
                   ),
                 ),
                 TextField(
+                  autofocus: true,
                   controller: _infoController,
                   maxLines: 5,
                   decoration:
-                      const InputDecoration(hintText: "Informações (opcional)"),
+                      const InputDecoration(hintText: "Perfil (opcional)"),
                 ),
               ],
             ),
@@ -188,6 +193,8 @@ class _ArtistsState extends State<Artists> {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     DateTime now = DateTime.now();
@@ -204,7 +211,7 @@ class _ArtistsState extends State<Artists> {
     await db.collection("artists").doc(dateNow).set(artistModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -220,6 +227,8 @@ class _ArtistsState extends State<Artists> {
     EasyLoading.showInfo(
       'atualizando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -229,12 +238,59 @@ class _ArtistsState extends State<Artists> {
     });
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
 
     return Future.value(true);
+  }
+
+  _dialogDelete(ArtistModel value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover artista'),
+        content:
+            Text('Tem certeza que deseja remover o artista\n${value.name}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeData(value.id!, value.image!);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future _removeData([String itemId = '', String itemImage = '']) async {
@@ -262,7 +318,7 @@ class _ArtistsState extends State<Artists> {
     }
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -299,7 +355,7 @@ class _ArtistsState extends State<Artists> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -318,7 +374,7 @@ class _ArtistsState extends State<Artists> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
     const double itemHeight = 100;
 
@@ -335,7 +391,7 @@ class _ArtistsState extends State<Artists> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar artista',
             onPressed: () {
-              _addNew(context, 0, '', '');
+              _dialogData(context, 0, '', '');
             },
           ),
         ],
@@ -380,97 +436,76 @@ class _ArtistsState extends State<Artists> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: SizedBox(
-                          height: 40.0,
-                          width: 40.0,
-                          child: FloatingActionButton(
-                            mini: false,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
                             tooltip: 'Adicionar imagem',
-                            child: const Icon(Icons.add_a_photo),
-                            backgroundColor: Colors.green,
+                            icon: const Icon(Icons.add_a_photo),
+                            color: Colors.green,
                             onPressed: () => _selectFile(value.id),
                           ),
-                        ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'IMAGEM',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: SizedBox(
-                          height: 40.0,
-                          width: 40.0,
-                          child: FloatingActionButton(
-                            mini: false,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
                             tooltip: 'Editar dados',
-                            child: const Icon(Icons.edit),
-                            backgroundColor: Colors.blue,
-                            onPressed: () => _addNew(
+                            icon: const Icon(Icons.edit),
+                            color: Colors.blue,
+                            onPressed: () => _dialogData(
                               context,
                               value.id,
                               value.name,
                               value.info,
                             ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: FloatingActionButton(
-                            mini: true,
-                            tooltip: 'Remover artista',
-                            child: const Icon(Icons.close),
-                            backgroundColor: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Remover artista'),
-                                content: Text(
-                                    'Tem certeza que deseja remover o artista\n${value.name}?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 15, 15, 15),
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Cancelar',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _removeData(value.id!, value.image!);
-                                      Navigator.pop(context);
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 15, 20, 15),
-                                      backgroundColor: Colors.red,
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EDITAR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Remover artista',
+                            icon: const Icon(Icons.delete_forever),
+                            color: Colors.grey.shade300,
+                            onPressed: () => _dialogDelete(value),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EXCLUIR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

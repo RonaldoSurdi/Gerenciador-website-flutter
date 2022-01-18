@@ -715,16 +715,16 @@ $(document).ready(function () {
 			}
 		} else if (getIdx == 5) {
 			//AGENDA
-			data = await db.collection("schedule").orderBy("id").get();//.where("view", "=", "1")
+			var dateNow = new Date();
+			var dateFilter = `${("0000" + (dateNow.getFullYear())).slice(-4)}${("00" + (dateNow.getMonth() + 1)).slice(-2)}${("00" + dateNow.getDate()).slice(-2)}${("00" + dateNow.getHours()).slice(-2)}${("00" + dateNow.getMinutes()).slice(-2)}00`;
+			data = await db.collection("schedule").where("id", ">=", dateFilter).orderBy("id").get();
 			scheduleData = [];
 			if (data.size > 0) {
 				response = data.docs;
 				for (var z = 0; z < data.size; z++) {
 					res = response[z].data();
 					scheduleData.push(res);
-					// var scheduleId = res.id;
 					var scheduleTitle = res.title;
-					// var scheduleDescription = res.description;
 					var schedulePlace = res.place;
 					var scheduleDateIni = new Date(res.dateini.toDate());
 					var scheduleDateEnd = new Date(res.dateend.toDate());

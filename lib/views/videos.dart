@@ -8,8 +8,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:hwscontrol/core/models/video_model.dart';
 import 'package:hwscontrol/core/models/youtube_model.dart';
 import 'package:hwscontrol/core/components/youtube.dart';
-//import 'package:flutter/services.dart';
-//import 'dart:convert';
 
 class Videos extends StatefulWidget {
   const Videos({Key? key}) : super(key: key);
@@ -24,39 +22,7 @@ class _VideosState extends State<Videos> {
 
   final List<VideoModel> _widgetList = [];
 
-  /*Future _importData(type) async {
-    EasyLoading.showInfo(
-      'importando dados...',
-      maskType: EasyLoadingMaskType.custom,
-    );
-
-    if (type == 1) {
-      String response = await rootBundle.loadString('assets/json/videos.json');
-
-      final dataImport = await json.decode(response);
-      VideoModel videoModel;
-      String? albumId;
-      for (int i = 0; i < dataImport.length; i++) {
-        albumId = dataImport[i][0];
-        videoModel = VideoModel(
-          date: albumId,
-          title: dataImport[i][1],
-          image: dataImport[i][2],
-          watch: dataImport[i][3],
-        );
-        FirebaseFirestore db = FirebaseFirestore.instance;
-        await db.collection("videos").doc(albumId).set(videoModel.toMap());
-      }
-    }
-
-    setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
-        _getData();
-      });
-    });
-  }*/
-
-  Future<void> _addNewVideos(BuildContext context) async {
+  Future<void> _dialogData(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -64,6 +30,7 @@ class _VideosState extends State<Videos> {
           builder: (builder, setState) => AlertDialog(
             title: const Text('Adicionar vídeo Youtube'),
             content: TextField(
+              autofocus: true,
               onChanged: (value) {
                 setState(() {
                   _watchValue = value;
@@ -116,7 +83,6 @@ class _VideosState extends State<Videos> {
     );
   }
 
-  // faz o envio da imagem para o storage
   Future _saveData(_watchText) async {
     String _watchRes = _watchText;
     YoutubeModel? youtubeModel;
@@ -153,6 +119,8 @@ class _VideosState extends State<Videos> {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     DateTime now = DateTime.now();
@@ -165,7 +133,7 @@ class _VideosState extends State<Videos> {
     db.collection("videos").doc(dateNow).set(videoModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -173,10 +141,59 @@ class _VideosState extends State<Videos> {
     return Future.value(true);
   }
 
+  _dialogDelete(VideoModel value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover vídeo'),
+        content:
+            Text('Tem certeza que deseja remover o vídeo\n${value.title}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeData(value.date);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future _removeData(itemId) async {
     EasyLoading.showInfo(
       'removendo video...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     await FirebaseFirestore.instance.collection("videos").doc(itemId).delete();
@@ -222,7 +239,7 @@ class _VideosState extends State<Videos> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -241,7 +258,7 @@ class _VideosState extends State<Videos> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
     const double itemHeight = 100;
 
@@ -251,16 +268,6 @@ class _VideosState extends State<Videos> {
         title: const Text('Vídeos Youtube'),
         backgroundColor: Colors.black38,
         actions: [
-          /*IconButton(
-            icon: const Icon(Icons.upload_file),
-            iconSize: 40,
-            color: Colors.amber,
-            splashColor: Colors.yellow,
-            tooltip: 'Importar JSON',
-            onPressed: () {
-              _importData(1);
-            },
-          ),*/
           IconButton(
             icon: const Icon(Icons.move_to_inbox_outlined),
             iconSize: 40,
@@ -268,7 +275,7 @@ class _VideosState extends State<Videos> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar vídeo',
             onPressed: () {
-              _addNewVideos(context);
+              _dialogData(context);
             },
           ),
         ],
@@ -313,78 +320,49 @@ class _VideosState extends State<Videos> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: SizedBox(
-                          height: 40.0,
-                          width: 40.0,
-                          child: FloatingActionButton(
-                            mini: false,
-                            tooltip: 'Abrir vídeo Youtube',
-                            child: const Icon(Icons.movie_creation),
-                            backgroundColor: Colors.green,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Abrir vídeo',
+                            icon: const Icon(Icons.movie_creation),
+                            color: Colors.blue,
                             onPressed: () => _openMovie(value.watch),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: FloatingActionButton(
-                            mini: true,
-                            tooltip: 'Remover vídeo',
-                            child: const Icon(Icons.close),
-                            backgroundColor: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Remover vídeo'),
-                                content: Text(
-                                    'Tem certeza que deseja remover o vídeo\n${value.title}?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 15, 15, 15),
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Cancelar',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _removeData(value.date);
-                                      Navigator.pop(context);
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 15, 20, 15),
-                                      backgroundColor: Colors.red,
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'YOUTUBE',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Remover vídeo',
+                            icon: const Icon(Icons.delete_forever),
+                            color: Colors.grey.shade300,
+                            onPressed: () => _dialogDelete(value),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EXCLUIR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

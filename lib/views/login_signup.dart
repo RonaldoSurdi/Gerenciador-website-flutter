@@ -31,7 +31,6 @@ class _LoginSignupState extends State<LoginSignup> {
   bool _obscureTextConfirmPassword = true;
 
   _validateFields() {
-    //Recupera dados dos campos
     String name = signupNameController.text;
     String email = signupEmailController.text;
     String senha = signupPasswordController.text;
@@ -87,7 +86,6 @@ class _LoginSignupState extends State<LoginSignup> {
       user!.updateDisplayName(userModel.nome);
       await user.reload();
 
-      //Salvar dados do usuário
       FirebaseFirestore db = FirebaseFirestore.instance;
 
       db.collection("users").doc(firebaseUser.user!.uid).set(userModel.toMap());
@@ -99,15 +97,12 @@ class _LoginSignupState extends State<LoginSignup> {
         ),
       );
     }).catchError((error) {
-      // print("erro app: " + error.toString());
-      // setState(() {
       CustomSnackBar(
         context,
         const Text(
             'Erro ao cadastrar usuário, verifique os campos e tente novamente!'),
         backgroundColor: Colors.red,
       );
-      //});
     });
   }
 
@@ -326,7 +321,7 @@ class _LoginSignupState extends State<LoginSignup> {
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 42),
                     child: Text(
-                      'CADASTRAR',
+                      'Cadastrar',
                       style: TextStyle(
                         color: Colors.yellow,
                         fontSize: 25.0,

@@ -3,13 +3,10 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/views/photo_images.dart';
-import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/album_model.dart';
-import 'package:hwscontrol/core/models/photo_model.dart';
-//import 'package:flutter/services.dart';
-//import 'dart:convert';
+import 'package:hwscontrol/core/models/photo_album_model.dart';
 
 class PhotoAlbums extends StatefulWidget {
   const PhotoAlbums({Key? key}) : super(key: key);
@@ -22,48 +19,23 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _confirmDeleteController =
+      TextEditingController();
+
   late String valueText;
 
   final List<AlbumModel> _widgetList = [];
 
-  /*Future _importData(type) async {
-    EasyLoading.showInfo(
-      'importando dados...',
-      maskType: EasyLoadingMaskType.custom,
-    );
-
-    if (type == 1) {
-      String response =
-          await rootBundle.loadString('assets/json/photo_albums.json');
-
-      final dataImport = await json.decode(response);
-      PhotoModel photoModel;
-      String idItem = '';
-
-      for (int i = 0; i < dataImport.length; i++) {
-        idItem = dataImport[i]["id"];
-        photoModel = PhotoModel(
-          id: idItem,
-          description: dataImport[i]["description"],
-          place: dataImport[i]["place"],
-          date: dataImport[i]["date"],
-        );
-        FirebaseFirestore db = FirebaseFirestore.instance;
-        await db
-            .collection("photos")
-            .doc(idItem)
-            .set(photoModel.toMap());
-      }
-    }
-
-    setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
-        _getData();
-      });
-    });
-  }*/
-
-  Future<void> _addNew(BuildContext context) async {
+  Future<void> _dialogData(
+    BuildContext context,
+    itemId,
+    itemDescription,
+    itemPlace,
+    itemDate,
+  ) async {
+    _descriptionController.text = itemDescription;
+    _placeController.text = itemPlace;
+    _dateController.text = itemDate;
     return showDialog(
       context: context,
       builder: (context) {
@@ -74,6 +46,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                autofocus: true,
                 controller: _descriptionController,
                 maxLength: 250,
                 decoration: const InputDecoration(
@@ -81,6 +54,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
                 ),
               ),
               TextField(
+                autofocus: true,
                 controller: _placeController,
                 maxLength: 100,
                 decoration: const InputDecoration(
@@ -88,6 +62,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
                 ),
               ),
               TextField(
+                autofocus: true,
                 controller: _dateController,
                 maxLength: 10,
                 decoration: const InputDecoration(
@@ -114,8 +89,20 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
             ),
             TextButton(
               onPressed: () {
-                _saveData(_descriptionController.text, _placeController.text,
-                    _dateController.text);
+                if (itemId == 0) {
+                  _saveData(
+                    _descriptionController.text,
+                    _placeController.text,
+                    _dateController.text,
+                  );
+                } else {
+                  _updateData(
+                    itemId,
+                    _descriptionController.text,
+                    _placeController.text,
+                    _dateController.text,
+                  );
+                }
                 Navigator.pop(context);
               },
               style: TextButton.styleFrom(
@@ -138,28 +125,29 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     );
   }
 
-  // faz o envio da imagem para o storage
   Future _saveData(descriptionText, placeText, dataText) async {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
 
-    PhotoModel photoModel = PhotoModel(
-        id: dateNow,
-        description: descriptionText,
-        place: placeText,
-        date: dataText);
+    PhotoAlbumModel photoAlbumModel = PhotoAlbumModel(
+      id: dateNow,
+      description: descriptionText,
+      place: placeText,
+      date: dataText,
+    );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
-    db.collection("photos").doc(dateNow).set(photoModel.toMap());
+    db.collection("photos").doc(dateNow).set(photoAlbumModel.toMap());
 
     setState(() {
-      CustomSnackBar(context, const Text("Álbum criado com sucesso."));
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -167,10 +155,154 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
     return Future.value(true);
   }
 
+  Future _updateData(itemId, descriptionText, placeText, dataText) async {
+    EasyLoading.showInfo(
+      'atualizando dados...',
+      maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
+    );
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    db.collection("photos").doc(itemId).update({
+      "description": descriptionText,
+      "place": placeText,
+      "date": dataText,
+    });
+
+    setState(() {
+      Timer(const Duration(milliseconds: 500), () {
+        _getData();
+      });
+    });
+
+    return Future.value(true);
+  }
+
+  _dialogDelete(
+    String titleParse,
+    AlbumModel value,
+    bool isMob,
+  ) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover álbum'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Tem certeza que deseja remover o álbum?',
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 14.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: !isMob
+                  ? Row(
+                      children: [
+                        const Text(
+                          'Para confirmar é necessário digitar: ',
+                          style: TextStyle(
+                            color: Colors.black45,
+                            fontSize: 12.0,
+                            fontFamily: 'WorkSansMedium',
+                          ),
+                        ),
+                        Text(
+                          titleParse,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 12.0,
+                            fontFamily: 'WorkSansMedium',
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text.rich(
+                      TextSpan(
+                        text: 'Para confirmar é necessário digitar: ',
+                        style: const TextStyle(
+                          color: Colors.black45,
+                          fontSize: 12.0,
+                          fontFamily: 'WorkSansMedium',
+                        ),
+                        children: [
+                          TextSpan(
+                            text: '\n$titleParse',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14.0,
+                              fontFamily: 'WorkSansMedium',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+            TextField(
+              controller: _confirmDeleteController,
+              decoration: InputDecoration(
+                hintText: titleParse,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_confirmDeleteController.text == titleParse) {
+                _removeData(value.id);
+                Navigator.pop(context);
+              }
+              _confirmDeleteController.text = '';
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future _removeData(itemId) async {
     EasyLoading.showInfo(
       'removendo álbum...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     await FirebaseFirestore.instance.collection("photos").doc(itemId).delete();
@@ -210,6 +342,8 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
         for (int i = 0; i < response.length; i++) {
           String idAlbum = response[i]["id"];
           String description = response[i]["description"];
+          String place = response[i]["place"];
+          String date = response[i]["date"];
           firebase_storage.Reference arquive = firebase_storage
               .FirebaseStorage.instance
               .ref()
@@ -217,17 +351,22 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
               .child(idAlbum);
 
           arquive.listAll().then((firebase_storage.ListResult listResult) {
-            String imageParse = 'images%2Fdefault.jpg';
-            if (listResult.items.isNotEmpty) {
-              String imageItem = listResult.items[0].fullPath;
-              imageItem = imageItem.replaceAll('/', '%2F');
-              imageParse = imageItem;
-            }
-            description = description.toUpperCase();
-
-            AlbumModel albumModel = AlbumModel(
-                id: idAlbum, description: description, image: imageParse);
             setState(() {
+              String imageParse = 'images%2Fdefault.jpg';
+              if (listResult.items.isNotEmpty) {
+                String imageItem = listResult.items[0].fullPath;
+                imageItem = imageItem.replaceAll('/', '%2F');
+                imageParse = imageItem;
+              }
+              description = description.toUpperCase();
+
+              AlbumModel albumModel = AlbumModel(
+                id: idAlbum,
+                description: description,
+                place: place,
+                date: date,
+                image: imageParse,
+              );
               _widgetList.add(albumModel);
             });
           }).catchError((error) {});
@@ -242,7 +381,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -261,33 +400,32 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    final double itemWidth = size.width;
-    const double itemHeight = 100;
+    final size = MediaQuery.of(context).size;
+    double itemWidth = size.width;
+    double itemHeight = 100;
+    int itemsPerPage = (size.height / 85.3).round() + 1;
+    bool isMob = (itemWidth <= 640);
+
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: const Text('Galeria de fotos'),
+        title: const Text('Álbum de fotos'),
         backgroundColor: Colors.black38,
         actions: [
-          /*IconButton(
-            icon: const Icon(Icons.upload_file),
-            iconSize: 40,
-            color: Colors.amber,
-            splashColor: Colors.yellow,
-            tooltip: 'Importar JSON álbums',
-            onPressed: () {
-              _importData(1);
-            },
-          ),*/
           IconButton(
-            icon: const Icon(Icons.add_photo_alternate),
+            icon: const Icon(Icons.add_circle_outline_outlined),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
             tooltip: 'Adicionar álbum',
             onPressed: () {
-              _addNew(context);
+              _dialogData(
+                context,
+                0,
+                '',
+                '',
+                '',
+              );
             },
           ),
         ],
@@ -300,6 +438,7 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               children: _widgetList.map((AlbumModel value) {
+                String titleParse = '${value.id} - ${value.description}';
                 return Container(
                   color: Colors.black26,
                   margin: const EdgeInsets.all(1.0),
@@ -333,79 +472,85 @@ class _PhotoAlbumsState extends State<PhotoAlbums> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: SizedBox(
-                          height: 40.0,
-                          width: 40.0,
-                          child: FloatingActionButton(
-                            mini: false,
-                            tooltip: 'Adicionar fotos',
-                            child: const Icon(Icons.add_a_photo),
-                            backgroundColor: Colors.green,
-                            onPressed: () =>
-                                _redirectTo(value.id, value.description),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Fotos do álbum',
+                            icon:
+                                const Icon(Icons.add_photo_alternate_outlined),
+                            color: Colors.amber,
+                            onPressed: () => _redirectTo(
+                              value.id,
+                              value.description,
+                            ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: FloatingActionButton(
-                            mini: true,
-                            tooltip: 'Remover álbum',
-                            child: const Icon(Icons.close),
-                            backgroundColor: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Remover álbum'),
-                                content: Text(
-                                    'Tem certeza que deseja remover o álbum\n${value.description}?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 15, 15, 15),
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Cancelar',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _removeData(value.id);
-                                      Navigator.pop(context);
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 15, 20, 15),
-                                      backgroundColor: Colors.red,
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'FOTOS',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Editar dados',
+                            icon: const Icon(Icons.edit),
+                            color: Colors.blue,
+                            onPressed: () => _dialogData(
+                              context,
+                              value.id,
+                              value.description,
+                              value.place,
+                              value.date,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EDITAR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Remover álbum',
+                            icon: const Icon(Icons.delete_forever),
+                            color: Colors.grey.shade300,
+                            onPressed: () => _dialogDelete(
+                              titleParse,
+                              value,
+                              isMob,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EXCLUIR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

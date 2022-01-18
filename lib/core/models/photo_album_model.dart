@@ -1,10 +1,10 @@
-class PhotoModel {
+class PhotoAlbumModel {
   String? id;
   String? description;
   String? place;
   String? date;
 
-  PhotoModel({this.id, this.description, this.place, this.date});
+  PhotoAlbumModel({this.id, this.description, this.place, this.date});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {

@@ -25,9 +25,6 @@ class _LoginSigninState extends State<LoginSignin> {
   bool _obscureTextPassword = true;
 
   _validateFields() {
-    //Recupera dados dos campos
-    //String email = 'ronaldohws@gmail.com';
-    //String password = '111111';
     String email = _loginEmailController.text;
     String password = _loginPasswordController.text;
 
@@ -45,30 +42,24 @@ class _LoginSigninState extends State<LoginSignin> {
 
         _logarUsuario();
       } else {
-        //setState(() {
         CustomSnackBar(
           context,
           const Text('Preencha a senha!'),
           backgroundColor: Colors.red,
         );
-        //});
       }
     } else {
-      // setState(() {
       CustomSnackBar(
         context,
         const Text('Preencha o E-mail utilizando @'),
         backgroundColor: Colors.red,
       );
-      // });
     }
   }
 
   _logarUsuario() {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    //String email = 'ronaldohws@gmail.com';
-    //String password = '111111';
     String email = _loginEmailController.text;
     String password = _loginPasswordController.text;
 
@@ -87,14 +78,12 @@ class _LoginSigninState extends State<LoginSignin> {
         ),
       );
     }).catchError((error) {
-      // setState(() {
       CustomSnackBar(
         context,
         const Text(
             'Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
         backgroundColor: Colors.red,
       );
-      // });
     });
   }
 
@@ -260,7 +249,7 @@ class _LoginSigninState extends State<LoginSignin> {
                       horizontal: 42.0,
                     ),
                     child: Text(
-                      'CONECTAR',
+                      'Conectar',
                       style: TextStyle(
                         color: Colors.yellow,
                         fontSize: 25.0,

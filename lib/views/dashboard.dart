@@ -25,16 +25,6 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  // settings do app
-  /*_settingsApp() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Settings(),
-      ),
-    );
-  }*/
-
   _openSite() async {
     String url = 'https://www.joaoluizcorrea.com.br';
     if (await canLaunch(url)) {
@@ -53,7 +43,6 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  // desconectar do app
   _logoutApp() async {
     return await showDialog<String>(
       context: context,
@@ -77,8 +66,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           TextButton(
             onPressed: () {
-              _logoutFirebase();
               Navigator.pop(context);
+              _logoutFirebase();
             },
             style: TextButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -100,7 +89,6 @@ class _DashboardState extends State<Dashboard> {
   }
 
   _logoutFirebase() {
-    // Deletar token de acesso
     DeleteAll().deleteAllTokens();
 
     Navigator.pushAndRemoveUntil(
@@ -110,7 +98,6 @@ class _DashboardState extends State<Dashboard> {
         ),
         (route) => false);
 
-    // Disconnect firebase
     FirebaseAuth auth = FirebaseAuth.instance;
 
     auth.signOut().then((value) {
@@ -124,13 +111,11 @@ class _DashboardState extends State<Dashboard> {
         ),
       );
     }).catchError((error) {
-      setState(() {
-        CustomSnackBar(
-            context,
-            const Text(
-                'Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
-            backgroundColor: Colors.red);
-      });
+      CustomSnackBar(
+          context,
+          const Text(
+              'Erro ao autenticar usuário, verifique e-mail e senha e tente novamente!'),
+          backgroundColor: Colors.red);
     });
   }
 
@@ -346,324 +331,325 @@ class _DashboardState extends State<Dashboard> {
           ],
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 40),
-            child: GridView.count(
-              crossAxisCount: gritCol,
-              childAspectRatio: (widthCol / heightCol),
-              //childAspectRatio: 200,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              controller: ScrollController(keepScrollOffset: false),
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              children: [
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.picture_in_picture),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Banners(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Banners',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: GridView.count(
+                crossAxisCount: gritCol,
+                childAspectRatio: (widthCol / heightCol),
+                //childAspectRatio: 200,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                controller: ScrollController(keepScrollOffset: false),
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                children: [
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.picture_in_picture),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Banners(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.info),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Biography(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Biografia',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                      const Text(
+                        'Banners',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.person_outline_outlined),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Artists(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Artistas',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.info),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Biography(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.audiotrack_outlined),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const DiscAlbums(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Discografia',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                      const Text(
+                        'Biografia',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.schedule),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Schedule(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Agenda de Shows',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.person_outline_outlined),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Artists(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.image),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PhotoAlbums(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Fotos Shows',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                      const Text(
+                        'Artistas',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.movie),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Videos(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Vídeos Youtube',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.audiotrack_outlined),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const DiscAlbums(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.cloud_download_rounded),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Downloads(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Downloads',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                      const Text(
+                        'Discografia',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.list_alt_outlined),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MessageBoards(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Mural de Recados',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.schedule),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Schedule(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.add_to_home_screen_outlined),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: _openSite,
-                    ),
-                    const Text(
-                      'Abrir Site',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                      const Text(
+                        'Agenda de Shows',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.settings_suggest),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Settings(),
-                          ),
-                        );
-                      },
-                    ),
-                    const Text(
-                      'Configurações',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.image),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PhotoAlbums(),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.logout),
-                      color: Colors.amber,
-                      iconSize: 48,
-                      //tooltip: '',
-                      onPressed: _logoutApp,
-                    ),
-                    const Text(
-                      'Desconectar',
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16.0,
-                        fontFamily: 'WorkSansLigth',
+                      const Text(
+                        'Fotos Shows',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ), /*
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.movie),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Videos(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Text(
+                        'Vídeos Youtube',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.cloud_download_rounded),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Downloads(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Text(
+                        'Downloads',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.list_alt_outlined),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MessageBoards(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Text(
+                        'Mural de Recados',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.add_to_home_screen_outlined),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: _openSite,
+                      ),
+                      const Text(
+                        'Abrir Site',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.settings_suggest),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Settings(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Text(
+                        'Configurações',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.logout),
+                        color: Colors.amber,
+                        iconSize: 48,
+                        //tooltip: '',
+                        onPressed: _logoutApp,
+                      ),
+                      const Text(
+                        'Desconectar',
+                        style: TextStyle(
+                          color: Colors.white54,
+                          fontSize: 16.0,
+                          fontFamily: 'WorkSansLigth',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ), /*
           const Padding(
             padding: EdgeInsets.only(top: 50),
             child: Image(
@@ -672,7 +658,8 @@ class _DashboardState extends State<Dashboard> {
               height: 200,
             ),
           )*/
-        ],
+          ],
+        ),
       ),
     );
   }

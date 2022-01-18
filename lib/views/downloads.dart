@@ -50,6 +50,8 @@ class _DownloadsState extends State<Downloads> {
       EasyLoading.showInfo(
         'enviando arquivo...',
         maskType: EasyLoadingMaskType.custom,
+        dismissOnTap: false,
+        duration: const Duration(seconds: 10),
       );
 
       Uint8List? fileBytes = result.files.first.bytes;
@@ -69,14 +71,14 @@ class _DownloadsState extends State<Downloads> {
       });
 
       setState(() {
-        Timer(const Duration(milliseconds: 1500), () {
+        Timer(const Duration(milliseconds: 500), () {
           _getData();
         });
       });
     }
   }
 
-  Future<void> _addNewSound(BuildContext context) async {
+  Future<void> _dialogData(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -88,6 +90,7 @@ class _DownloadsState extends State<Downloads> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
+                  autofocus: true,
                   controller: _titleController,
                   maxLength: 100,
                   decoration: const InputDecoration(
@@ -95,6 +98,7 @@ class _DownloadsState extends State<Downloads> {
                   ),
                 ),
                 TextField(
+                  autofocus: true,
                   controller: _fileController,
                   maxLength: 200,
                   decoration: const InputDecoration(
@@ -102,6 +106,7 @@ class _DownloadsState extends State<Downloads> {
                   ),
                 ),
                 TextField(
+                  autofocus: true,
                   controller: _descriptionController,
                   maxLines: 3,
                   decoration:
@@ -160,7 +165,6 @@ class _DownloadsState extends State<Downloads> {
     );
   }
 
-  // faz o envio da imagem para o storage
   Future _saveData(
     String _titleValue,
     String _fileValue,
@@ -169,6 +173,8 @@ class _DownloadsState extends State<Downloads> {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     DateTime now = DateTime.now();
@@ -185,12 +191,59 @@ class _DownloadsState extends State<Downloads> {
     db.collection("downloads").doc(dateNow).set(downloadModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
 
     return Future.value(true);
+  }
+
+  _dialogDelete(DownloadModel value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover arquivo'),
+        content: Text(
+            'Tem certeza que deseja remover o arquivo\n${value.title}\n${value.file}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeData(value.id, value.file);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future _removeData(itemId, itemFile) async {
@@ -252,7 +305,7 @@ class _DownloadsState extends State<Downloads> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -271,7 +324,7 @@ class _DownloadsState extends State<Downloads> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     final double itemWidth = size.width;
     const double itemHeight = 100;
 
@@ -290,7 +343,7 @@ class _DownloadsState extends State<Downloads> {
             splashColor: Colors.yellow,
             tooltip: 'Adicionar arquivo',
             onPressed: () {
-              _addNewSound(context);
+              _dialogData(context);
             },
           ),
         ],
@@ -333,80 +386,51 @@ class _DownloadsState extends State<Downloads> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                        child: SizedBox(
-                          height: 40.0,
-                          width: 40.0,
-                          child: FloatingActionButton(
-                            mini: false,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
                             tooltip: 'Enviar arquivo',
-                            child: const Icon(Icons.upload),
-                            backgroundColor: Colors.grey,
+                            icon: const Icon(Icons.upload),
+                            color: Colors.blue,
                             onPressed: () => setState(() {
                               _selectSound(value.id);
                             }),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 5, 15, 5),
-                        child: SizedBox(
-                          height: 25.0,
-                          width: 25.0,
-                          child: FloatingActionButton(
-                            mini: true,
-                            tooltip: 'Remover arquivo',
-                            child: const Icon(Icons.close),
-                            backgroundColor: Colors.red,
-                            onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Remover arquivo'),
-                                content: Text(
-                                    'Tem certeza que deseja remover o arquivo\n${value.title}\n${value.file}?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 15, 15, 15),
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Cancelar',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _removeData(value.id, value.file);
-                                      Navigator.pop(context);
-                                    },
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          20, 15, 20, 15),
-                                      backgroundColor: Colors.red,
-                                      alignment: Alignment.center,
-                                    ),
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16.0,
-                                        fontFamily: 'WorkSansMedium',
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'UPLOAD',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Remover arquivo',
+                            icon: const Icon(Icons.delete_forever),
+                            color: Colors.grey.shade300,
+                            onPressed: () => _dialogDelete(value),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                            child: Text(
+                              'EXCLUIR',
+                              style: TextStyle(
+                                color: Colors.white30,
+                                fontSize: 10.0,
+                                fontFamily: 'WorkSansLigth',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

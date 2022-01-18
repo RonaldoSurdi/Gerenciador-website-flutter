@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-// import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:decorated_icon/decorated_icon.dart';
 import 'package:hwscontrol/core/models/banner_model.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -42,11 +42,12 @@ class _BannersState extends State<Banners> {
     }
   }
 
-  // faz o envio da imagem para o storage
   Future _uploadFile() async {
     EasyLoading.showInfo(
       'enviando imagem...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
     DateTime now = DateTime.now();
     String dateNow = DateFormat('yyyyMMddkkmmss').format(now);
@@ -77,7 +78,7 @@ class _BannersState extends State<Banners> {
     db.collection("banners").doc(dateNow).set(bannerModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -85,10 +86,58 @@ class _BannersState extends State<Banners> {
     return Future.value(uploadTask);
   }
 
+  _dialogDelete(String value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover imagem'),
+        content: Text('Tem certeza que deseja remover a imagem\n$value?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeFile(value);
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future _removeFile(fileName) async {
     EasyLoading.showInfo(
       'removendo imagem...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
     firebase_storage.Reference arquive = firebase_storage
         .FirebaseStorage.instance
@@ -129,7 +178,7 @@ class _BannersState extends State<Banners> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -189,7 +238,6 @@ class _BannersState extends State<Banners> {
         child: GridView.count(
           crossAxisCount: gritCol,
           childAspectRatio: (widthCol / heightCol),
-          //childAspectRatio: 200,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           controller: ScrollController(keepScrollOffset: false),
@@ -217,57 +265,27 @@ class _BannersState extends State<Banners> {
                         height: 25.0,
                         width: 25.0,
                         child: FloatingActionButton(
+                          heroTag: 'remove_$value',
                           mini: true,
-                          elevation: 2,
                           tooltip: 'Remover imagem',
-                          child: const Icon(Icons.close),
-                          backgroundColor: Colors.red,
-                          onPressed: () => showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Remover imagem'),
-                              content: Text(
-                                  'Tem certeza que deseja remover a imagem\n$value?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        15, 15, 15, 15),
-                                    alignment: Alignment.center,
-                                  ),
-                                  child: const Text(
-                                    'Cancelar',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontFamily: 'WorkSansMedium',
-                                    ),
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    _removeFile(value);
-                                    Navigator.pop(context);
-                                  },
-                                  style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        20, 15, 20, 15),
-                                    backgroundColor: Colors.red,
-                                    alignment: Alignment.center,
-                                  ),
-                                  child: const Text(
-                                    'Excluir',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.0,
-                                      fontFamily: 'WorkSansMedium',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          child: DecoratedIcon(
+                            Icons.delete_forever,
+                            color: Colors.grey.shade300,
+                            size: 20.0,
+                            shadows: const [
+                              BoxShadow(
+                                color: Colors.black54,
+                                offset: Offset(2.0, 2.0),
+                              ),
+                            ],
                           ),
+                          elevation: 0,
+                          disabledElevation: 0,
+                          highlightElevation: 0,
+                          focusElevation: 0,
+                          hoverElevation: 0,
+                          backgroundColor: Colors.transparent,
+                          onPressed: () => _dialogDelete(value),
                         ),
                       ),
                     ),

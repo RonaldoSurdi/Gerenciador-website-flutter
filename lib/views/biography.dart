@@ -1,13 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/biography_model.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:hwscontrol/core/theme/custom_theme.dart';
-// import 'dart:convert' as convert;
 
 class Biography extends StatefulWidget {
   const Biography({Key? key}) : super(key: key);
@@ -39,12 +35,14 @@ class _BiographyState extends State<Biography> {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
     FirebaseFirestore db = FirebaseFirestore.instance;
     db.collection("biography").doc("data").set(biographyModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -72,7 +70,7 @@ class _BiographyState extends State<Biography> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -101,6 +99,7 @@ class _BiographyState extends State<Biography> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 15, 20, 20),
           child: TextField(
+            autofocus: true,
             controller: _descriptionController,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.next,
@@ -140,6 +139,7 @@ class _BiographyState extends State<Biography> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "save_biography",
         onPressed: () => _onVerifyData(),
         tooltip: 'Salvar alterações',
         child: const Icon(Icons.save),

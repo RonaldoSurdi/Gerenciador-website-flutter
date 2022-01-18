@@ -75,6 +75,8 @@ class _SettingsState extends State<Settings> {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -82,7 +84,7 @@ class _SettingsState extends State<Settings> {
     db.collection("settings").doc("secure").set(settingsprivateModel.toMap());
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -116,7 +118,7 @@ class _SettingsState extends State<Settings> {
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -550,6 +552,7 @@ class _SettingsState extends State<Settings> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "save_settings",
         onPressed: () => _onVerifyData(),
         tooltip: 'Salvar alterações',
         child: const Icon(Icons.save),

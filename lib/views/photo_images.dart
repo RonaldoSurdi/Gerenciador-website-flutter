@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:decorated_icon/decorated_icon.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:hwscontrol/core/models/photo_image_model.dart';
 
 class PhotoImages extends StatefulWidget {
   final String itemId;
@@ -19,11 +21,9 @@ class PhotoImages extends StatefulWidget {
 }
 
 class _PhotoImagesState extends State<PhotoImages> {
-  // variaveis da tela
-  final _picker = ImagePicker();
   List<XFile>? _imageFileList;
 
-  final List<String> _widgetList = [];
+  final List<PhotoImageModel> _widgetList = [];
 
   set _imageFile(XFile? value) {
     _imageFileList = value == null ? null : [value];
@@ -32,7 +32,12 @@ class _PhotoImagesState extends State<PhotoImages> {
   // seleciona a imagem do computador
   Future _selectFile() async {
     try {
-      final image = await _picker.pickImage(source: ImageSource.gallery);
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 1600,
+        maxWidth: 1080,
+        imageQuality: 90,
+      );
 
       if (image != null) {
         setState(() {
@@ -45,11 +50,12 @@ class _PhotoImagesState extends State<PhotoImages> {
     }
   }
 
-  // faz o envio da imagem para o storage
   Future _uploadFile() async {
     EasyLoading.showInfo(
       'gravando dados...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     String fileName = _imageFileList![0].name;
@@ -73,7 +79,7 @@ class _PhotoImagesState extends State<PhotoImages> {
         arquive.putData(await _imageFileList![0].readAsBytes(), metadata);
 
     setState(() {
-      Timer(const Duration(milliseconds: 1500), () {
+      Timer(const Duration(milliseconds: 500), () {
         _getData();
       });
     });
@@ -81,10 +87,59 @@ class _PhotoImagesState extends State<PhotoImages> {
     return Future.value(uploadTask);
   }
 
+  _dialogDelete(PhotoImageModel value) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Remover imagem'),
+        content:
+            Text('Tem certeza que deseja remover a imagem\n${value.image}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _removeFile('${value.image}');
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              backgroundColor: Colors.red,
+              alignment: Alignment.center,
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+                fontFamily: 'WorkSansMedium',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future _removeFile(fileName) async {
     EasyLoading.showInfo(
       'removendo imagem...',
       maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
     );
 
     firebase_storage.Reference arquive = firebase_storage
@@ -113,21 +168,27 @@ class _PhotoImagesState extends State<PhotoImages> {
         .child("photos")
         .child(widget.itemId);
 
+    //print(arquive);
+    firebase_storage.ListResult listImages = await arquive.listAll();
     setState(() {
-      arquive.listAll().then((firebase_storage.ListResult listResult) {
-        for (int i = 0; i < listResult.items.length; i++) {
-          String imageItem = listResult.items[i].fullPath;
-          imageItem = imageItem.replaceAll('/', '%2F');
-          _widgetList.add(imageItem);
-        }
-      }).catchError((error) {});
-      closeLoading();
+      for (int i = 0; i < listImages.items.length; i++) {
+        String imageItem = listImages.items[i].fullPath;
+        imageItem = imageItem.replaceAll('/', '%2F');
+
+        PhotoImageModel photoImageModel = PhotoImageModel(
+          id: i.toString(),
+          image: imageItem,
+        );
+
+        _widgetList.add(photoImageModel);
+      }
     });
+    closeLoading();
   }
 
   closeLoading() {
     if (EasyLoading.isShow) {
-      Timer(const Duration(milliseconds: 2000), () {
+      Timer(const Duration(milliseconds: 500), () {
         EasyLoading.dismiss(animation: true);
       });
     }
@@ -146,8 +207,8 @@ class _PhotoImagesState extends State<PhotoImages> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    final double imageSize = size.width / 3;
+    final size = MediaQuery.of(context).size;
+    final double imageSize = size.width / 1;
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
@@ -155,7 +216,7 @@ class _PhotoImagesState extends State<PhotoImages> {
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_a_photo),
+            icon: const Icon(Icons.add_photo_alternate_outlined),
             iconSize: 40,
             color: Colors.amber,
             splashColor: Colors.yellow,
@@ -173,11 +234,11 @@ class _PhotoImagesState extends State<PhotoImages> {
                 crossAxisCount: 3,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
-                childAspectRatio: 1.8,
+                childAspectRatio: 1,
                 controller: ScrollController(keepScrollOffset: false),
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
-                children: _widgetList.map((String value) {
+                children: _widgetList.map((PhotoImageModel value) {
                   return Container(
                     color: Colors.transparent,
                     child: Stack(
@@ -186,7 +247,7 @@ class _PhotoImagesState extends State<PhotoImages> {
                           borderRadius: BorderRadius.circular(10.0),
                           child: Image(
                             image: NetworkImage(
-                                'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/$value?alt=media'),
+                                'https://firebasestorage.googleapis.com/v0/b/joao-luiz-correa.appspot.com/o/${value.image}?alt=media'),
                             fit: BoxFit.fitWidth,
                             width: imageSize,
                           ),
@@ -199,58 +260,27 @@ class _PhotoImagesState extends State<PhotoImages> {
                               height: 25.0,
                               width: 25.0,
                               child: FloatingActionButton(
+                                heroTag: "remove_${value.image}",
                                 mini: true,
-                                elevation: 2,
                                 tooltip: 'Remover imagem',
-                                child: const Icon(Icons.close),
-                                backgroundColor: Colors.red,
-                                onPressed: () => showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      AlertDialog(
-                                    title: const Text('Remover imagem'),
-                                    content: Text(
-                                        'Tem certeza que deseja remover a imagem\n$value?'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              15, 15, 15, 15),
-                                          alignment: Alignment.center,
-                                        ),
-                                        child: const Text(
-                                          'Cancelar',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16.0,
-                                            fontFamily: 'WorkSansMedium',
-                                          ),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          _removeFile(value);
-                                          Navigator.pop(context);
-                                        },
-                                        style: TextButton.styleFrom(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              20, 15, 20, 15),
-                                          backgroundColor: Colors.red,
-                                          alignment: Alignment.center,
-                                        ),
-                                        child: const Text(
-                                          'Excluir',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontFamily: 'WorkSansMedium',
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                child: DecoratedIcon(
+                                  Icons.delete_forever,
+                                  color: Colors.grey.shade300,
+                                  size: 20.0,
+                                  shadows: const [
+                                    BoxShadow(
+                                      color: Colors.black54,
+                                      offset: Offset(2.0, 2.0),
+                                    ),
+                                  ],
                                 ),
+                                elevation: 0,
+                                disabledElevation: 0,
+                                highlightElevation: 0,
+                                focusElevation: 0,
+                                hoverElevation: 0,
+                                backgroundColor: Colors.transparent,
+                                onPressed: () => _dialogDelete(value),
                               ),
                             ),
                           ),
