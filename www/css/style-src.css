@@ -3328,3 +3328,18 @@ section.info-agileinfo h4 {
 .sortable-handler {
   touch-action: none !important;
 }
+.c-loader {
+	display: inline-block;
+	animation: is-rotating 1s infinite;
+	border: 6px solid #555;
+	border-radius: 50%;
+	border-top-color: #CCC;
+	height: 20px;
+	width: 20px;
+}
+
+@keyframes is-rotating {
+	to {
+		transform: rotate(1turn);
+	}
+}

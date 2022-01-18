@@ -22,6 +22,7 @@ exports.handler = async function(req, res, firestore, cors, nodemailer) {
         const fromEmail = settingsData.email;
         const toName = req.body["to_name"];
         const toEmail = req.body["to_email"];
+        const message = req.body["content"];
         let toPhone = req.body["to_phone"];
         let cityUf = req.body["city_uf"];
         let content = req.body["content"];
@@ -61,7 +62,6 @@ exports.handler = async function(req, res, firestore, cors, nodemailer) {
             text: textFrom,
             html: htmlFrom
         };
-
         const emailClient = {
             from: from,
             to: to,
@@ -69,6 +69,21 @@ exports.handler = async function(req, res, firestore, cors, nodemailer) {
             text: textTo,
             html: htmlTo
         };
+        const timestamp = new Date(Date.now());
+        const contactId = Date.now();
+        const docModel = {
+            "id": contactId,
+            "name": toName,
+            "email": toEmail,
+            "phone": toPhone,
+            "cityuf": cityUf,
+            "message": message,
+            "ip": ipAddress,
+            "send": timestamp,
+            "read": null,
+            "view": false
+        };
+        await firestore.collection("contacts").doc(`${contactId}`).set(docModel);
         await transporter.sendMail(emailEnterprise, async (error, info) => {
             if (error) {
                 console.log(`Erro ao enviar email...\n${error}\n${info}`);

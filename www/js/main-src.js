@@ -473,13 +473,15 @@ $(document).ready(function () {
 	//contato
 	/*$("input,textarea").jqBootstrapValidation({*/
 	$('form[name="sentMessage"]').find('input,textarea').not('[type=submit]').jqBootstrapValidation({
-        preventSubmit: true,
+		preventSubmit: true,
         submitError: function($form, event, errors) {
             // something to have when submit produces an error ?
             // Not decided if I need it yet
         },
         submitSuccess: function($form, event) {
             event.preventDefault();
+			$('#btsend').html('<div class="c-loader"></div> Aguarde...');
+			$('#btsend').css('pointer-events', 'none');
             var name = $("#name").val();
             var email = $("#email").val();
 			var phone = $("#phone").val();
@@ -497,7 +499,6 @@ $(document).ready(function () {
                 },
                 cache: false,
                 success: function(data) {
-					console.log(data);
                     // Success message
                     $('#success').html("<div class='alert alert-success'>");
                     $('#success > .alert-success').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
@@ -509,6 +510,8 @@ $(document).ready(function () {
 
                     //clear all fields
                     $('#contatoForm').trigger("reset");
+					$('#btsend').html('Enviar');
+					$('#btsend').css('pointer-events', 'auto');
                 },
                 error: function(error) {
 					console.log(error);
@@ -520,6 +523,8 @@ $(document).ready(function () {
                     $('#success > .alert-danger').append('</div>');
                     //clear all fields
                     $('#contatoForm').trigger("reset");
+					$('#btsend').html('Enviar');
+					$('#btsend').css('pointer-events', 'auto');
                 },
             });
         },
