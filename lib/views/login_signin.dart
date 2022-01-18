@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/views/dashboard.dart';
-import 'package:loading_overlay_pro/animations/bouncing_line.dart';
 
 class LoginSignin extends StatefulWidget {
   const LoginSignin({Key? key}) : super(key: key);
@@ -24,22 +25,12 @@ class _LoginSigninState extends State<LoginSignin> {
   final _storage = const FlutterSecureStorage();
   bool _obscureTextPassword = true;
 
-  _validateFields() {
+  void _validateFields() async {
     String email = _loginEmailController.text;
     String password = _loginPasswordController.text;
 
     if (email.trim().isNotEmpty && email.trim().contains("@")) {
       if (password.isNotEmpty) {
-        setState(() {
-          const LoadingBouncingLine.circle(
-            borderColor: Colors.cyan,
-            borderSize: 3.0,
-            size: 120.0,
-            backgroundColor: Colors.cyanAccent,
-            duration: Duration(milliseconds: 500),
-          );
-        });
-
         _logarUsuario();
       } else {
         CustomSnackBar(
@@ -57,20 +48,30 @@ class _LoginSigninState extends State<LoginSignin> {
     }
   }
 
-  _logarUsuario() {
+  void _logarUsuario() async {
+    EasyLoading.showInfo(
+      'autenticando...',
+      maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
+    );
+
     FirebaseAuth auth = FirebaseAuth.instance;
 
     String email = _loginEmailController.text;
     String password = _loginPasswordController.text;
 
-    auth
+    await auth
         .signInWithEmailAndPassword(
       email: email,
       password: password,
     )
-        .then((firebaseUser) {
-      _saveMail(email);
-      _savePassword(password);
+        .then((firebaseUser) async {
+      await _storage.write(key: "keyMail", value: email);
+      await _storage.write(key: "keyPasswd", value: password);
+
+      closeLoading();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -78,6 +79,8 @@ class _LoginSigninState extends State<LoginSignin> {
         ),
       );
     }).catchError((error) {
+      closeLoading();
+
       CustomSnackBar(
         context,
         const Text(
@@ -87,17 +90,12 @@ class _LoginSigninState extends State<LoginSignin> {
     });
   }
 
-  // salvar token do login
-  void _saveMail(String email) async {
-    const String keyMail = "keyMail";
-    final String mail = email;
-    await _storage.write(key: keyMail, value: mail);
-  }
-
-  void _savePassword(String password) async {
-    const String keyPasswd = "keyPasswd";
-    final String passwd = password;
-    await _storage.write(key: keyPasswd, value: passwd);
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 500), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

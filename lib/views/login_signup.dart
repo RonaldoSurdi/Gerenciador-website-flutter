@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hwscontrol/core/models/user_model.dart';
@@ -26,6 +29,8 @@ class _LoginSignupState extends State<LoginSignup> {
       TextEditingController();
   final TextEditingController signupConfirmPasswordController =
       TextEditingController();
+
+  final _storage = const FlutterSecureStorage();
 
   bool _obscureTextPassword = true;
   bool _obscureTextConfirmPassword = true;
@@ -74,6 +79,13 @@ class _LoginSignupState extends State<LoginSignup> {
   }
 
   _registeruser(UserModel userModel) async {
+    EasyLoading.showInfo(
+      'autenticando...',
+      maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
+    );
+
     FirebaseAuth auth = FirebaseAuth.instance;
 
     await auth
@@ -83,12 +95,20 @@ class _LoginSignupState extends State<LoginSignup> {
     )
         .then((firebaseUser) async {
       User? user = firebaseUser.user;
-      user!.updateDisplayName(userModel.nome);
+      await user!.updateDisplayName(userModel.nome);
       await user.reload();
 
       FirebaseFirestore db = FirebaseFirestore.instance;
 
-      db.collection("users").doc(firebaseUser.user!.uid).set(userModel.toMap());
+      await db
+          .collection("users")
+          .doc(firebaseUser.user!.uid)
+          .set(userModel.toMap());
+
+      await _storage.write(key: "keyMail", value: userModel.email);
+      await _storage.write(key: "keyPasswd", value: userModel.password);
+
+      closeLoading();
 
       Navigator.pushReplacement(
         context,
@@ -97,6 +117,8 @@ class _LoginSignupState extends State<LoginSignup> {
         ),
       );
     }).catchError((error) {
+      closeLoading();
+
       CustomSnackBar(
         context,
         const Text(
@@ -104,6 +126,14 @@ class _LoginSignupState extends State<LoginSignup> {
         backgroundColor: Colors.red,
       );
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 500), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override

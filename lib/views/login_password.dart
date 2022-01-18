@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,6 +42,13 @@ class _LoginPasswordState extends State<LoginPassword> {
   }
 
   _sendpassword(UserModel userModel) async {
+    EasyLoading.showInfo(
+      'enviando email...',
+      maskType: EasyLoadingMaskType.custom,
+      dismissOnTap: false,
+      duration: const Duration(seconds: 10),
+    );
+
     FirebaseAuth auth = FirebaseAuth.instance;
 
     await auth
@@ -47,6 +56,8 @@ class _LoginPasswordState extends State<LoginPassword> {
       email: userModel.email!,
     )
         .then((firebaseUser) {
+      closeLoading();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -54,7 +65,8 @@ class _LoginPasswordState extends State<LoginPassword> {
         ),
       );
     }).catchError((error) {
-      // print("erro app: " + error.toString());
+      closeLoading();
+
       setState(() {
         CustomSnackBar(
             context,
@@ -63,6 +75,14 @@ class _LoginPasswordState extends State<LoginPassword> {
             backgroundColor: Colors.red);
       });
     });
+  }
+
+  closeLoading() {
+    if (EasyLoading.isShow) {
+      Timer(const Duration(milliseconds: 500), () {
+        EasyLoading.dismiss(animation: true);
+      });
+    }
   }
 
   @override
