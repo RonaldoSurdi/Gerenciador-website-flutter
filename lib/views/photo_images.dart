@@ -212,7 +212,7 @@ class _PhotoImagesState extends State<PhotoImages> {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
-        title: Text('Fotos ${widget.itemTitle}'),
+        title: Text(widget.itemTitle),
         backgroundColor: Colors.black38,
         actions: [
           IconButton(
