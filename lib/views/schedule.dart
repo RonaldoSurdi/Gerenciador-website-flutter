@@ -6,7 +6,6 @@ import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hwscontrol/core/models/schedule_model.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-// import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key? key}) : super(key: key);
@@ -325,31 +324,39 @@ class _ScheduleState extends State<Schedule> {
               ),
               TextButton(
                 onPressed: () {
-                  if (itemId == 0) {
-                    _saveData(
-                      _titleValue,
-                      _placeValue,
-                      _descriptionValue,
-                      _dataIniValue,
-                      _dataEndValue,
-                    ).then(
-                      (value) => {
-                        if (value) {Navigator.pop(context)}
-                      },
-                    );
+                  if (_titleValue.isEmpty) {
+                    CustomSnackBar(context, const Text('Digite o título.'),
+                        backgroundColor: Colors.red);
+                  } else if (_placeValue.isEmpty) {
+                    CustomSnackBar(context, const Text('Digite o local.'),
+                        backgroundColor: Colors.red);
                   } else {
-                    _updateData(
-                      itemId,
-                      _titleValue,
-                      _placeValue,
-                      _descriptionValue,
-                      _dataIniValue,
-                      _dataEndValue,
-                    ).then(
-                      (value) => {
-                        if (value) {Navigator.pop(context)}
-                      },
-                    );
+                    if (itemId == 0) {
+                      _saveData(
+                        _titleValue,
+                        _placeValue,
+                        _descriptionValue,
+                        _dataIniValue,
+                        _dataEndValue,
+                      ).then(
+                        (value) => {
+                          if (value) {Navigator.pop(context)}
+                        },
+                      );
+                    } else {
+                      _updateData(
+                        itemId,
+                        _titleValue,
+                        _placeValue,
+                        _descriptionValue,
+                        _dataIniValue,
+                        _dataEndValue,
+                      ).then(
+                        (value) => {
+                          if (value) {Navigator.pop(context)}
+                        },
+                      );
+                    }
                   }
                 },
                 style: TextButton.styleFrom(
@@ -400,13 +407,14 @@ class _ScheduleState extends State<Schedule> {
       Timestamp _dataEndTimestamp = Timestamp.fromDate(_dataEndValue);
 
       ScheduleModel scheduleModel = ScheduleModel(
-          id: dateNow,
-          title: _titleValue,
-          place: _placeValue,
-          description: _descriptionValue,
-          dateini: _dataIniTimestamp,
-          dateend: _dataEndTimestamp,
-          view: _viewValue);
+        id: dateNow,
+        title: _titleValue,
+        place: _placeValue,
+        description: _descriptionValue,
+        dateini: _dataIniTimestamp,
+        dateend: _dataEndTimestamp,
+        view: _viewValue,
+      );
 
       FirebaseFirestore db = FirebaseFirestore.instance;
       await db.collection("schedule").doc(dateNow).set(scheduleModel.toMap());
@@ -610,7 +618,7 @@ class _ScheduleState extends State<Schedule> {
             onPressed: () {
               _dialogData(
                 context,
-                '0',
+                0,
                 '',
                 '',
                 '',

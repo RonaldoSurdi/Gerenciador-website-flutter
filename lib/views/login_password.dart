@@ -5,8 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hwscontrol/core/theme/custom_theme.dart';
 import 'package:hwscontrol/core/components/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hwscontrol/core/models/user_model.dart';
-import 'package:hwscontrol/views/dashboard.dart';
+import 'package:hwscontrol/views/login_auth.dart';
 
 class LoginPassword extends StatefulWidget {
   const LoginPassword({Key? key}) : super(key: key);
@@ -30,9 +29,7 @@ class _LoginPasswordState extends State<LoginPassword> {
         CustomSnackBar(context, const Text('Verificando'));
       });
 
-      UserModel userModel = UserModel(email: email);
-
-      _sendpassword(userModel);
+      _sendpassword(email);
     } else {
       setState(() {
         CustomSnackBar(context, const Text('Preencha o E-mail utilizando @'),
@@ -41,7 +38,7 @@ class _LoginPasswordState extends State<LoginPassword> {
     }
   }
 
-  _sendpassword(UserModel userModel) async {
+  _sendpassword(String email) async {
     EasyLoading.showInfo(
       'enviando email...',
       maskType: EasyLoadingMaskType.custom,
@@ -53,7 +50,7 @@ class _LoginPasswordState extends State<LoginPassword> {
 
     await auth
         .sendPasswordResetEmail(
-      email: userModel.email!,
+      email: email,
     )
         .then((firebaseUser) {
       closeLoading();
@@ -61,7 +58,7 @@ class _LoginPasswordState extends State<LoginPassword> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (builder) => const Dashboard(title: 'Loading...'),
+          builder: (builder) => const LoginAuth(title: 'Loading...'),
         ),
       );
     }).catchError((error) {
@@ -117,7 +114,7 @@ class _LoginPasswordState extends State<LoginPassword> {
                         child: TextField(
                           focusNode: _focusNodeEmail,
                           controller: forgotpasswordEmailController,
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.text,
                           autocorrect: false,
                           style: const TextStyle(
                             fontFamily: 'WorkSansThin',

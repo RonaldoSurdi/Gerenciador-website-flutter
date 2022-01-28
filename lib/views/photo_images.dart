@@ -168,7 +168,6 @@ class _PhotoImagesState extends State<PhotoImages> {
         .child("photos")
         .child(widget.itemId);
 
-    //print(arquive);
     firebase_storage.ListResult listImages = await arquive.listAll();
     setState(() {
       for (int i = 0; i < listImages.items.length; i++) {
