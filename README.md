@@ -1,5 +1,4 @@
-# HWSCONTROL
-##### Sistema de gerenciamento de conteúdo web
+# Sistema de gerenciamento de website Flutter
 
 ## :star: Run Debugging Web
 
